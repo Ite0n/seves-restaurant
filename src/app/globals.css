@@ -325,7 +325,7 @@
     @apply h-px w-full bg-gradient-to-r from-transparent via-gold/30 to-transparent;
   }
 
-  .menu-atmosphere {
+  .section-atmosphere {
     pointer-events: none;
     position: absolute;
     inset: 0;
@@ -333,7 +333,7 @@
     z-index: 0;
   }
 
-  .menu-atmosphere__orb {
+  .section-atmosphere__orb {
     position: absolute;
     border-radius: 50%;
     filter: blur(80px);
@@ -341,7 +341,7 @@
     animation: atmosphere-drift 20s var(--ease-luxe) infinite alternate;
   }
 
-  .menu-atmosphere__orb--primary {
+  .section-atmosphere__orb--primary {
     top: -18%;
     left: 50%;
     width: min(90vw, 52rem);
@@ -356,7 +356,7 @@
     animation-duration: 22s;
   }
 
-  .menu-atmosphere__orb--accent {
+  .section-atmosphere__orb--accent {
     bottom: 8%;
     right: -8%;
     width: min(70vw, 36rem);
@@ -371,7 +371,7 @@
     animation-direction: alternate-reverse;
   }
 
-  .menu-atmosphere__orb--whisper {
+  .section-atmosphere__orb--whisper {
     top: 42%;
     left: -12%;
     width: min(55vw, 28rem);
@@ -385,7 +385,7 @@
     animation-duration: 18s;
   }
 
-  .menu-atmosphere__sheen {
+  .section-atmosphere__sheen {
     position: absolute;
     inset: -20% -10%;
     background: linear-gradient(
@@ -399,7 +399,7 @@
     animation: atmosphere-sheen 14s var(--ease-luxe) infinite alternate;
   }
 
-  .menu-atmosphere__grain {
+  .section-atmosphere__grain {
     position: absolute;
     inset: 0;
     opacity: 0.035;
@@ -408,7 +408,7 @@
     background-size: 180px 180px;
   }
 
-  .menu-atmosphere__vignette {
+  .section-atmosphere__vignette {
     position: absolute;
     inset: 0;
     background:
@@ -431,7 +431,7 @@
       );
   }
 
-  .menu-atmosphere__hairline {
+  .section-atmosphere__hairline {
     position: absolute;
     top: 0;
     left: 10%;

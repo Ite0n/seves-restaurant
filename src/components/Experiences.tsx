@@ -5,12 +5,13 @@ import { motion } from "framer-motion";
 import { EXPERIENCES } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
+import SectionAtmosphere from "./ui/SectionAtmosphere";
 import { EASE_LUXE, fadeUp } from "@/lib/motion";
 
 export default function Experiences() {
   return (
-    <section id="experiences" className="relative bg-ink-800 section-pad">
-      <div className="absolute inset-0 grain opacity-40" />
+    <section id="experiences" className="relative overflow-hidden bg-ink-800 section-pad">
+      <SectionAtmosphere />
 
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
