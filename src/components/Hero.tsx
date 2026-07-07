@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RESTAURANT } from "@/lib/data";
 import MagneticButton from "./ui/MagneticButton";
 import SeasonalBadge from "./ui/SeasonalBadge";
@@ -12,14 +12,12 @@ import { EASE_LUXE } from "@/lib/motion";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 
-const HERO_VIDEO = "/video/hero.mp4";
+const HERO_VIDEO = "/video/hero.mp4?v=2";
 const HERO_POSTER = "/images/hero-terrace-firewater.png";
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [useStatic, setUseStatic] = useState(false);
-  const [videoPlaying, setVideoPlaying] = useState(false);
   const { t } = useLocale();
 
   const { scrollYProgress } = useScroll({
@@ -38,18 +36,22 @@ export default function Hero() {
     if (reduced) setUseStatic(true);
   }, []);
 
-  const tryPlay = () => {
-    const el = videoRef.current;
-    if (!el) return;
-    el.play().catch(() => {
-      /* Autoplay may be blocked until interaction — keep video element visible */
-    });
-  };
+  const initVideo = useCallback((node: HTMLVideoElement | null) => {
+    if (!node) return;
 
-  useEffect(() => {
-    if (useStatic) return;
-    tryPlay();
-  }, [useStatic]);
+    node.muted = true;
+    node.playsInline = true;
+
+    const play = () => {
+      node.play().catch(() => {
+        /* autoplay blocked until user gesture */
+      });
+    };
+
+    play();
+    node.addEventListener("loadeddata", play, { once: true });
+    node.addEventListener("canplay", play, { once: true });
+  }, []);
 
   const title = RESTAURANT.name;
 
@@ -59,52 +61,43 @@ export default function Hero() {
       ref={ref}
       className="relative h-[100svh] w-full overflow-hidden bg-ink-900 grain"
     >
-      <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
+      {/* Video must NOT sit inside a transformed parent — breaks playback in Chrome/Safari */}
+      <div className="absolute inset-0 overflow-hidden">
         {useStatic ? (
-          <Image
-            src={HERO_POSTER}
-            alt="Sèves garden terrace at blue hour with fire bowls and water features"
-            fill
-            priority
-            quality={85}
-            sizes="100vw"
-            className="object-cover object-center"
-          />
+          <motion.div
+            style={{ y: imgY, scale: imgScale }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={HERO_POSTER}
+              alt="Sèves garden terrace at blue hour with fire bowls and water features"
+              fill
+              priority
+              quality={85}
+              sizes="100vw"
+              className="object-cover object-center"
+            />
+          </motion.div>
         ) : (
           <video
-            ref={videoRef}
-            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
-              videoPlaying ? "opacity-100" : "opacity-0"
-            }`}
-            src={HERO_VIDEO}
-            poster={HERO_POSTER}
+            ref={initVideo}
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
-            onLoadedData={tryPlay}
-            onCanPlay={tryPlay}
-            onPlaying={() => setVideoPlaying(true)}
+            poster={HERO_POSTER}
+            disablePictureInPicture
+            className="absolute inset-0 h-full w-full object-cover object-center"
             onError={() => setUseStatic(true)}
-          />
+          >
+            <source src={HERO_VIDEO} type="video/mp4" />
+          </video>
         )}
-        {!useStatic && !videoPlaying && (
-          <Image
-            src={HERO_POSTER}
-            alt=""
-            fill
-            priority
-            quality={85}
-            sizes="100vw"
-            className="object-cover object-center"
-            aria-hidden
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-ink-900/70" />
-        <div className="absolute inset-0 vignette-strong" />
-      </motion.div>
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-ink-900/70" />
+        <div className="pointer-events-none absolute inset-0 vignette-strong" />
+      </div>
 
       <div className="pointer-events-none absolute inset-0 z-[2] opacity-60">
         <GoldDust />
