@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
@@ -9,7 +9,7 @@ function Particles({ count = 900 }: { count?: number }) {
   const { viewport } = useThree();
   const mouse = useRef({ x: 0, y: 0 });
 
-  const { positions, speeds } = useMemo(() => {
+  const [{ positions, speeds }] = useState(() => {
     const positions = new Float32Array(count * 3);
     const speeds = new Float32Array(count);
     for (let i = 0; i < count; i++) {
@@ -19,7 +19,7 @@ function Particles({ count = 900 }: { count?: number }) {
       speeds[i] = 0.08 + Math.random() * 0.22;
     }
     return { positions, speeds };
-  }, [count]);
+  });
 
   useFrame((state, delta) => {
     const pts = points.current;

@@ -11,9 +11,11 @@ export default function Preloader() {
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setProgress(100);
-      const t = setTimeout(() => setDone(true), 200);
-      return () => clearTimeout(t);
+      const frame = requestAnimationFrame(() => {
+        setProgress(100);
+        setTimeout(() => setDone(true), 200);
+      });
+      return () => cancelAnimationFrame(frame);
     }
 
     let frame = 0;

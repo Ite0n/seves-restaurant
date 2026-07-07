@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useRef } from "react";
+import { Suspense, useMemo, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
@@ -27,8 +27,12 @@ function ImagePanel({
   index: number;
 }) {
   const texture = useTexture(src);
-  texture.colorSpace = THREE.SRGBColorSpace;
-  const img = texture.image as HTMLImageElement;
+  const map = useMemo(() => {
+    const cloned = texture.clone();
+    cloned.colorSpace = THREE.SRGBColorSpace;
+    return cloned;
+  }, [texture]);
+  const img = map.image as HTMLImageElement;
   const aspect = img && img.width ? img.width / img.height : 0.75;
   let width = PANEL_HEIGHT * aspect;
   width = Math.min(width, 8);
@@ -49,7 +53,7 @@ function ImagePanel({
     <group position={[x, 0, z]} rotation={[0, rotY, 0]}>
       <mesh ref={mesh}>
         <planeGeometry args={[width, PANEL_HEIGHT]} />
-        <meshBasicMaterial map={texture} toneMapped={false} />
+        <meshBasicMaterial map={map} toneMapped={false} />
       </mesh>
       {/* gold frame */}
       <mesh position={[0, 0, -0.02]}>
@@ -70,6 +74,7 @@ function Rig({ progress }: { progress: MotionValue<number> }) {
   const pointer = useRef({ x: 0, y: 0 });
   const totalDepth = (STATIONS.length - 1) * SPACING;
 
+  /* eslint-disable react-hooks/immutability -- standard react-three-fiber animation loop */
   useFrame(({ pointer: p }) => {
     pointer.current.x += (p.x - pointer.current.x) * 0.05;
     pointer.current.y += (p.y - pointer.current.y) * 0.05;
@@ -81,6 +86,7 @@ function Rig({ progress }: { progress: MotionValue<number> }) {
     camera.position.y += (pointer.current.y * 0.6 - camera.position.y) * 0.05;
     camera.lookAt(0, 0, camera.position.z - 6);
   });
+  /* eslint-enable react-hooks/immutability */
 
   return null;
 }
