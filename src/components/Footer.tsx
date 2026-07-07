@@ -22,9 +22,9 @@ export default function Footer() {
       <div className="relative mx-auto max-w-content px-6">
         <div className="grid gap-12 pb-16 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
-            <span className="text-gold">
+            <a href="#top" className="inline-block text-gold transition-opacity hover:opacity-80" aria-label="Back to top">
               <Logo />
-            </span>
+            </a>
             <p className="mt-6 max-w-xs font-serif text-xl font-light italic text-cream/70">
               {RESTAURANT.tagline}
             </p>
