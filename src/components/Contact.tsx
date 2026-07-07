@@ -87,9 +87,7 @@ export default function Contact() {
                     className="flex items-center justify-between border-b border-cream/10 pb-2 text-sm"
                   >
                     <span>{h.d}</span>
-                    <span className={h.h === "Closed" ? "text-cream/40" : "text-gold"}>
-                      {h.h}
-                    </span>
+                    <span className="text-gold">{h.h}</span>
                   </li>
                 ))}
               </ul>
