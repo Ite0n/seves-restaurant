@@ -26,7 +26,15 @@ export default function Menu() {
 
   return (
     <section id="menu" className="relative overflow-hidden bg-ink-800 section-pad">
-      <div className="absolute inset-0 grain opacity-50" />
+      <div className="menu-atmosphere" aria-hidden="true">
+        <div className="menu-atmosphere__orb menu-atmosphere__orb--primary" />
+        <div className="menu-atmosphere__orb menu-atmosphere__orb--accent" />
+        <div className="menu-atmosphere__orb menu-atmosphere__orb--whisper" />
+        <div className="menu-atmosphere__sheen" />
+        <div className="menu-atmosphere__grain" />
+        <div className="menu-atmosphere__vignette" />
+        <div className="menu-atmosphere__hairline" />
+      </div>
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
           label="La Carte"
