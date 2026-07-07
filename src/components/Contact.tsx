@@ -39,12 +39,12 @@ export default function Contact() {
           <Reveal className="group relative min-h-[380px] overflow-hidden rounded-sm lg:min-h-[520px]">
             <Image
               src={RESTAURANT.contactImage}
-              alt={`${RESTAURANT.name} — ${RESTAURANT.city} entrance at night`}
+              alt={`${RESTAURANT.name} terrace — ${RESTAURANT.city}`}
               fill
               loading="lazy"
               sizes="(max-width: 1024px) 100vw, 50vw"
               quality={78}
-              className="object-cover object-center transition-transform duration-[1.4s] ease-luxe group-hover:scale-105"
+              className="object-cover object-[center_35%] transition-transform duration-[1.4s] ease-luxe group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/20 to-transparent" />
             <div className="img-frame absolute inset-0" />

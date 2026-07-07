@@ -16,7 +16,7 @@ export const RESTAURANT = {
   },
   mapsUrl: "https://maps.app.goo.gl/jSBUZVytPz7Qz9qD6",
   coordinates: { lat: 33.9495, lng: 35.5925 },
-  contactImage: "/images/exterior-facade-diners.png",
+  contactImage: "/images/exterior-terrace-night.png",
 } as const;
 
 export type Dish = {
