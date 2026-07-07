@@ -18,7 +18,8 @@ const HERO_POSTER = "/images/hero-terrace-firewater.png";
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useVideo, setUseVideo] = useState(false);
+  const [useStatic, setUseStatic] = useState(false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const { t } = useLocale();
 
   const { scrollYProgress } = useScroll({
@@ -34,15 +35,21 @@ export default function Hero() {
 
   useEffect(() => {
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.innerWidth < 768;
-    if (!reduced && !mobile) setUseVideo(true);
+    if (reduced) setUseStatic(true);
   }, []);
 
+  const tryPlay = () => {
+    const el = videoRef.current;
+    if (!el) return;
+    el.play().catch(() => {
+      /* Autoplay may be blocked until interaction — keep video element visible */
+    });
+  };
+
   useEffect(() => {
-    if (useVideo && videoRef.current) {
-      videoRef.current.play().catch(() => setUseVideo(false));
-    }
-  }, [useVideo]);
+    if (useStatic) return;
+    tryPlay();
+  }, [useStatic]);
 
   const title = RESTAURANT.name;
 
@@ -53,19 +60,7 @@ export default function Hero() {
       className="relative h-[100svh] w-full overflow-hidden bg-ink-900 grain"
     >
       <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
-        {useVideo ? (
-          <video
-            ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            src={HERO_VIDEO}
-            poster={HERO_POSTER}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-          />
-        ) : (
+        {useStatic ? (
           <Image
             src={HERO_POSTER}
             alt="Sèves garden terrace at blue hour with fire bowls and water features"
@@ -74,6 +69,36 @@ export default function Hero() {
             quality={85}
             sizes="100vw"
             className="object-cover object-center"
+          />
+        ) : (
+          <video
+            ref={videoRef}
+            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+              videoPlaying ? "opacity-100" : "opacity-0"
+            }`}
+            src={HERO_VIDEO}
+            poster={HERO_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+            onLoadedData={tryPlay}
+            onCanPlay={tryPlay}
+            onPlaying={() => setVideoPlaying(true)}
+            onError={() => setUseStatic(true)}
+          />
+        )}
+        {!useStatic && !videoPlaying && (
+          <Image
+            src={HERO_POSTER}
+            alt=""
+            fill
+            priority
+            quality={85}
+            sizes="100vw"
+            className="object-cover object-center"
+            aria-hidden
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
