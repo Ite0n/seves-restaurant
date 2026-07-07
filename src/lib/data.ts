@@ -36,7 +36,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Caramelised fig tart crowned with torched goat-cheese mousse, wild berries, candied pecans and aged balsamic.",
     price: "32",
-    image: "/images/dish-fig-tart-salad.png",
+    image: "/images/menu/nutty-tarte.png",
     tag: "Signature",
   },
   {
@@ -44,7 +44,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Corn-fed poularde, charred over embers, laid on a tarragon-herb risotto with rosé jus and confit tomatoes.",
     price: "44",
-    image: "/images/dish-roast-chicken.png",
+    image: "/images/menu/supreme-rotie.png",
     tag: "From the fire",
   },
   {
@@ -52,7 +52,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Hand-shaved mortadella over whipped pistachio ricotta, lingonberries, lemon zest and lace tuile.",
     price: "28",
-    image: "/images/dish-mortadella-carpaccio.png",
+    image: "/images/menu/pate-en-croute.png",
     tag: "Cold cuts",
   },
   {
@@ -60,7 +60,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Strained labneh, sourdough croutons, pickled radish, pomegranate and a whisper of Aleppo pepper oil.",
     price: "26",
-    image: "/images/dish-labneh-panzanella.png",
+    image: "/images/menu/tomate-seves.png",
     tag: "Garden",
   },
 ];
