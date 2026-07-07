@@ -12,7 +12,7 @@ import { EASE_LUXE } from "@/lib/motion";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 
-const HERO_VIDEO = "/video/hero.mp4?v=2";
+const HERO_VIDEO = "/video/hero.mp4?v=3";
 const HERO_POSTER = "/images/hero-terrace-firewater.png";
 
 export default function Hero() {
