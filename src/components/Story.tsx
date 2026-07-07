@@ -123,7 +123,7 @@ export default function Story() {
 
             <ul className="mt-14 space-y-6 border-t border-cream/10 pt-10">
               {TIMELINE.map((t, i) => (
-                <Reveal key={t.year} delay={i * 0.08}>
+                <Reveal key={t.id} delay={i * 0.08}>
                   <li className="flex gap-6">
                     <span className="shrink-0 font-display text-sm tracking-wide2 text-gold">
                       {t.year}
