@@ -75,16 +75,61 @@ export const TASTING_MENU = {
 export type GalleryItem = { src: string; alt: string; span: string };
 
 export const GALLERY: GalleryItem[] = [
-  { src: "/images/interior-dining-banquette.png", alt: "Main dining room with emerald velvet banquettes", span: "md:col-span-2 md:row-span-2" },
-  { src: "/images/interior-feather-art.png", alt: "Backlit feather sculpture and bar", span: "" },
-  { src: "/images/bar-bonsai-night.png", alt: "Bar with bonsai and curated spirits", span: "" },
-  { src: "/images/interior-pendant-room.png", alt: "Dining room beneath cascading pendant lights", span: "md:col-span-2" },
-  { src: "/images/interior-banquette-windows.png", alt: "Window seating at dusk", span: "" },
-  { src: "/images/exterior-firewater-city.png", alt: "Terrace with fire bowls and water features", span: "md:row-span-2" },
-  { src: "/images/interior-bonsai-window.png", alt: "Bonsai centerpiece on marble", span: "" },
-  { src: "/images/interior-winecart-dusk.png", alt: "Wine service at golden hour", span: "md:col-span-2" },
-  { src: "/images/bar-stools-night.png", alt: "The bar after dark", span: "" },
-  { src: "/images/interior-banquette-garden.png", alt: "Garden-view banquette", span: "" },
+  {
+    src: "/images/interior-dining-banquette.png",
+    alt: "Main dining room with emerald velvet banquettes",
+    span: "col-span-2 row-span-2 md:col-span-6 md:row-span-2",
+  },
+  {
+    src: "/images/interior-feather-art.png",
+    alt: "Backlit feather sculpture and bar",
+    span: "col-span-1 row-span-1 md:col-span-3",
+  },
+  {
+    src: "/images/bar-bonsai-night.png",
+    alt: "Bar with bonsai and curated spirits",
+    span: "col-span-1 row-span-1 md:col-span-3",
+  },
+  {
+    src: "/images/interior-pendant-room.png",
+    alt: "Dining room beneath cascading pendant lights",
+    span: "col-span-2 row-span-1 md:col-span-6",
+  },
+  {
+    src: "/images/exterior-firewater-city.png",
+    alt: "Terrace with fire bowls and water features",
+    span: "col-span-1 row-span-2 md:col-span-4 md:row-span-2",
+  },
+  {
+    src: "/images/exterior-terrace-night.png",
+    alt: "Garden terrace at twilight",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
+  {
+    src: "/images/interior-banquette-windows.png",
+    alt: "Window seating at dusk",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
+  {
+    src: "/images/interior-winecart-dusk.png",
+    alt: "Wine service at golden hour",
+    span: "col-span-2 row-span-1 md:col-span-5",
+  },
+  {
+    src: "/images/interior-bonsai-window.png",
+    alt: "Bonsai centerpiece on marble",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
+  {
+    src: "/images/bar-stools-night.png",
+    alt: "The bar after dark",
+    span: "col-span-1 row-span-1 md:col-span-3",
+  },
+  {
+    src: "/images/interior-banquette-garden.png",
+    alt: "Garden-view banquette",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
 ];
 
 export type Testimonial = { quote: string; author: string; role: string };
