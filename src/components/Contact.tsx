@@ -38,13 +38,13 @@ export default function Contact() {
         <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <Reveal className="group relative min-h-[380px] overflow-hidden rounded-sm lg:min-h-[520px]">
             <Image
-              src="/images/exterior-facade-sign.png"
-              alt={`${RESTAURANT.name} entrance`}
+              src={RESTAURANT.contactImage}
+              alt={`${RESTAURANT.name} — ${RESTAURANT.city} entrance at night`}
               fill
               loading="lazy"
               sizes="(max-width: 1024px) 100vw, 50vw"
               quality={78}
-              className="object-cover transition-transform duration-[1.4s] ease-luxe group-hover:scale-105"
+              className="object-cover object-center transition-transform duration-[1.4s] ease-luxe group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/20 to-transparent" />
             <div className="img-frame absolute inset-0" />
