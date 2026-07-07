@@ -1,8 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { SIGNATURE_DISHES, type Dish } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
@@ -10,6 +10,7 @@ import { fadeUp, maskReveal } from "@/lib/motion";
 
 function DishRow({ dish, index }: { dish: Dish; index: number }) {
   const ref = useRef<HTMLDivElement>(null);
+  const [hovered, setHovered] = useState(false);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -29,7 +30,10 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
         initial="hidden"
         whileInView="show"
         viewport={{ once: true, amount: 0.3 }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
         className="relative aspect-[4/5] w-full overflow-hidden rounded-sm [direction:ltr]"
+        data-cursor="hover"
       >
         <motion.div style={{ y }} className="absolute inset-[-10%]">
           <Image
@@ -41,6 +45,28 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
             quality={80}
           />
         </motion.div>
+        <AnimatePresence>
+          {hovered && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 flex flex-wrap items-end gap-2 bg-ink-900/60 p-6 backdrop-blur-[2px]"
+            >
+              {dish.ingredients.map((ing, i) => (
+                <motion.span
+                  key={ing}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="rounded-full border border-gold/30 bg-gold/10 px-3 py-1 text-[0.6rem] uppercase tracking-wide2 text-gold"
+                >
+                  {ing}
+                </motion.span>
+              ))}
+            </motion.div>
+          )}
+        </AnimatePresence>
         <div className="img-frame absolute inset-0" />
         <span className="absolute left-5 top-5 rounded-full glass px-4 py-1.5 text-[0.6rem] uppercase tracking-luxe text-gold">
           {dish.tag}

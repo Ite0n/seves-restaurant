@@ -28,6 +28,5 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# editor
-.vscode/*
+/data/
 !.vscode/extensions.json

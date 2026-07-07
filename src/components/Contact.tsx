@@ -36,33 +36,36 @@ export default function Contact() {
         />
 
         <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-14">
-          <Reveal className="group relative min-h-[380px] overflow-hidden rounded-sm lg:min-h-[520px]">
-            <Image
-              src={RESTAURANT.contactImage}
-              alt={`${RESTAURANT.name} terrace — ${RESTAURANT.city}`}
-              fill
-              loading="lazy"
-              sizes="(max-width: 1024px) 100vw, 50vw"
-              quality={78}
-              className="object-cover object-[center_28%] transition-transform duration-[1.4s] ease-luxe group-hover:scale-105 md:object-[center_35%]"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/20 to-transparent" />
-            <div className="img-frame absolute inset-0" />
-            <div className="absolute bottom-6 left-6 right-6 flex flex-wrap gap-3">
+          <Reveal className="flex flex-col gap-4">
+            <div className="group relative min-h-[280px] overflow-hidden rounded-sm lg:min-h-[360px]">
+              <Image
+                src={RESTAURANT.contactImage}
+                alt={`${RESTAURANT.name} terrace — ${RESTAURANT.city}`}
+                fill
+                loading="lazy"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                quality={78}
+                className="object-cover object-[center_28%] transition-transform duration-[1.4s] ease-luxe group-hover:scale-105 md:object-[center_35%]"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/20 to-transparent" />
+              <div className="img-frame absolute inset-0" />
+            </div>
+            <div className="relative min-h-[240px] overflow-hidden rounded-sm ring-1 ring-gold/15 lg:min-h-[280px]">
+              <iframe
+                title="Sèves location on Google Maps"
+                src={`https://maps.google.com/maps?q=${RESTAURANT.coordinates.lat},${RESTAURANT.coordinates.lng}&z=15&output=embed`}
+                className="absolute inset-0 h-full w-full border-0 grayscale-[30%] contrast-[1.05] invert-[92%] hue-rotate-180"
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+            <div className="flex flex-wrap gap-3">
               <a
                 href={RESTAURANT.mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-full glass px-5 py-3 text-[0.65rem] uppercase tracking-wide2 text-cream transition-colors hover:text-gold"
               >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M12 21s-7-6.3-7-11a7 7 0 1114 0c0 4.7-7 11-7 11z"
-                    stroke="currentColor"
-                    strokeWidth="1.4"
-                  />
-                  <circle cx="12" cy="10" r="2.4" stroke="currentColor" strokeWidth="1.4" />
-                </svg>
                 Open in Maps
               </a>
               <a

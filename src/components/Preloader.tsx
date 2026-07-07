@@ -1,43 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { useAssetPreload } from "@/hooks/useAssetPreload";
 import { EASE_LUXE } from "@/lib/motion";
 
 export default function Preloader() {
-  const [progress, setProgress] = useState(0);
-  const [done, setDone] = useState(false);
-
-  useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduce) {
-      const frame = requestAnimationFrame(() => {
-        setProgress(100);
-        setTimeout(() => setDone(true), 200);
-      });
-      return () => cancelAnimationFrame(frame);
-    }
-
-    let frame = 0;
-    const start = performance.now();
-    const duration = 2400;
-
-    const tick = (now: number) => {
-      const p = Math.min(((now - start) / duration) * 100, 100);
-      setProgress(Math.floor(p));
-      if (p < 100) {
-        frame = requestAnimationFrame(tick);
-      } else {
-        setTimeout(() => setDone(true), 400);
-      }
-    };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  const { progress, ready } = useAssetPreload();
 
   return (
     <AnimatePresence>
-      {!done && (
+      {!ready && (
         <motion.div
           className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-ink-900"
           exit={{ opacity: 0 }}
@@ -62,7 +34,7 @@ export default function Preloader() {
               <motion.div
                 className="h-full bg-gradient-to-r from-gold-600 to-gold-200"
                 style={{ width: `${progress}%` }}
-                transition={{ duration: 0.1 }}
+                transition={{ duration: 0.15 }}
               />
             </div>
             <span className="font-display text-xs tabular-nums tracking-widest text-gold/60">

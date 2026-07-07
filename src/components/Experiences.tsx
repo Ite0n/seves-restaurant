@@ -1,14 +1,21 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { EXPERIENCES, RESTAURANT } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
+import ExperienceEnquiryModal from "./ExperienceEnquiryModal";
 import { EASE_LUXE, fadeUp } from "@/lib/motion";
 
 export default function Experiences() {
+  const [enquiry, setEnquiry] = useState<{
+    id: string;
+    title: string;
+  } | null>(null);
+
   return (
     <section id="experiences" className="relative overflow-hidden bg-ink-800 section-pad">
       <SectionAtmosphere />
@@ -34,6 +41,7 @@ export default function Experiences() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.1, duration: 1, ease: EASE_LUXE }}
               className="group relative flex flex-col overflow-hidden rounded-sm bg-ink-900/50"
+              data-cursor="hover"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
@@ -60,6 +68,13 @@ export default function Experiences() {
                   <span className="text-cream/45">{exp.capacity}</span>
                   <span className="text-gold">{exp.from}</span>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setEnquiry({ id: exp.id, title: exp.title })}
+                  className="mt-5 w-full rounded-full border border-gold/40 py-3 text-[0.65rem] uppercase tracking-luxe text-gold transition-colors hover:bg-gold hover:text-ink-900"
+                >
+                  Enquire
+                </button>
               </div>
             </motion.article>
           ))}
@@ -74,6 +89,15 @@ export default function Experiences() {
           </p>
         </Reveal>
       </div>
+
+      {enquiry && (
+        <ExperienceEnquiryModal
+          experienceId={enquiry.id}
+          experienceTitle={enquiry.title}
+          open={!!enquiry}
+          onClose={() => setEnquiry(null)}
+        />
+      )}
     </section>
   );
 }

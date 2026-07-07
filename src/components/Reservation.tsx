@@ -1,21 +1,22 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
 import { RESTAURANT } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
+import { trackEvent } from "@/lib/analytics";
 import {
   reservationSchema,
   type ReservationInput,
 } from "@/lib/validations";
 
 const GUESTS = ["2", "3", "4", "5", "6", "7+"];
-const TIMES = ["18:00", "19:00", "20:00", "21:00", "22:00"];
 
 function Field({
   label,
@@ -44,9 +45,14 @@ function Field({
 const inputCls =
   "w-full rounded-none border-b border-cream/20 bg-transparent pb-3 text-cream placeholder:text-cream/30 outline-none transition-colors focus:border-gold";
 
+type Slot = { time: string; available: boolean; remaining: number };
+
 export default function Reservation() {
   const [reference, setReference] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
+  const [slots, setSlots] = useState<Slot[]>([]);
+  const [limited, setLimited] = useState(false);
+  const { t } = useLocale();
 
   const {
     register,
@@ -67,6 +73,25 @@ export default function Reservation() {
 
   const guests = watch("guests");
   const time = watch("time");
+  const date = watch("date");
+
+  useEffect(() => {
+    if (!date) return;
+    fetch(`/api/availability?date=${date}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.slots) {
+          setSlots(data.slots);
+          setLimited(data.limited);
+          const current = data.slots.find((s: Slot) => s.time === time);
+          if (current && !current.available) {
+            const first = data.slots.find((s: Slot) => s.available);
+            if (first) setValue("time", first.time);
+          }
+        }
+      })
+      .catch(() => {});
+  }, [date, setValue, time]);
 
   const onSubmit = async (data: ReservationInput) => {
     setApiError(null);
@@ -81,6 +106,7 @@ export default function Reservation() {
         setApiError(json.error ?? "Request failed. Please try again.");
         return;
       }
+      trackEvent("reservation_submit", { guests: data.guests, time: data.time });
       setReference(json.reference);
     } catch {
       setApiError("Unable to connect. Please call us directly.");
@@ -92,6 +118,14 @@ export default function Reservation() {
     setReference(null);
     setApiError(null);
   };
+
+  const times = slots.length > 0 ? slots : [
+    { time: "18:00", available: true, remaining: 4 },
+    { time: "19:00", available: true, remaining: 4 },
+    { time: "20:00", available: true, remaining: 4 },
+    { time: "21:00", available: true, remaining: 4 },
+    { time: "22:00", available: true, remaining: 4 },
+  ];
 
   return (
     <section id="reservation" className="relative overflow-hidden bg-ink-900 section-pad">
@@ -122,6 +156,12 @@ export default function Reservation() {
             }
             description="We welcome bookings up to 60 days in advance. For parties larger than seven or private dining, kindly contact our maître d'."
           />
+          {date && limited && (
+            <p className="mt-4 text-sm text-gold/90">{t("reserve.limited")}</p>
+          )}
+          {date && !limited && slots.length > 0 && (
+            <p className="mt-4 text-sm text-cream/50">{t("reserve.available")}</p>
+          )}
           <Reveal delay={0.16}>
             <div className="mt-8 space-y-1 font-light text-cream/70">
               <p className="text-gold">Reservations line</p>
@@ -130,6 +170,14 @@ export default function Reservation() {
                 className="font-serif text-2xl transition-colors hover:text-gold"
               >
                 {RESTAURANT.phone}
+              </a>
+              <a
+                href={`https://wa.me/${RESTAURANT.phone.replace(/\D/g, "")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-block text-xs uppercase tracking-luxe text-cream/50 hover:text-gold"
+              >
+                WhatsApp
               </a>
             </div>
           </Reveal>
@@ -187,18 +235,24 @@ export default function Reservation() {
 
                   <Field label="Time" error={errors.time?.message}>
                     <div className="flex flex-wrap gap-2">
-                      {TIMES.map((t) => (
+                      {times.map((slot) => (
                         <button
-                          key={t}
+                          key={slot.time}
                           type="button"
-                          onClick={() => setValue("time", t)}
-                          className={`rounded-full border px-4 py-2 text-xs tracking-wide transition-all duration-300 ${
-                            time === t
+                          disabled={!slot.available}
+                          onClick={() => setValue("time", slot.time)}
+                          className={`rounded-full border px-4 py-2 text-xs tracking-wide transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-30 ${
+                            time === slot.time
                               ? "border-gold bg-gold text-ink-900"
                               : "border-cream/20 text-cream/70 hover:border-gold/50"
                           }`}
                         >
-                          {t}
+                          {slot.time}
+                          {slot.remaining <= 2 && slot.available && (
+                            <span className="ml-1 text-[0.55rem] opacity-70">
+                              · {slot.remaining}
+                            </span>
+                          )}
                         </button>
                       ))}
                     </div>

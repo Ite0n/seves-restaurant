@@ -57,7 +57,11 @@ export default function MagneticButton({
 
   if (href) {
     return (
-      <a href={href} aria-label={typeof children === "string" ? children : undefined}>
+      <a
+        href={href}
+        onClick={onClick}
+        aria-label={typeof children === "string" ? children : undefined}
+      >
         {inner}
       </a>
     );

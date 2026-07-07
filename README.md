@@ -1,16 +1,16 @@
 # Sèves — Ultra-Premium Restaurant Experience
 
 A cinematic, Michelin-star-grade website for **Sèves** — *"where every plate is
-a piece of art."* Black canvas, warm gold accents, Apple-level motion, and a
-live in-browser 3D walkthrough built from the venue's own photography.
+a piece of art."* Black canvas, warm gold accents, Apple-level motion, hero
+video, and a live in-browser 3D walkthrough built from the venue's photography.
 
 ## Stack
 
-- **Next.js 14** (App Router, TypeScript)
+- **Next.js 16** (App Router, TypeScript)
 - **Tailwind CSS** — custom luxury design system
 - **Framer Motion** — reveals, parallax, page choreography
-- **GSAP** — available for advanced timelines
-- **React Three Fiber + Three.js** — hero gold-dust field & the 3D walkthrough
+- **GSAP ScrollTrigger** — walkthrough snap, tasting journey pin
+- **React Three Fiber + Three.js** — hero gold-dust field & 3D walkthrough
 - **Lenis** — buttery smooth scrolling
 
 ## Getting started
@@ -24,44 +24,55 @@ npm run start    # serve the production build
 
 ## Sections
 
-1. **Fullscreen cinematic hero** — parallax terrace plate + animated gold dust (R3F) + kinetic wordmark
-2. **The Experience** — scroll-driven WebGL 3D walkthrough through the real spaces
-3. **Signature dishes** — alternating parallax showcase
-4. **Interactive menu** — animated category tabs with synced imagery
-5. **Story** — brigade & philosophy with layered parallax
-6. **Gallery** — masonry grid with lightbox
-7. **Reservation** — premium booking form with success state
-8. **Testimonials** — auto-advancing quote carousel
-9. **Contact + location** — hours, map link, details
-10. **Footer**
+1. **Cinematic hero** — looped terrace video (desktop) + gold dust + seasonal badge
+2. **Press marquee** — logo-style accolades
+3. **3D walkthrough** — scroll-driven WebGL with GSAP snap points
+4. **Signature dishes** — ingredient reveal on hover
+5. **Interactive menu** — category tabs with synced imagery
+6. **Tasting journey** — pinned horizontal scroll through course chapters
+7. **Wine cellar** — sommelier picks and featured bottles
+8. **Chef & story** — brigade, philosophy, timeline
+9. **Experiences** — private dining with enquiry modals
+10. **Events calendar** — upcoming wine dinners and terrace evenings
+11. **Gallery** — masonry grid, Ken Burns, swipe lightbox
+12. **Testimonials** — auto-advancing carousel
+13. **Gift experiences** — voucher enquiries
+14. **Reservation** — live slot availability + WhatsApp fallback
+15. **FAQ, contact** — embedded map, hours
+16. **Footer** — newsletter signup
 
-## The 3D walkthrough
+## Enhancements
 
-The walkthrough (`src/components/Walkthrough.tsx`) renders a **real WebGL scene**
-(`walkthrough/WalkthroughScene.tsx`): the venue photos are mounted as framed
-panels in 3D space with depth fog, a reflective floor, gold rim light, mouse
-parallax and a scroll-controlled camera dolly — preserving the architecture and
-visual language of the source media while staying performant and lazy-loaded.
+- **Hero video** at `public/video/hero.mp4`
+- **i18n** — EN / FR / AR toggle (navbar)
+- **Custom cursor**, **sound toggle**, **mobile reserve bar**
+- **Time-of-day theme** — Beirut evening/day tint
+- **API routes** — `/api/reservations`, `/api/availability`, `/api/newsletter`
+- **Analytics events** — `window` custom events for conversion tracking
 
-To use a pre-rendered cinematic film instead (e.g. Higgsfield), see
-[`public/video/README.md`](public/video/README.md).
+### Optional assets
+
+- Walkthrough film: see [`public/video/README.md`](public/video/README.md)
+- Ambient audio: drop `ambient.mp3` in `public/audio/`
+
+### Environment variables
+
+```env
+RESEND_API_KEY=           # Email notifications
+RESERVATION_EMAIL=        # Maître d' inbox
+NEWSLETTER_EMAIL=         # Newsletter signups
+```
 
 ## Performance & SEO
 
-- 3D libraries are **code-split** (`next/dynamic`, `ssr:false`) and never block first paint
-- `next/image` with AVIF/WebP, responsive `sizes`, lazy loading below the fold
-- Hero image marked `priority` for a fast LCP
-- `prefers-reduced-motion` respected (smooth scroll + heavy motion disabled)
-- Mobile-first responsive layout across all breakpoints
-- JSON-LD `Restaurant` schema, Open Graph, Twitter cards, `robots.ts`, `sitemap.ts`
-
-## Assets
-
-All imagery in `public/images/` is sourced from the provided Sèves photography
-and renamed semantically (interior / dishes / exterior / brand / team).
+- 3D libraries code-split (`next/dynamic`, `ssr:false`)
+- `next/image` with responsive `sizes`, lazy loading
+- Hero video on desktop; still poster on mobile
+- `prefers-reduced-motion` respected throughout
+- JSON-LD Restaurant + FAQPage, Open Graph video, hreflang alternates
 
 ## Customisation
 
-- Brand, menu, hours, copy, testimonials → `src/lib/data.ts`
-- Colors / fonts / easings → `tailwind.config.ts` and `src/app/globals.css`
+- Brand, menu, hours, copy → `src/lib/data.ts`
+- Translations → `src/lib/i18n.ts`
 - Motion variants → `src/lib/motion.ts`

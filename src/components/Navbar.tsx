@@ -5,12 +5,17 @@ import { AnimatePresence, motion, useScroll, useMotionValueEvent } from "framer-
 import { NAV_LINKS } from "@/lib/data";
 import Logo from "./ui/Logo";
 import MagneticButton from "./ui/MagneticButton";
+import LanguageToggle from "./ui/LanguageToggle";
+import { useScrollSpy, hrefToSectionId } from "@/hooks/useScrollSpy";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
+  const activeSection = useScrollSpy();
+  const { t } = useLocale();
 
   useMotionValueEvent(scrollY, "change", (v) => setScrolled(v > 40));
 
@@ -20,6 +25,9 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [open]);
+
+  const isActive = (href: string) =>
+    activeSection === hrefToSectionId(href);
 
   return (
     <>
@@ -45,26 +53,33 @@ export default function Navbar() {
             <Logo />
           </a>
 
-          <nav className="hidden items-center gap-8 lg:flex" aria-label="Main navigation">
+          <nav className="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
             {NAV_LINKS.map((l) => (
               <a
                 key={l.href}
                 href={l.href}
-                className="group relative text-[0.72rem] uppercase tracking-wide2 text-cream/70 transition-colors hover:text-cream"
+                className={`group relative text-[0.72rem] uppercase tracking-wide2 transition-colors ${
+                  isActive(l.href) ? "text-gold" : "text-cream/70 hover:text-cream"
+                }`}
               >
-                {l.label}
-                <span className="absolute -bottom-1 left-0 h-px w-0 bg-gold transition-all duration-500 ease-luxe group-hover:w-full" />
+                {t(l.i18nKey)}
+                <span
+                  className={`absolute -bottom-1 left-0 h-px bg-gold transition-all duration-500 ease-luxe ${
+                    isActive(l.href) ? "w-full" : "w-0 group-hover:w-full"
+                  }`}
+                />
               </a>
             ))}
           </nav>
 
-          <div className="hidden lg:block">
+          <div className="hidden items-center gap-4 lg:flex">
+            <LanguageToggle />
             <MagneticButton
               href="#reservation"
               className="border border-gold/40 bg-transparent text-gold hover:bg-gold hover:text-ink-900"
               strength={0.25}
             >
-              Reserve
+              {t("nav.reserve")}
             </MagneticButton>
           </div>
 
@@ -97,6 +112,9 @@ export default function Navbar() {
             transition={{ duration: 0.5, ease: EASE_LUXE }}
             className="fixed inset-0 z-40 flex flex-col items-center justify-center glass-strong lg:hidden"
           >
+            <div className="mb-8">
+              <LanguageToggle />
+            </div>
             <nav className="flex flex-col items-center gap-7" aria-label="Mobile navigation">
               {NAV_LINKS.map((l, i) => (
                 <motion.a
@@ -106,9 +124,11 @@ export default function Navbar() {
                   initial={{ opacity: 0, y: 24 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.1 + i * 0.07, ease: EASE_LUXE, duration: 0.6 }}
-                  className="font-serif text-3xl text-cream/90"
+                  className={`font-serif text-3xl ${
+                    isActive(l.href) ? "text-gold" : "text-cream/90"
+                  }`}
                 >
-                  {l.label}
+                  {t(l.i18nKey)}
                 </motion.a>
               ))}
               <motion.a
@@ -119,7 +139,7 @@ export default function Navbar() {
                 transition={{ delay: 0.55, ease: EASE_LUXE, duration: 0.6 }}
                 className="mt-4 rounded-full border border-gold/50 px-8 py-3 text-xs uppercase tracking-luxe text-gold"
               >
-                Reserve a table
+                {t("nav.reserve")}
               </motion.a>
             </nav>
           </motion.div>

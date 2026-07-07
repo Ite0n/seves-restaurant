@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GALLERY } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
@@ -10,6 +10,33 @@ import { EASE_LUXE } from "@/lib/motion";
 
 export default function Gallery() {
   const [active, setActive] = useState<number | null>(null);
+
+  const next = useCallback(() => {
+    setActive((idx) =>
+      idx !== null && idx < GALLERY.length - 1 ? idx + 1 : 0
+    );
+  }, []);
+
+  const prev = useCallback(() => {
+    setActive((idx) =>
+      idx !== null && idx > 0 ? idx - 1 : GALLERY.length - 1
+    );
+  }, []);
+
+  useEffect(() => {
+    if (active === null) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setActive(null);
+      if (e.key === "ArrowRight") next();
+      if (e.key === "ArrowLeft") prev();
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [active, next, prev]);
+
+  let touchStartX = 0;
 
   return (
     <section id="gallery" className="relative overflow-hidden bg-ink-800 section-pad">
@@ -38,6 +65,7 @@ export default function Gallery() {
               transition={{ duration: 0.75, ease: EASE_LUXE, delay: i * 0.04 }}
               className={`group relative touch-manipulation overflow-hidden rounded-sm ring-1 ring-inset ring-gold/12 transition-[box-shadow,ring-color] duration-700 active:scale-[0.99] hover:ring-gold/35 hover:shadow-[0_24px_60px_-28px_rgba(201,169,106,0.45)] ${item.span}`}
               aria-label={`View: ${item.alt}`}
+              data-cursor="hover"
             >
               <Image
                 src={item.src}
@@ -46,7 +74,7 @@ export default function Gallery() {
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                 loading="lazy"
                 quality={72}
-                className="object-cover transition-transform duration-[1.6s] ease-luxe group-hover:scale-[1.06]"
+                className="object-cover transition-transform duration-[6s] ease-linear group-hover:scale-[1.08] ken-burns"
               />
 
               <div className="absolute inset-0 bg-gradient-to-t from-ink-900/75 via-ink-900/10 to-ink-900/20 transition-opacity duration-700 group-hover:from-ink-900/55" />
@@ -89,16 +117,22 @@ export default function Gallery() {
             </button>
             <button
               type="button"
-              onClick={() => setActive((idx) => (idx !== null && idx > 0 ? idx - 1 : GALLERY.length - 1))}
-              className="absolute left-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full glass p-3 text-cream/70 hover:text-gold md:block"
+              onClick={(e) => {
+                e.stopPropagation();
+                prev();
+              }}
+              className="absolute left-4 top-1/2 z-10 -translate-y-1/2 rounded-full glass p-3 text-cream/70 hover:text-gold md:left-6"
               aria-label="Previous image"
             >
               ←
             </button>
             <button
               type="button"
-              onClick={() => setActive((idx) => (idx !== null && idx < GALLERY.length - 1 ? idx + 1 : 0))}
-              className="absolute right-4 top-1/2 z-10 hidden -translate-y-1/2 rounded-full glass p-3 text-cream/70 hover:text-gold md:block"
+              onClick={(e) => {
+                e.stopPropagation();
+                next();
+              }}
+              className="absolute right-4 top-1/2 z-10 -translate-y-1/2 rounded-full glass p-3 text-cream/70 hover:text-gold md:right-6"
               aria-label="Next image"
             >
               →
@@ -111,6 +145,16 @@ export default function Gallery() {
               transition={{ duration: 0.5, ease: EASE_LUXE }}
               className="relative h-[78vh] w-full max-w-5xl overflow-hidden rounded-sm ring-1 ring-gold/20"
               onClick={(e) => e.stopPropagation()}
+              onTouchStart={(e) => {
+                touchStartX = e.touches[0].clientX;
+              }}
+              onTouchEnd={(e) => {
+                const dx = e.changedTouches[0].clientX - touchStartX;
+                if (Math.abs(dx) > 50) {
+                  if (dx < 0) next();
+                  else prev();
+                }
+              }}
             >
               <Image
                 src={GALLERY[active].src}

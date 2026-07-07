@@ -60,6 +60,14 @@ export const metadata: Metadata = {
         alt: "Sèves dining room",
       },
     ],
+    videos: [
+      {
+        url: "/video/hero.mp4",
+        width: 1920,
+        height: 1080,
+        type: "video/mp4",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
@@ -68,7 +76,14 @@ export const metadata: Metadata = {
     images: ["/images/interior-dining-banquette.png"],
   },
   robots: { index: true, follow: true },
-  alternates: { canonical: SITE_URL },
+  alternates: {
+    canonical: SITE_URL,
+    languages: {
+      en: SITE_URL,
+      fr: `${SITE_URL}?lang=fr`,
+      ar: `${SITE_URL}?lang=ar`,
+    },
+  },
 };
 
 export const viewport: Viewport = {
@@ -95,6 +110,8 @@ const jsonLd = [
     },
     url: SITE_URL,
     image: `${SITE_URL}/images/exterior-facade-sign.png`,
+    hasMenu: `${SITE_URL}/#menu`,
+    menu: `${SITE_URL}/#menu`,
     acceptsReservations: true,
     hasMap: RESTAURANT.mapsUrl,
     openingHours: "Mo-Su 12:00-00:00",

@@ -3,14 +3,26 @@
 import { useState } from "react";
 import { RESTAURANT, NAV_LINKS } from "@/lib/data";
 import Logo from "./ui/Logo";
+import { trackEvent } from "@/lib/analytics";
 
 export default function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
-  const handleNewsletter = (e: React.FormEvent) => {
+  const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email) setSubscribed(true);
+    if (!email) return;
+    try {
+      await fetch("/api/newsletter", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      trackEvent("newsletter_subscribe");
+      setSubscribed(true);
+    } catch {
+      setSubscribed(true);
+    }
   };
 
   return (

@@ -3,15 +3,24 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { RESTAURANT } from "@/lib/data";
 import MagneticButton from "./ui/MagneticButton";
+import SeasonalBadge from "./ui/SeasonalBadge";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 
+const HERO_VIDEO = "/video/hero.mp4";
+const HERO_POSTER = "/images/hero-terrace-firewater.png";
+
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [useVideo, setUseVideo] = useState(false);
+  const { t } = useLocale();
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -23,6 +32,18 @@ export default function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
   const lineWidth = useTransform(scrollYProgress, [0, 0.5], ["0%", "100%"]);
 
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const mobile = window.innerWidth < 768;
+    if (!reduced && !mobile) setUseVideo(true);
+  }, []);
+
+  useEffect(() => {
+    if (useVideo && videoRef.current) {
+      videoRef.current.play().catch(() => setUseVideo(false));
+    }
+  }, [useVideo]);
+
   const title = RESTAURANT.name;
 
   return (
@@ -32,15 +53,29 @@ export default function Hero() {
       className="relative h-[100svh] w-full overflow-hidden bg-ink-900 grain"
     >
       <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
-        <Image
-          src="/images/hero-terrace-firewater.png"
-          alt="Sèves garden terrace at blue hour with fire bowls and water features"
-          fill
-          priority
-          quality={85}
-          sizes="100vw"
-          className="object-cover object-center"
-        />
+        {useVideo ? (
+          <video
+            ref={videoRef}
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            src={HERO_VIDEO}
+            poster={HERO_POSTER}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="auto"
+          />
+        ) : (
+          <Image
+            src={HERO_POSTER}
+            alt="Sèves garden terrace at blue hour with fire bowls and water features"
+            fill
+            priority
+            quality={85}
+            sizes="100vw"
+            className="object-cover object-center"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-ink-900/70" />
         <div className="absolute inset-0 vignette-strong" />
@@ -54,6 +89,15 @@ export default function Hero() {
         style={{ y: contentY, opacity }}
         className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center"
       >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: EASE_LUXE, delay: 0.4 }}
+          className="mb-6"
+        >
+          <SeasonalBadge />
+        </motion.div>
+
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -110,14 +154,14 @@ export default function Hero() {
             className="bg-gold text-ink-900"
             strength={0.3}
           >
-            Reserve a Table
+            {t("hero.reserve")}
           </MagneticButton>
           <MagneticButton
             href="#walkthrough"
             className="border border-cream/25 bg-transparent text-cream/80 hover:border-gold hover:text-gold"
             strength={0.25}
           >
-            Enter the Experience
+            {t("hero.enter")}
           </MagneticButton>
         </motion.div>
       </motion.div>
@@ -130,7 +174,7 @@ export default function Hero() {
         className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
       >
         <span className="text-[0.6rem] uppercase tracking-luxe text-cream/50">
-          Scroll
+          {t("hero.scroll")}
         </span>
         <span className="relative h-14 w-px overflow-hidden bg-cream/15">
           <motion.span

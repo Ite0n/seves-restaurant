@@ -9,6 +9,8 @@ import {
   useMotionValueEvent,
 } from "framer-motion";
 import SectionLabel from "./ui/SectionLabel";
+import { useWalkthroughSnap } from "@/hooks/useGsapScroll";
+import { trackEvent } from "@/lib/analytics";
 
 /**
  * Optional cinematic walkthrough video.
@@ -34,6 +36,7 @@ const CAPTIONS = [
 
 export default function Walkthrough() {
   const ref = useRef<HTMLDivElement>(null);
+  useWalkthroughSnap(ref);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
@@ -44,12 +47,17 @@ export default function Walkthrough() {
   });
 
   const [active, setActive] = useState(0);
+  const [completed, setCompleted] = useState(false);
   useMotionValueEvent(progress, "change", (v) => {
     let idx = 0;
     for (let i = 0; i < CAPTIONS.length; i++) {
       if (v >= CAPTIONS[i].at) idx = i;
     }
     setActive(idx);
+    if (v > 0.92 && !completed) {
+      setCompleted(true);
+      trackEvent("walkthrough_complete");
+    }
   });
 
   const introOpacity = useTransform(scrollYProgress, [0, 0.05, 0.12], [1, 1, 0]);
