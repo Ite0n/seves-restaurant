@@ -1,9 +1,8 @@
-export type Locale = "en" | "fr" | "ar";
+export type Locale = "en" | "fr";
 
 export const LOCALES: { code: Locale; label: string }[] = [
   { code: "en", label: "EN" },
   { code: "fr", label: "FR" },
-  { code: "ar", label: "ع" },
 ];
 
 type Dict = Record<string, string>;
@@ -46,26 +45,7 @@ const fr: Dict = {
   "sound.off": "Ambiance sonore désactivée",
 };
 
-const ar: Dict = {
-  "nav.experience": "التجربة",
-  "nav.kitchen": "المطبخ",
-  "nav.menu": "القائمة",
-  "nav.cellar": "القبو",
-  "nav.chef": "الشيف",
-  "nav.gallery": "المعرض",
-  "nav.visit": "الزيارة",
-  "nav.reserve": "احجز",
-  "hero.scroll": "مرر",
-  "hero.reserve": "احجز طاولة",
-  "hero.enter": "ادخل التجربة",
-  "season.badge": "صيف 2026 · قائمة تُعدّ كل مساء",
-  "reserve.limited": "طاولات محدودة هذا المساء",
-  "reserve.available": "طاولات متاحة",
-  "sound.on": "الصوت المحيط مفعّل",
-  "sound.off": "الصوت المحيط معطّل",
-};
-
-const dictionaries: Record<Locale, Dict> = { en, fr, ar };
+const dictionaries: Record<Locale, Dict> = { en, fr };
 
 export function t(locale: Locale, key: string): string {
   return dictionaries[locale][key] ?? dictionaries.en[key] ?? key;

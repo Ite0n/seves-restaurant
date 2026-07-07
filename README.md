@@ -44,7 +44,7 @@ npm run start    # serve the production build
 ## Enhancements
 
 - **Hero video** at `public/video/hero.mp4`
-- **i18n** — EN / FR / AR toggle (navbar)
+- **i18n** — EN / FR toggle (navbar)
 - **Custom cursor**, **sound toggle**, **mobile reserve bar**
 - **Time-of-day theme** — Beirut evening/day tint
 - **API routes** — `/api/reservations`, `/api/availability`, `/api/newsletter`

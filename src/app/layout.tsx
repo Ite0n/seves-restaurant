@@ -81,7 +81,6 @@ export const metadata: Metadata = {
     languages: {
       en: SITE_URL,
       fr: `${SITE_URL}?lang=fr`,
-      ar: `${SITE_URL}?lang=ar`,
     },
   },
 };
