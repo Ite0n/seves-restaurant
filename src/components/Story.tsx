@@ -15,10 +15,10 @@ const STATS = [
 ];
 
 const TIMELINE = [
-  { year: "2024", event: "Sèves opens in Dbayeh — a garden terrace dream realised." },
-  { year: "2025", event: "The grand dining room unveils beneath cascading light." },
-  { year: "2025", event: "Chef's table and private salon launch for intimate gatherings." },
-  { year: "2026", event: "Recognised among the world's most exciting fine-dining rooms." },
+  { id: "open", year: "2024", event: "Sèves opens in Dbayeh — a garden terrace dream realised." },
+  { id: "dining-room", year: "2025", event: "The grand dining room unveils beneath cascading light." },
+  { id: "chefs-table", year: "2025", event: "Chef's table and private salon launch for intimate gatherings." },
+  { id: "recognition", year: "2026", event: "Recognised among the world's most exciting fine-dining rooms." },
 ];
 
 export default function Story() {
