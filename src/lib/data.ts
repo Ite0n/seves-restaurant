@@ -25,6 +25,7 @@ export type Dish = {
   price: string;
   image: string;
   tag: string;
+  ingredients: string[];
 };
 
 export const SIGNATURE_DISHES: Dish[] = [
@@ -35,6 +36,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     price: "32",
     image: "/images/menu/nutty-tarte.png",
     tag: "Signature",
+    ingredients: ["Fig", "Goat cheese", "Wild berries", "Pecan", "Balsamic"],
   },
   {
     name: "Heritage Roast Chicken",
@@ -43,6 +45,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     price: "44",
     image: "/images/menu/supreme-rotie.png",
     tag: "From the fire",
+    ingredients: ["Corn-fed poularde", "Tarragon risotto", "Rosé jus", "Confit tomato"],
   },
   {
     name: "Mortadella Carpaccio",
@@ -51,6 +54,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     price: "28",
     image: "/images/menu/pate-en-croute.png",
     tag: "Cold cuts",
+    ingredients: ["Mortadella", "Pistachio ricotta", "Lingonberry", "Lemon zest"],
   },
   {
     name: "Labneh & Charred Panzanella",
@@ -59,6 +63,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     price: "26",
     image: "/images/menu/tomate-seves.png",
     tag: "Garden",
+    ingredients: ["Labneh", "Sourdough", "Pickled radish", "Pomegranate", "Aleppo oil"],
   },
 ];
 
@@ -164,7 +169,7 @@ export const TESTIMONIALS: Testimonial[] = [
 export const STORY_IMAGES = {
   team: "/images/team-chefs.png",
   ambience: "/images/ambience-table-setting.png",
-  plateArt: "/images/brand-plate-art.png",
+  plateArt: "/images/brand-monument-sign.png",
   monument: "/images/brand-monument-sign.png",
 } as const;
 
@@ -269,10 +274,111 @@ export const PRESS = [
 ] as const;
 
 export const NAV_LINKS = [
-  { label: "Experience", href: "#walkthrough" },
-  { label: "Kitchen", href: "#dishes" },
-  { label: "Menu", href: "#menu" },
-  { label: "Chef", href: "#chef" },
-  { label: "Gallery", href: "#gallery" },
-  { label: "Visit", href: "#contact" },
+  { label: "Experience", href: "#walkthrough", i18nKey: "nav.experience" },
+  { label: "Kitchen", href: "#dishes", i18nKey: "nav.kitchen" },
+  { label: "Menu", href: "#menu", i18nKey: "nav.menu" },
+  { label: "Cellar", href: "#cellar", i18nKey: "nav.cellar" },
+  { label: "Chef", href: "#chef", i18nKey: "nav.chef" },
+  { label: "Gallery", href: "#gallery", i18nKey: "nav.gallery" },
+  { label: "Visit", href: "#contact", i18nKey: "nav.visit" },
 ] as const;
+
+export const TASTING_COURSES = [
+  { chapter: "Garden", title: "Amuse & Garden", desc: "Tomate Sèves, labneh, herbs from the terrace beds.", image: "/images/menu/tomate-seves.png" },
+  { chapter: "Sea", title: "From the Coast", desc: "Crudo du jour, ceviche of Mediterranean catch.", image: "/images/menu/crudo-du-jour.png" },
+  { chapter: "Fire", title: "Embers & Smoke", desc: "Heritage roast, charred vegetables, jus reduction.", image: "/images/menu/supreme-rotie.png" },
+  { chapter: "Land", title: "Terroir", desc: "Wagyu entrecôte, lamb pithivier, burghul revisité.", image: "/images/menu/entrecote.png" },
+  { chapter: "Cellar", title: "Interlude", desc: "Sommelier pour — a bridge between savoury and sweet.", image: "/images/interior-winecart-dusk.png" },
+  { chapter: "Sweet", title: "Finale", desc: "Nutty tarte, pavlova, mille-feuille — grace notes.", image: "/images/menu/nutty-tarte.png" },
+] as const;
+
+export const CELLAR = {
+  sommelier: "Marie-Claire Khoury",
+  title: "Head Sommelier",
+  quote: "Our cellar is a dialogue between the Old World and the Levant — each bottle chosen to honour the plate before it.",
+  featured: [
+    { name: "Château Musar", vintage: "2016", region: "Bekaa Valley", note: "Iconic Lebanese blend — fig, leather, spice.", price: "18" },
+    { name: "Domaine des Tourelles", vintage: "2020", region: "Lebanon", note: "Cinsault elegance with Mediterranean herbs.", price: "14" },
+    { name: "Krug", vintage: "Grande Cuvée", region: "Champagne", note: "Celebration in a glass — brioche and citrus.", price: "45" },
+    { name: "Gaja", vintage: "2019", region: "Barbaresco", note: "Nebbiolo finesse — rose, tar, silk tannins.", price: "38" },
+  ],
+  image: "/images/interior-winecart-dusk.png",
+} as const;
+
+export type EventItem = {
+  id: string;
+  date: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  image: string;
+  price?: string;
+};
+
+export const EVENTS: EventItem[] = [
+  {
+    id: "wine-dinner-july",
+    date: "2026-07-18",
+    title: "Bekaa Valley Wine Dinner",
+    subtitle: "Six courses · Six pours",
+    description: "An evening dedicated to Lebanese winemakers — each course paired with a rare vintage from our cellar.",
+    image: "/images/interior-winecart-dusk.png",
+    price: "$165 pp",
+  },
+  {
+    id: "guest-chef-august",
+    date: "2026-08-22",
+    title: "Guest Chef Series",
+    subtitle: "Chef Antoine R.",
+    description: "A two-Michelin-star guest takes the pass for one night only — a collaborative menu with Michel Bacha.",
+    image: "/images/team-chefs.png",
+    price: "$220 pp",
+  },
+  {
+    id: "terrace-blue-hour",
+    date: "2026-09-05",
+    title: "Blue Hour on the Terrace",
+    subtitle: "Fire & Water",
+    description: "Golden-hour canapés, live fire cooking, and cocktails as the city lights awaken.",
+    image: "/images/exterior-terrace-night.png",
+    price: "$95 pp",
+  },
+];
+
+export const GIFT_EXPERIENCES = [
+  {
+    id: "tasting-gift",
+    title: "The Sèves Journey",
+    description: "Gift certificate for our 14-course tasting menu — valid 12 months.",
+    price: "$185",
+    image: "/images/brand-monument-sign.png",
+  },
+  {
+    id: "chefs-table-gift",
+    title: "Chef's Table",
+    description: "Six seats at the pass — an unforgettable evening for two.",
+    price: "$440",
+    image: "/images/interior-dining-banquette.png",
+  },
+  {
+    id: "private-dining-gift",
+    title: "Private Dining",
+    description: "The Garden Room — bespoke menu for up to 14 guests.",
+    price: "On request",
+    image: "/images/interior-banquette-garden.png",
+  },
+] as const;
+
+export const PRESS_LOGOS = [
+  { name: "Michelin Guide", abbr: "MICHELIN" },
+  { name: "World's 50 Best", abbr: "50 BEST" },
+  { name: "Gault & Millau", abbr: "G&M" },
+  { name: "Condé Nast Traveller", abbr: "CN" },
+  { name: "Travel & Leisure", abbr: "T&L" },
+  { name: "L'Orient Gourmand", abbr: "LOG" },
+] as const;
+
+export const SEASON = {
+  label: "Summer 2026",
+  note: "Menu composed nightly",
+} as const;

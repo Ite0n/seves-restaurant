@@ -10,6 +10,7 @@ import Reveal from "./ui/Reveal";
 import MagneticButton from "./ui/MagneticButton";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
 import { EASE_LUXE } from "@/lib/motion";
+import { trackEvent } from "@/lib/analytics";
 
 export default function Menu() {
   const [activeCat, setActiveCat] = useState(MENU[0].id);
@@ -23,6 +24,7 @@ export default function Menu() {
     setActiveCat(id);
     const next = MENU.find((c) => c.id === id)!;
     setActiveItem(next.items[0].id);
+    trackEvent("menu_category_switch", { category: id });
   };
 
   return (
