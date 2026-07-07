@@ -39,9 +39,9 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    if (useVideo && videoRef.current) {
-      videoRef.current.play().catch(() => setUseVideo(false));
-    }
+    const video = videoRef.current;
+    if (!video || !useVideo) return;
+    video.play().catch(() => setUseVideo(false));
   }, [useVideo]);
 
   const title = RESTAURANT.name;
@@ -56,15 +56,18 @@ export default function Hero() {
         {useVideo ? (
           <video
             ref={videoRef}
-            className="absolute inset-0 h-full w-full object-cover object-center"
-            src={HERO_VIDEO}
-            poster={HERO_POSTER}
             autoPlay
             muted
             loop
             playsInline
             preload="auto"
-          />
+            poster={HERO_POSTER}
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover object-center"
+            onError={() => setUseVideo(false)}
+          >
+            <source src={HERO_VIDEO} type="video/mp4" />
+          </video>
         ) : (
           <Image
             src={HERO_POSTER}

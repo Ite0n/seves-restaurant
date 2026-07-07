@@ -3,6 +3,10 @@ import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
 import { saveReservation } from "@/lib/reservations-store";
 import { getAvailability } from "@/lib/availability";
+import {
+  formatReservationWhatsAppMessage,
+  sendWhatsAppNotification,
+} from "@/lib/whatsapp";
 
 export async function POST(request: Request) {
   try {
@@ -29,6 +33,7 @@ export async function POST(request: Request) {
     }
 
     const reference = `SV-${Date.now().toString(36).toUpperCase()}`;
+    const whatsappMessage = formatReservationWhatsAppMessage(data, reference);
 
     await saveReservation({
       reference,
@@ -42,6 +47,8 @@ export async function POST(request: Request) {
       createdAt: new Date().toISOString(),
     });
 
+    const whatsappSent = await sendWhatsAppNotification(whatsappMessage);
+
     if (process.env.RESEND_API_KEY && process.env.RESERVATION_EMAIL) {
       await fetch("https://api.resend.com/emails", {
         method: "POST",
@@ -50,19 +57,10 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "Sèves <reservations@seves.restaurant>",
+          from: "Sèves <info@seveslb.com>",
           to: process.env.RESERVATION_EMAIL,
           subject: `Reservation request — ${data.name}`,
-          text: [
-            `Reference: ${reference}`,
-            `Name: ${data.name}`,
-            `Phone: ${data.phone}`,
-            `Email: ${data.email || "—"}`,
-            `Date: ${data.date}`,
-            `Time: ${data.time}`,
-            `Guests: ${data.guests}`,
-            `Notes: ${data.notes || "—"}`,
-          ].join("\n"),
+          text: whatsappMessage.replace(/\*/g, ""),
         }),
       });
 
@@ -74,7 +72,7 @@ export async function POST(request: Request) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            from: "Sèves <reservations@seves.restaurant>",
+            from: "Sèves <info@seveslb.com>",
             to: data.email,
             subject: "Your reservation request — Sèves",
             text: `Dear ${data.name},\n\nThank you for your reservation request for ${data.guests} guests on ${data.date} at ${data.time}.\n\nReference: ${reference}\n\nOur maître d' will confirm shortly.\n\nSèves`,
@@ -87,6 +85,7 @@ export async function POST(request: Request) {
       success: true,
       message: "Your reservation request has been received.",
       reference,
+      whatsappSent,
     });
   } catch (err) {
     if (err instanceof ZodError) {

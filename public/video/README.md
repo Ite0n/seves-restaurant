@@ -1,11 +1,16 @@
-# Cinematic walkthrough video (optional drop-in)
+# Cinematic video assets
 
-The homepage ships with a **live WebGL 3D walkthrough** (React Three Fiber)
-that dollies the camera through the real venue photography.
+## Hero (`hero.mp4`)
 
-If you generate a cinematic walkthrough film (e.g. with Higgsfield image→video,
-recommended model `kling3_0` using `interior-pendant-room.png` as the start
-frame), export it and place it here:
+Fullscreen autoplay loop on the homepage hero. Place your file at:
+
+```
+public/video/hero.mp4
+```
+
+The hero uses the terrace still as a poster while the video loads, and falls back to the image if video fails or reduced motion is enabled.
+
+## Walkthrough (`walkthrough.mp4`) — optional
 
 ```
 public/video/walkthrough.mp4

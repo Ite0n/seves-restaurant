@@ -15,6 +15,10 @@ import {
   reservationSchema,
   type ReservationInput,
 } from "@/lib/validations";
+import {
+  buildWhatsAppUrl,
+  formatReservationWhatsAppMessage,
+} from "@/lib/whatsapp";
 
 const GUESTS = ["2", "3", "4", "5", "6", "7+"];
 
@@ -52,6 +56,8 @@ export default function Reservation() {
   const [apiError, setApiError] = useState<string | null>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [limited, setLimited] = useState(false);
+  const [whatsappNotified, setWhatsappNotified] = useState(false);
+  const [whatsappAutoSent, setWhatsappAutoSent] = useState(false);
   const { t } = useLocale();
 
   const {
@@ -107,6 +113,24 @@ export default function Reservation() {
         return;
       }
       trackEvent("reservation_submit", { guests: data.guests, time: data.time });
+
+      if (!json.whatsappSent) {
+        const url = buildWhatsAppUrl(
+          formatReservationWhatsAppMessage(data, json.reference)
+        );
+        const link = document.createElement("a");
+        link.href = url;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        setWhatsappNotified(true);
+      } else {
+        setWhatsappNotified(true);
+        setWhatsappAutoSent(true);
+      }
+
       setReference(json.reference);
     } catch {
       setApiError("Unable to connect. Please call us directly.");
@@ -117,6 +141,8 @@ export default function Reservation() {
     reset();
     setReference(null);
     setApiError(null);
+    setWhatsappNotified(false);
+    setWhatsappAutoSent(false);
   };
 
   const times = slots.length > 0 ? slots : [
@@ -329,6 +355,13 @@ export default function Reservation() {
                     Thank you. Our maître d&apos; will confirm your table for{" "}
                     {guests} at {time} shortly.
                   </p>
+                  {whatsappNotified && (
+                    <p className="mt-2 max-w-xs text-xs font-light text-cream/45">
+                      {whatsappAutoSent
+                        ? "Your request was delivered to us on WhatsApp."
+                        : "WhatsApp opened with your reservation — tap send to confirm."}
+                    </p>
+                  )}
                   {reference && (
                     <p className="mt-4 font-display text-xs tracking-luxe text-gold/70">
                       Ref · {reference}
