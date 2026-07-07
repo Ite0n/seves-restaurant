@@ -32,19 +32,19 @@ export default function Contact() {
               Find your way to <span className="gold-gradient">Sèves</span>
             </>
           }
-          description="Bayeh 76, Sin El Fil — where fire, water, and the Beirut sky meet."
+          description={`${RESTAURANT.streetAddress}, ${RESTAURANT.city} — where fire, water, and the Mediterranean sky meet.`}
         />
 
         <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-14">
           <Reveal className="group relative min-h-[380px] overflow-hidden rounded-sm lg:min-h-[520px]">
             <Image
-              src="/images/exterior-facade-sign.png"
-              alt={`${RESTAURANT.name} entrance`}
+              src={RESTAURANT.contactImage}
+              alt={`${RESTAURANT.name} terrace — ${RESTAURANT.city}`}
               fill
               loading="lazy"
               sizes="(max-width: 1024px) 100vw, 50vw"
               quality={78}
-              className="object-cover transition-transform duration-[1.4s] ease-luxe group-hover:scale-105"
+              className="object-cover object-[center_28%] transition-transform duration-[1.4s] ease-luxe group-hover:scale-105 md:object-[center_35%]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/20 to-transparent" />
             <div className="img-frame absolute inset-0" />
@@ -87,9 +87,7 @@ export default function Contact() {
                     className="flex items-center justify-between border-b border-cream/10 pb-2 text-sm"
                   >
                     <span>{h.d}</span>
-                    <span className={h.h === "Closed" ? "text-cream/40" : "text-gold"}>
-                      {h.h}
-                    </span>
+                    <span className="text-gold">{h.h}</span>
                   </li>
                 ))}
               </ul>

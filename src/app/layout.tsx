@@ -33,9 +33,10 @@ export const metadata: Metadata = {
     template: `%s · ${RESTAURANT.name}`,
   },
   description:
-    "Sèves is an ultra-premium fine-dining destination in Beirut. A cinematic garden terrace, an artful seasonal kitchen, and a curated cellar — where every plate is a piece of art.",
+    "Sèves is an ultra-premium fine-dining destination in Dbayeh, Lebanon. A cinematic garden terrace, an artful seasonal kitchen, and a curated cellar — where every plate is a piece of art.",
   keywords: [
     "Sèves",
+    "fine dining Dbayeh",
     "fine dining Beirut",
     "luxury restaurant Lebanon",
     "Michelin star dining",
@@ -50,7 +51,7 @@ export const metadata: Metadata = {
     siteName: RESTAURANT.name,
     title: `${RESTAURANT.name} — ${RESTAURANT.tagline}`,
     description:
-      "A cinematic fine-dining experience in Beirut. Where every plate is a piece of art.",
+      "A cinematic fine-dining experience in Dbayeh, Lebanon. Where every plate is a piece of art.",
     images: [
       {
         url: "/images/interior-dining-banquette.png",
@@ -87,13 +88,17 @@ const jsonLd = [
     email: RESTAURANT.email,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Bayeh 76, Sin El Fil",
-      addressLocality: "Beirut",
+      streetAddress: RESTAURANT.streetAddress,
+      addressLocality: RESTAURANT.city,
+      addressRegion: "Mount Lebanon",
       addressCountry: "LB",
     },
     url: SITE_URL,
     image: `${SITE_URL}/images/exterior-facade-sign.png`,
     acceptsReservations: true,
+    hasMap: RESTAURANT.mapsUrl,
+    openingHours: "Mo-Su 12:00-00:00",
+    sameAs: [RESTAURANT.social.instagram],
     geo: {
       "@type": "GeoCoordinates",
       latitude: RESTAURANT.coordinates.lat,
@@ -123,6 +128,11 @@ export default function RootLayout({
       className={`${cormorant.variable} ${cinzel.variable} ${jost.variable}`}
     >
       <body className="bg-ink-900 text-cream antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "history.scrollRestoration='manual';window.scrollTo(0,0);",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

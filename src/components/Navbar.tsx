@@ -36,7 +36,12 @@ export default function Navbar() {
               : "max-w-none bg-transparent py-5 md:py-6"
           }`}
         >
-          <a href="#top" className="text-gold transition-opacity hover:opacity-80" aria-label="Sèves home">
+          <a
+            href="#top"
+            onClick={() => setOpen(false)}
+            className="text-gold transition-opacity hover:opacity-80"
+            aria-label="Sèves home"
+          >
             <Logo />
           </a>
 

@@ -2,24 +2,21 @@ export const RESTAURANT = {
   name: "Sèves",
   tagline: "Where every plate is a piece of art",
   descriptor: "Fine Dining · Garden Terrace · Bar",
-  city: "Beirut",
+  city: "Dbayeh",
   country: "Lebanon",
-  phone: "+961 1 000 076",
-  email: "reserve@seves.restaurant",
-  address: "Bayeh 76, Sin El Fil — Beirut, Lebanon",
-  hours: [
-    { d: "Tuesday — Thursday", h: "12:00 — 23:30" },
-    { d: "Friday — Saturday", h: "12:00 — 01:00" },
-    { d: "Sunday", h: "12:00 — 23:00" },
-    { d: "Monday", h: "Closed" },
-  ],
+  phone: "+961 70 553 301",
+  email: "info@seveslb.com",
+  streetAddress: "Kabalen el Achkar",
+  address: "Kabalen el Achkar, Dbayeh — Mount Lebanon, Lebanon",
+  hours: [{ d: "Daily", h: "12:00 PM — 12:00 AM" }],
   social: {
-    instagram: "https://instagram.com",
+    instagram: "https://www.instagram.com/seves.lb",
     facebook: "https://facebook.com",
     tiktok: "https://tiktok.com",
   },
-  mapsUrl: "https://maps.google.com/?q=Sin+El+Fil+Beirut",
-  coordinates: { lat: 33.8886, lng: 35.5456 },
+  mapsUrl: "https://maps.app.goo.gl/jSBUZVytPz7Qz9qD6",
+  coordinates: { lat: 33.9495, lng: 35.5925 },
+  contactImage: "/images/exterior-terrace-night.png",
 } as const;
 
 export type Dish = {
@@ -36,7 +33,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Caramelised fig tart crowned with torched goat-cheese mousse, wild berries, candied pecans and aged balsamic.",
     price: "32",
-    image: "/images/dish-fig-tart-salad.png",
+    image: "/images/menu/nutty-tarte.png",
     tag: "Signature",
   },
   {
@@ -44,7 +41,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Corn-fed poularde, charred over embers, laid on a tarragon-herb risotto with rosé jus and confit tomatoes.",
     price: "44",
-    image: "/images/dish-roast-chicken.png",
+    image: "/images/menu/supreme-rotie.png",
     tag: "From the fire",
   },
   {
@@ -52,7 +49,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Hand-shaved mortadella over whipped pistachio ricotta, lingonberries, lemon zest and lace tuile.",
     price: "28",
-    image: "/images/dish-mortadella-carpaccio.png",
+    image: "/images/menu/pate-en-croute.png",
     tag: "Cold cuts",
   },
   {
@@ -60,7 +57,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Strained labneh, sourdough croutons, pickled radish, pomegranate and a whisper of Aleppo pepper oil.",
     price: "26",
-    image: "/images/dish-labneh-panzanella.png",
+    image: "/images/menu/tomate-seves.png",
     tag: "Garden",
   },
 ];
@@ -78,16 +75,61 @@ export const TASTING_MENU = {
 export type GalleryItem = { src: string; alt: string; span: string };
 
 export const GALLERY: GalleryItem[] = [
-  { src: "/images/interior-dining-banquette.png", alt: "Main dining room with emerald velvet banquettes", span: "md:col-span-2 md:row-span-2" },
-  { src: "/images/interior-feather-art.png", alt: "Backlit feather sculpture and bar", span: "" },
-  { src: "/images/bar-bonsai-night.png", alt: "Bar with bonsai and curated spirits", span: "" },
-  { src: "/images/interior-pendant-room.png", alt: "Dining room beneath cascading pendant lights", span: "md:col-span-2" },
-  { src: "/images/interior-banquette-windows.png", alt: "Window seating at dusk", span: "" },
-  { src: "/images/exterior-firewater-city.png", alt: "Terrace with fire bowls and water features", span: "md:row-span-2" },
-  { src: "/images/interior-bonsai-window.png", alt: "Bonsai centerpiece on marble", span: "" },
-  { src: "/images/interior-winecart-dusk.png", alt: "Wine service at golden hour", span: "md:col-span-2" },
-  { src: "/images/bar-stools-night.png", alt: "The bar after dark", span: "" },
-  { src: "/images/interior-banquette-garden.png", alt: "Garden-view banquette", span: "" },
+  {
+    src: "/images/interior-dining-banquette.png",
+    alt: "Main dining room with emerald velvet banquettes",
+    span: "col-span-2 row-span-2 md:col-span-6 md:row-span-2",
+  },
+  {
+    src: "/images/interior-feather-art.png",
+    alt: "Backlit feather sculpture and bar",
+    span: "col-span-1 row-span-1 md:col-span-3",
+  },
+  {
+    src: "/images/bar-bonsai-night.png",
+    alt: "Bar with bonsai and curated spirits",
+    span: "col-span-1 row-span-1 md:col-span-3",
+  },
+  {
+    src: "/images/interior-pendant-room.png",
+    alt: "Dining room beneath cascading pendant lights",
+    span: "col-span-2 row-span-1 md:col-span-6",
+  },
+  {
+    src: "/images/exterior-firewater-city.png",
+    alt: "Terrace with fire bowls and water features",
+    span: "col-span-1 row-span-1 md:col-span-4 md:row-span-2",
+  },
+  {
+    src: "/images/exterior-terrace-night.png",
+    alt: "Garden terrace at twilight",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
+  {
+    src: "/images/interior-banquette-windows.png",
+    alt: "Window seating at dusk",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
+  {
+    src: "/images/interior-winecart-dusk.png",
+    alt: "Wine service at golden hour",
+    span: "col-span-2 row-span-1 md:col-span-5",
+  },
+  {
+    src: "/images/interior-bonsai-window.png",
+    alt: "Bonsai centerpiece on marble",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
+  {
+    src: "/images/bar-stools-night.png",
+    alt: "The bar after dark",
+    span: "col-span-1 row-span-1 md:col-span-3",
+  },
+  {
+    src: "/images/interior-banquette-garden.png",
+    alt: "Garden-view banquette",
+    span: "col-span-1 row-span-1 md:col-span-4",
+  },
 ];
 
 export type Testimonial = { quote: string; author: string; role: string };
@@ -205,7 +247,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "Is there valet parking?",
-    a: "Complimentary valet is available Tuesday through Sunday from 18:00. Street parking is also available on Bayeh.",
+    a: "Complimentary valet is available Tuesday through Sunday from 18:00. Street parking is also available on Kabalen el Achkar.",
   },
   {
     q: "Can I purchase a gift experience?",

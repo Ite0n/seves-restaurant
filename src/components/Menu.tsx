@@ -8,6 +8,7 @@ import { TASTING_MENU } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
 import MagneticButton from "./ui/MagneticButton";
+import SectionAtmosphere from "./ui/SectionAtmosphere";
 import { EASE_LUXE } from "@/lib/motion";
 
 export default function Menu() {
@@ -26,7 +27,7 @@ export default function Menu() {
 
   return (
     <section id="menu" className="relative overflow-hidden bg-ink-800 section-pad">
-      <div className="absolute inset-0 grain opacity-50" />
+      <SectionAtmosphere />
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
           label="La Carte"

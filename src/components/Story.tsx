@@ -9,16 +9,16 @@ import Reveal from "./ui/Reveal";
 import { fadeUp } from "@/lib/motion";
 
 const STATS = [
-  { value: "2019", label: "Established" },
+  { value: "2024", label: "Established" },
   { value: "14", label: "Course tasting" },
   { value: "1", label: "Open kitchen" },
 ];
 
 const TIMELINE = [
-  { year: "2019", event: "Sèves opens on Bayeh — a garden terrace dream realised." },
-  { year: "2021", event: "The grand dining room unveils beneath cascading light." },
-  { year: "2023", event: "Chef's table and private salon launch for intimate gatherings." },
-  { year: "2025", event: "Recognised among the world's most exciting fine-dining rooms." },
+  { id: "open", year: "2024", event: "Sèves opens in Dbayeh — a garden terrace dream realised." },
+  { id: "dining-room", year: "2025", event: "The grand dining room unveils beneath cascading light." },
+  { id: "chefs-table", year: "2025", event: "Chef's table and private salon launch for intimate gatherings." },
+  { id: "recognition", year: "2026", event: "Recognised among the world's most exciting fine-dining rooms." },
 ];
 
 export default function Story() {
@@ -123,7 +123,7 @@ export default function Story() {
 
             <ul className="mt-14 space-y-6 border-t border-cream/10 pt-10">
               {TIMELINE.map((t, i) => (
-                <Reveal key={t.year} delay={i * 0.08}>
+                <Reveal key={t.id} delay={i * 0.08}>
                   <li className="flex gap-6">
                     <span className="shrink-0 font-display text-sm tracking-wide2 text-gold">
                       {t.year}
