@@ -5,21 +5,21 @@ import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["300", "400"],
   variable: "--font-cormorant",
   display: "swap",
 });
 
 const cinzel = Cinzel({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400"],
   variable: "--font-cinzel",
   display: "swap",
 });
 
 const jost = Jost({
   subsets: ["latin"],
-  weight: ["300", "400", "500"],
+  weight: ["300"],
   variable: "--font-jost",
   display: "swap",
 });
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: `${RESTAURANT.name} — ${RESTAURANT.tagline}`,
-    description: "A cinematic fine-dining experience in Beirut.",
+    description: "A cinematic fine-dining experience in Dbayeh, Lebanon.",
     images: ["/images/interior-dining-banquette.png"],
   },
   robots: { index: true, follow: true },
@@ -144,6 +144,14 @@ export default function RootLayout({
       lang="en"
       className={`${cormorant.variable} ${cinzel.variable} ${jost.variable}`}
     >
+      <head>
+        <link
+          rel="preload"
+          as="image"
+          href="/images/hero-terrace-firewater.png"
+          fetchPriority="high"
+        />
+      </head>
       <body className="bg-ink-900 text-cream antialiased">
         <script
           dangerouslySetInnerHTML={{

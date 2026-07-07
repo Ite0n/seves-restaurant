@@ -1,3 +1,7 @@
-import nextConfig from "eslint-config-next/core-web-vitals";
+import { defineConfig, globalIgnores } from "eslint/config";
+import nextVitals from "eslint-config-next/core-web-vitals";
 
-export default nextConfig;
+export default defineConfig([
+  ...nextVitals,
+  globalIgnores([".next/**", "out/**", "build/**", "next-env.d.ts"]),
+]);

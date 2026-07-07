@@ -1,6 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import Image from "next/image";
 import { useRef, useState } from "react";
 import {
   motion,
@@ -10,14 +11,9 @@ import {
 } from "framer-motion";
 import SectionLabel from "./ui/SectionLabel";
 import { useWalkthroughSnap } from "@/hooks/useGsapScroll";
+import { useNearViewport } from "@/hooks/useNearViewport";
 import { trackEvent } from "@/lib/analytics";
 
-/**
- * Optional cinematic walkthrough video.
- * Drop a Higgsfield-generated file at /public/video/walkthrough.mp4
- * and set this to "/video/walkthrough.mp4" to use it instead of the
- * live WebGL walkthrough.
- */
 const WALKTHROUGH_VIDEO: string | null = null;
 
 const WalkthroughScene = dynamic(
@@ -25,18 +21,37 @@ const WalkthroughScene = dynamic(
   { ssr: false }
 );
 
+const FALLBACK_STATIONS = [
+  "/images/exterior-facade-sign.png",
+  "/images/interior-pendant-room.png",
+  "/images/interior-dining-banquette.png",
+  "/images/interior-feather-art.png",
+  "/images/bar-bonsai-night.png",
+  "/images/exterior-firewater-city.png",
+];
+
 const CAPTIONS = [
   { at: 0.04, title: "Arrival", text: "The illuminated façade welcomes you into Sèves." },
   { at: 0.22, title: "The Grand Room", text: "Cascading light over marble and emerald velvet." },
   { at: 0.4, title: "The Table", text: "Intimate banquettes framed by living botanicals." },
   { at: 0.58, title: "The Detail", text: "A backlit feather — craft in every surface." },
   { at: 0.74, title: "The Bar", text: "A curated cellar and barrel-aged signatures." },
-  { at: 0.9, title: "The Terrace", text: "Fire and water beneath the Beirut sky." },
+  { at: 0.9, title: "The Terrace", text: "Fire and water beneath the Dbayeh sky." },
 ];
+
+function canUseWebGLWalkthrough() {
+  if (typeof window === "undefined") return false;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return !reduced && window.innerWidth >= 768;
+}
 
 export default function Walkthrough() {
   const ref = useRef<HTMLDivElement>(null);
-  useWalkthroughSnap(ref);
+  const [useWebGL, setUseWebGL] = useState(canUseWebGLWalkthrough);
+  const sceneNear = useNearViewport(ref, "600px 0px");
+
+  useWalkthroughSnap(ref, useWebGL);
+
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end end"],
@@ -79,22 +94,35 @@ export default function Walkthrough() {
     );
   }
 
+  const fallbackImage =
+    FALLBACK_STATIONS[Math.min(active, FALLBACK_STATIONS.length - 1)];
+
   return (
     <section
       id="walkthrough"
       ref={ref}
-      className="relative h-[420vh] bg-ink-900"
+      className={`relative bg-ink-900 ${useWebGL ? "h-[420vh]" : "h-[260vh] md:h-[420vh]"}`}
     >
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
-        {/* WebGL walkthrough */}
         <div className="absolute inset-0">
-          <WalkthroughScene progress={progress} />
+          {useWebGL && sceneNear ? (
+            <WalkthroughScene progress={progress} />
+          ) : (
+            <Image
+              key={fallbackImage}
+              src={fallbackImage}
+              alt={CAPTIONS[active].title}
+              fill
+              sizes="100vw"
+              priority={false}
+              className="object-cover"
+              quality={75}
+            />
+          )}
         </div>
 
-        {/* vignette */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(5,5,5,0.85)_100%)]" />
 
-        {/* intro overlay */}
         <motion.div
           style={{ opacity: introOpacity }}
           className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center"
@@ -108,7 +136,6 @@ export default function Walkthrough() {
           </p>
         </motion.div>
 
-        {/* live caption */}
         <div className="pointer-events-none absolute bottom-16 left-0 right-0 px-8 md:bottom-20 md:px-16">
           <div className="mx-auto max-w-5xl">
             <motion.div
@@ -127,7 +154,6 @@ export default function Walkthrough() {
           </div>
         </div>
 
-        {/* progress bar */}
         <div className="absolute bottom-0 left-0 h-[2px] w-full bg-cream/10">
           <motion.div
             className="h-full origin-left bg-gradient-to-r from-gold-600 to-gold-200"
@@ -135,7 +161,6 @@ export default function Walkthrough() {
           />
         </div>
 
-        {/* outro fade to next section */}
         <motion.div
           style={{ opacity: outroOpacity }}
           className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent to-ink-900"

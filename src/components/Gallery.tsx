@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { GALLERY } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
@@ -36,7 +36,7 @@ export default function Gallery() {
     return () => window.removeEventListener("keydown", onKey);
   }, [active, next, prev]);
 
-  let touchStartX = 0;
+  const touchStartX = useRef(0);
 
   return (
     <section id="gallery" className="relative overflow-hidden bg-ink-800 section-pad">
@@ -146,10 +146,10 @@ export default function Gallery() {
               className="relative h-[78vh] w-full max-w-5xl overflow-hidden rounded-sm ring-1 ring-gold/20"
               onClick={(e) => e.stopPropagation()}
               onTouchStart={(e) => {
-                touchStartX = e.touches[0].clientX;
+                touchStartX.current = e.touches[0].clientX;
               }}
               onTouchEnd={(e) => {
-                const dx = e.changedTouches[0].clientX - touchStartX;
+                const dx = e.changedTouches[0].clientX - touchStartX.current;
                 if (Math.abs(dx) > 50) {
                   if (dx < 0) next();
                   else prev();

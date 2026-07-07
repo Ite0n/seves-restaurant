@@ -17,24 +17,36 @@ export default function CustomCursor() {
     let my = 0;
     let rx = 0;
     let ry = 0;
+    let lastMove = Date.now();
+    let frame = 0;
 
     const onMove = (e: MouseEvent) => {
+      lastMove = Date.now();
       mx = e.clientX;
       my = e.clientY;
       if (dotRef.current) {
         dotRef.current.style.transform = `translate(${mx}px, ${my}px)`;
       }
+      schedule();
     };
 
     const tick = () => {
+      frame = 0;
       rx += (mx - rx) * 0.15;
       ry += (my - ry) * 0.15;
       if (ringRef.current) {
         ringRef.current.style.transform = `translate(${rx}px, ${ry}px)`;
       }
-      requestAnimationFrame(tick);
+      const active =
+        Date.now() - lastMove < 2000 ||
+        Math.abs(mx - rx) > 0.5 ||
+        Math.abs(my - ry) > 0.5;
+      if (active) schedule();
     };
-    const frame = requestAnimationFrame(tick);
+
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(tick);
+    };
 
     const onOver = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest(

@@ -4,23 +4,35 @@ import { useEffect, useRef, useState } from "react";
 import { trackEvent } from "@/lib/analytics";
 import { useLocale } from "@/context/LocaleContext";
 
+const AMBIENT_SRC = "/audio/ambient.mp3";
+
 export default function SoundToggle() {
   const [on, setOn] = useState(false);
+  const [available, setAvailable] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const { t } = useLocale();
 
   useEffect(() => {
-    audioRef.current = new Audio("/audio/ambient.mp3");
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.25;
     return () => {
       audioRef.current?.pause();
+      audioRef.current = null;
     };
   }, []);
 
+  const getAudio = () => {
+    if (!audioRef.current) {
+      const audio = new Audio(AMBIENT_SRC);
+      audio.loop = true;
+      audio.volume = 0.25;
+      audioRef.current = audio;
+    }
+    return audioRef.current;
+  };
+
   const toggle = async () => {
-    const audio = audioRef.current;
-    if (!audio) return;
+    if (!available) return;
+
+    const audio = getAudio();
 
     if (on) {
       audio.pause();
@@ -32,16 +44,18 @@ export default function SoundToggle() {
         setOn(true);
         trackEvent("sound_toggle", { state: "on" });
       } catch {
-        /* file missing or autoplay blocked */
+        setAvailable(false);
       }
     }
   };
+
+  if (!available) return null;
 
   return (
     <button
       type="button"
       onClick={toggle}
-      className="fixed bottom-24 right-4 z-50 flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 bg-ink-900/80 text-cream/60 backdrop-blur-sm transition-colors hover:border-gold hover:text-gold lg:bottom-6"
+      className="fixed bottom-6 right-4 z-50 hidden h-10 w-10 items-center justify-center rounded-full border border-cream/20 bg-ink-900/80 text-cream/60 backdrop-blur-sm transition-colors hover:border-gold hover:text-gold lg:flex"
       aria-label={on ? t("sound.on") : t("sound.off")}
       title={on ? t("sound.on") : t("sound.off")}
     >

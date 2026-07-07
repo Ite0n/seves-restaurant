@@ -4,7 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
-function Particles({ count = 900 }: { count?: number }) {
+function Particles({ count }: { count: number }) {
   const points = useRef<THREE.Points>(null);
   const { viewport } = useThree();
   const mouse = useRef({ x: 0, y: 0 });
@@ -21,13 +21,16 @@ function Particles({ count = 900 }: { count?: number }) {
     return { positions, speeds };
   });
 
-  useFrame((state, delta) => {
+  const elapsed = useRef(0);
+
+  useFrame((_, delta) => {
+    elapsed.current += delta;
     const pts = points.current;
     if (!pts) return;
     const arr = pts.geometry.attributes.position.array as Float32Array;
     for (let i = 0; i < count; i++) {
       arr[i * 3 + 1] += speeds[i] * delta;
-      arr[i * 3] += Math.sin(state.clock.elapsedTime * 0.3 + i) * delta * 0.04;
+      arr[i * 3] += Math.sin(elapsed.current * 0.3 + i) * delta * 0.04;
       if (arr[i * 3 + 1] > 4.6) arr[i * 3 + 1] = -4.6;
     }
     pts.geometry.attributes.position.needsUpdate = true;
@@ -82,15 +85,25 @@ function Particles({ count = 900 }: { count?: number }) {
 }
 
 export default function GoldDust() {
+  const [{ count, dprMax }] = useState(() => {
+    if (typeof window === "undefined") {
+      return { count: 500, dprMax: 1.4 };
+    }
+    const w = window.innerWidth;
+    if (w < 768) return { count: 320, dprMax: 1.25 };
+    if (w < 1200) return { count: 550, dprMax: 1.45 };
+    return { count: 900, dprMax: 1.6 };
+  });
+
   return (
     <Canvas
       className="!absolute inset-0"
       camera={{ position: [0, 0, 6], fov: 50 }}
-      dpr={[1, 1.6]}
+      dpr={[1, dprMax]}
       gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
       frameloop="always"
     >
-      <Particles />
+      <Particles count={count} />
     </Canvas>
   );
 }

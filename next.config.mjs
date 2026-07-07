@@ -11,7 +11,12 @@ const nextConfig = {
     qualities: [65, 72, 75, 78, 80, 85, 88],
   },
   experimental: {
-    optimizePackageImports: ["framer-motion", "@react-three/drei"],
+    optimizePackageImports: [
+      "framer-motion",
+      "gsap",
+      "lenis",
+      "@react-three/drei",
+    ],
   },
 };
 

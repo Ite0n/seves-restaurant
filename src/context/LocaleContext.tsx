@@ -18,13 +18,19 @@ type LocaleContextValue = {
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
 
+function readSavedLocale(): Locale {
+  if (typeof window === "undefined") return "en";
+  const saved = localStorage.getItem("seves-locale") as Locale | null;
+  return saved && ["en", "fr", "ar"].includes(saved) ? saved : "en";
+}
+
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>(readSavedLocale);
 
   useEffect(() => {
-    const saved = localStorage.getItem("seves-locale") as Locale | null;
-    if (saved && ["en", "fr", "ar"].includes(saved)) setLocaleState(saved);
-  }, []);
+    document.documentElement.lang = locale === "ar" ? "ar" : locale;
+    document.documentElement.dir = locale === "ar" ? "rtl" : "ltr";
+  }, [locale]);
 
   const setLocale = useCallback((l: Locale) => {
     setLocaleState(l);

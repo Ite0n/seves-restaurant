@@ -5,6 +5,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import type { MotionValue } from "framer-motion";
+import { optimizedImageUrl } from "@/lib/image-url";
 
 const STATIONS = [
   "/images/exterior-facade-sign.png",
@@ -14,7 +15,7 @@ const STATIONS = [
   "/images/bar-bonsai-night.png",
   "/images/interior-winecart-dusk.png",
   "/images/exterior-firewater-city.png",
-];
+].map((src) => optimizedImageUrl(src, 2048, 85));
 
 const SPACING = 7;
 const PANEL_HEIGHT = 5.4;
@@ -42,11 +43,13 @@ function ImagePanel({
   const x = index === 0 ? 0 : side * 3.4;
   const rotY = index === 0 ? 0 : side * 0.6;
   const mesh = useRef<THREE.Mesh>(null);
+  const elapsed = useRef(0);
 
-  useFrame((state) => {
+  useFrame((_, delta) => {
+    elapsed.current += delta;
     if (!mesh.current) return;
     mesh.current.position.y =
-      Math.sin(state.clock.elapsedTime * 0.5 + index) * 0.06;
+      Math.sin(elapsed.current * 0.5 + index) * 0.06;
   });
 
   return (

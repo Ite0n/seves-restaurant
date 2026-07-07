@@ -15,11 +15,42 @@ const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 const HERO_VIDEO = "/video/hero.mp4";
 const HERO_POSTER = "/images/hero-terrace-firewater.png";
 
+function prefersReducedMotion() {
+  if (typeof window === "undefined") return true;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function canPlayHeroVideo() {
+  if (typeof window === "undefined") return false;
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return !reduced && window.innerWidth >= 768;
+}
+
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useVideo, setUseVideo] = useState(false);
+  const [useVideo, setUseVideo] = useState(canPlayHeroVideo);
+  const [showDust, setShowDust] = useState(false);
   const { t } = useLocale();
+
+  useEffect(() => {
+    if (prefersReducedMotion()) return;
+
+    let idle: ReturnType<typeof setTimeout> | number;
+    if ("requestIdleCallback" in window) {
+      idle = window.requestIdleCallback(() => setShowDust(true), { timeout: 2000 });
+    } else {
+      idle = setTimeout(() => setShowDust(true), 1200);
+    }
+
+    return () => {
+      if ("requestIdleCallback" in window) {
+        window.cancelIdleCallback(idle as number);
+      } else {
+        clearTimeout(idle as ReturnType<typeof setTimeout>);
+      }
+    };
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -31,12 +62,6 @@ export default function Hero() {
   const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "55%"]);
   const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
   const lineWidth = useTransform(scrollYProgress, [0, 0.5], ["0%", "100%"]);
-
-  useEffect(() => {
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.innerWidth < 768;
-    if (!reduced && !mobile) setUseVideo(true);
-  }, []);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -60,7 +85,7 @@ export default function Hero() {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             poster={HERO_POSTER}
             aria-hidden="true"
             className="absolute inset-0 h-full w-full object-cover object-center"
@@ -84,9 +109,11 @@ export default function Hero() {
         <div className="absolute inset-0 vignette-strong" />
       </motion.div>
 
-      <div className="pointer-events-none absolute inset-0 z-[2] opacity-60">
-        <GoldDust />
-      </div>
+      {showDust && (
+        <div className="pointer-events-none absolute inset-0 z-[2] opacity-60">
+          <GoldDust />
+        </div>
+      )}
 
       <motion.div
         style={{ y: contentY, opacity }}

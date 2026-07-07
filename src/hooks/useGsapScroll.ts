@@ -6,13 +6,19 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-export function useWalkthroughSnap(sectionRef: React.RefObject<HTMLElement | null>) {
+export function useWalkthroughSnap(
+  sectionRef: React.RefObject<HTMLElement | null>,
+  enabled = true
+) {
   useEffect(() => {
+    if (!enabled) return;
+
     const el = sectionRef.current;
     if (!el) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const mobile = window.innerWidth < 768;
+    if (reduced || mobile) return;
 
     const st = ScrollTrigger.create({
       trigger: el,
@@ -26,7 +32,7 @@ export function useWalkthroughSnap(sectionRef: React.RefObject<HTMLElement | nul
     });
 
     return () => st.kill();
-  }, [sectionRef]);
+  }, [sectionRef, enabled]);
 }
 
 export function useTastingJourneyPin(
@@ -39,7 +45,8 @@ export function useTastingJourneyPin(
     if (!container || !track) return;
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
+    const mobile = window.innerWidth < 768;
+    if (reduced || mobile) return;
 
     const scrollWidth = track.scrollWidth - container.offsetWidth;
 

@@ -2,50 +2,44 @@
 
 import { useEffect, useState } from "react";
 
-const CRITICAL_ASSETS = [
-  "/video/hero.mp4",
-  "/images/hero-terrace-firewater.png",
-];
+const HERO_POSTER = "/images/hero-terrace-firewater.png";
 
 export function useAssetPreload() {
   const [progress, setProgress] = useState(0);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let loaded = 0;
-    const total = CRITICAL_ASSETS.length;
+    let cancelled = false;
 
-    const bump = () => {
-      loaded += 1;
-      const pct = Math.round((loaded / total) * 100);
-      setProgress(pct);
-      if (loaded >= total) {
-        setTimeout(() => setReady(true), reduce ? 100 : 300);
-      }
+    const img = new Image();
+    img.onload = () => {
+      if (cancelled) return;
+      setProgress(100);
+      setTimeout(() => setReady(true), 200);
     };
-
-    CRITICAL_ASSETS.forEach((src) => {
-      if (src.endsWith(".mp4")) {
-        const video = document.createElement("video");
-        video.preload = "auto";
-        video.onloadeddata = bump;
-        video.onerror = bump;
-        video.src = src;
-      } else {
-        const img = new Image();
-        img.onload = bump;
-        img.onerror = bump;
-        img.src = src;
-      }
-    });
-
-    const fallback = setTimeout(() => {
+    img.onerror = () => {
+      if (cancelled) return;
       setProgress(100);
       setReady(true);
-    }, 5000);
+    };
 
-    return () => clearTimeout(fallback);
+    const tick = setInterval(() => {
+      setProgress((p) => (p >= 90 ? p : p + 12));
+    }, 120);
+
+    img.src = HERO_POSTER;
+
+    const fallback = setTimeout(() => {
+      if (cancelled) return;
+      setProgress(100);
+      setReady(true);
+    }, 2500);
+
+    return () => {
+      cancelled = true;
+      clearInterval(tick);
+      clearTimeout(fallback);
+    };
   }, []);
 
   return { progress, ready };

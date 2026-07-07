@@ -170,7 +170,6 @@ export const STORY_IMAGES = {
   team: "/images/team-chefs.png",
   ambience: "/images/ambience-table-setting.png",
   plateArt: "/images/brand-monument-sign.png",
-  monument: "/images/brand-monument-sign.png",
 } as const;
 
 export const CHEF = {
@@ -263,15 +262,6 @@ export const FAQ: FaqItem[] = [
     a: "The bar welcomes walk-ins from 17:00 with a curated small-plates menu and signature cocktails.",
   },
 ];
-
-export const PRESS = [
-  "L'Orient Gourmand",
-  "Condé Nast Traveller",
-  "World's 50 Best",
-  "Gault & Millau",
-  "Travel & Leisure",
-  "Michelin Guide",
-] as const;
 
 export const NAV_LINKS = [
   { label: "Experience", href: "#walkthrough", i18nKey: "nav.experience" },
