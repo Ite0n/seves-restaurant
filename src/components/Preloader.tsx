@@ -53,7 +53,7 @@ export default function Preloader() {
               S<span className="italic">è</span>VES
             </div>
             <p className="mt-4 text-[0.6rem] uppercase tracking-luxe text-cream/40">
-              Beirut · Fine Dining
+              Beirut · Dbayeh · Fine Dining
             </p>
           </motion.div>
 

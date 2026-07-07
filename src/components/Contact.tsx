@@ -32,7 +32,7 @@ export default function Contact() {
               Find your way to <span className="gold-gradient">Sèves</span>
             </>
           }
-          description="Bayeh 76, Sin El Fil — where fire, water, and the Beirut sky meet."
+          description={`${RESTAURANT.streetAddress}, ${RESTAURANT.city} — where fire, water, and the Mediterranean sky meet.`}
         />
 
         <div className="mt-16 grid gap-10 lg:grid-cols-2 lg:gap-14">

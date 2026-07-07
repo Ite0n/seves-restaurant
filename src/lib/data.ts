@@ -2,11 +2,12 @@ export const RESTAURANT = {
   name: "Sèves",
   tagline: "Where every plate is a piece of art",
   descriptor: "Fine Dining · Garden Terrace · Bar",
-  city: "Beirut",
+  city: "Dbayeh",
   country: "Lebanon",
   phone: "+961 1 000 076",
   email: "reserve@seves.restaurant",
-  address: "Bayeh 76, Sin El Fil — Beirut, Lebanon",
+  streetAddress: "Kabalen el Achkar",
+  address: "Kabalen el Achkar, Dbayeh — Mount Lebanon, Lebanon",
   hours: [
     { d: "Tuesday — Thursday", h: "12:00 — 23:30" },
     { d: "Friday — Saturday", h: "12:00 — 01:00" },
@@ -18,8 +19,8 @@ export const RESTAURANT = {
     facebook: "https://facebook.com",
     tiktok: "https://tiktok.com",
   },
-  mapsUrl: "https://maps.google.com/?q=Sin+El+Fil+Beirut",
-  coordinates: { lat: 33.8886, lng: 35.5456 },
+  mapsUrl: "https://maps.app.goo.gl/jSBUZVytPz7Qz9qD6",
+  coordinates: { lat: 33.9495, lng: 35.5925 },
 } as const;
 
 export type Dish = {
@@ -205,7 +206,7 @@ export const FAQ: FaqItem[] = [
   },
   {
     q: "Is there valet parking?",
-    a: "Complimentary valet is available Tuesday through Sunday from 18:00. Street parking is also available on Bayeh.",
+    a: "Complimentary valet is available Tuesday through Sunday from 18:00. Street parking is also available on Kabalen el Achkar.",
   },
   {
     q: "Can I purchase a gift experience?",

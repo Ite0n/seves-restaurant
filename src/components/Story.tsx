@@ -15,7 +15,7 @@ const STATS = [
 ];
 
 const TIMELINE = [
-  { year: "2019", event: "Sèves opens on Bayeh — a garden terrace dream realised." },
+  { year: "2019", event: "Sèves opens in Dbayeh — a garden terrace dream realised." },
   { year: "2021", event: "The grand dining room unveils beneath cascading light." },
   { year: "2023", event: "Chef's table and private salon launch for intimate gatherings." },
   { year: "2025", event: "Recognised among the world's most exciting fine-dining rooms." },
