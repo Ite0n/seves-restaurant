@@ -59,10 +59,10 @@ export default function Gallery() {
               key={item.src}
               type="button"
               onClick={() => setActive(i)}
-              initial={{ opacity: 0, y: 28 }}
+              initial={{ opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.15 }}
-              transition={{ duration: 0.75, ease: EASE_LUXE, delay: i * 0.04 }}
+              viewport={{ once: true, amount: 0.05 }}
+              transition={{ duration: 0.5, ease: EASE_LUXE, delay: Math.min(i * 0.02, 0.2) }}
               className={`group relative touch-manipulation overflow-hidden rounded-sm ring-1 ring-inset ring-gold/12 transition-[box-shadow,ring-color] duration-700 active:scale-[0.99] hover:ring-gold/35 hover:shadow-[0_24px_60px_-28px_rgba(201,169,106,0.45)] ${item.span}`}
               aria-label={`View: ${item.alt}`}
               data-cursor="hover"
@@ -72,7 +72,8 @@ export default function Gallery() {
                 alt={item.alt}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
-                loading="lazy"
+                priority={i < 3}
+                loading={i < 8 ? "eager" : "lazy"}
                 quality={72}
                 className="object-cover transition-transform duration-[6s] ease-linear group-hover:scale-[1.08] ken-burns"
               />

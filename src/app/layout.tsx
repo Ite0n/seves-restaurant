@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Cormorant_Garamond, Cinzel, Jost } from "next/font/google";
 import { FAQ, RESTAURANT } from "@/lib/data";
+import ScrollRestorationInit from "@/components/ScrollRestorationInit";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -46,7 +48,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Sèves" }],
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "fr_FR",
     url: SITE_URL,
     siteName: RESTAURANT.name,
     title: `${RESTAURANT.name} — ${RESTAURANT.tagline}`,
@@ -79,9 +81,8 @@ export const metadata: Metadata = {
   alternates: {
     canonical: SITE_URL,
     languages: {
-      en: SITE_URL,
-      fr: `${SITE_URL}?lang=fr`,
-      ar: `${SITE_URL}?lang=ar`,
+      fr: SITE_URL,
+      en: `${SITE_URL}?lang=en`,
     },
   },
 };
@@ -141,7 +142,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html
-      lang="en"
+      lang="fr"
       className={`${cormorant.variable} ${cinzel.variable} ${jost.variable}`}
     >
       <head>
@@ -153,13 +154,11 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-ink-900 text-cream antialiased">
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "history.scrollRestoration='manual';window.scrollTo(0,0);",
-          }}
-        />
-        <script
+        <ScrollRestorationInit />
+        <Script
+          id="schema-json-ld"
           type="application/ld+json"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}

@@ -9,11 +9,9 @@ import MagneticButton from "./ui/MagneticButton";
 import SeasonalBadge from "./ui/SeasonalBadge";
 import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
+import { HERO_POSTER, HERO_VIDEO } from "@/lib/critical-assets";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
-
-const HERO_VIDEO = "/video/hero.mp4";
-const HERO_POSTER = "/images/hero-terrace-firewater.png";
 
 function prefersReducedMotion() {
   if (typeof window === "undefined") return true;
@@ -29,9 +27,14 @@ function canPlayHeroVideo() {
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useVideo, setUseVideo] = useState(canPlayHeroVideo);
+  const [useVideo, setUseVideo] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
   const [showDust, setShowDust] = useState(false);
   const { t } = useLocale();
+
+  useEffect(() => {
+    setUseVideo(canPlayHeroVideo());
+  }, []);
 
   useEffect(() => {
     if (prefersReducedMotion()) return;
@@ -78,31 +81,33 @@ export default function Hero() {
       className="relative h-[100svh] w-full overflow-hidden bg-ink-900 grain"
     >
       <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
-        {useVideo ? (
+        <Image
+          src={HERO_POSTER}
+          alt="Sèves garden terrace at blue hour with fire bowls and water features"
+          fill
+          priority
+          quality={85}
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+        {useVideo && (
           <video
             ref={videoRef}
             autoPlay
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             poster={HERO_POSTER}
             aria-hidden="true"
-            className="absolute inset-0 h-full w-full object-cover object-center"
+            onCanPlay={() => setVideoReady(true)}
+            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+              videoReady ? "opacity-100" : "opacity-0"
+            }`}
             onError={() => setUseVideo(false)}
           >
             <source src={HERO_VIDEO} type="video/mp4" />
           </video>
-        ) : (
-          <Image
-            src={HERO_POSTER}
-            alt="Sèves garden terrace at blue hour with fire bowls and water features"
-            fill
-            priority
-            quality={85}
-            sizes="100vw"
-            className="object-cover object-center"
-          />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-ink-900/70" />
@@ -122,7 +127,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: EASE_LUXE, delay: 0.4 }}
+          transition={{ duration: 0.7, ease: EASE_LUXE, delay: 0.12 }}
           className="mb-6"
         >
           <SeasonalBadge />
@@ -131,7 +136,7 @@ export default function Hero() {
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: EASE_LUXE, delay: 0.5 }}
+          transition={{ duration: 0.7, ease: EASE_LUXE, delay: 0.18 }}
           className="mb-6 text-[0.7rem] uppercase tracking-luxe text-gold/90"
         >
           {RESTAURANT.descriptor} · {RESTAURANT.city}
@@ -144,9 +149,9 @@ export default function Hero() {
               initial={{ y: "120%", opacity: 0, rotateX: 40 }}
               animate={{ y: "0%", opacity: 1, rotateX: 0 }}
               transition={{
-                duration: 1.3,
+                duration: 0.85,
                 ease: EASE_LUXE,
-                delay: 0.6 + i * 0.09,
+                delay: 0.22 + i * 0.035,
               }}
               className="inline-block gold-shimmer"
               style={{ perspective: 800 }}
@@ -161,13 +166,13 @@ export default function Hero() {
           style={{ width: lineWidth }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.8 }}
+          transition={{ delay: 0.45, duration: 0.6 }}
         />
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: EASE_LUXE, delay: 1.2 }}
+          transition={{ duration: 0.7, ease: EASE_LUXE, delay: 0.5 }}
           className="mt-5 max-w-md font-serif text-xl font-light italic text-cream/85 md:text-2xl"
         >
           {RESTAURANT.tagline}
@@ -176,7 +181,7 @@ export default function Hero() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: EASE_LUXE, delay: 1.45 }}
+          transition={{ duration: 0.7, ease: EASE_LUXE, delay: 0.62 }}
           className="mt-12 flex flex-col items-center gap-4 sm:flex-row"
         >
           <MagneticButton
@@ -199,7 +204,7 @@ export default function Hero() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 2, duration: 1 }}
+        transition={{ delay: 0.75, duration: 0.6 }}
         style={{ opacity }}
         className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
       >

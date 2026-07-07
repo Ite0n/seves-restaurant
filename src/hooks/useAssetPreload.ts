@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { HERO_POSTER } from "@/lib/critical-assets";
 
-const HERO_POSTER = "/images/hero-terrace-firewater.png";
+const MIN_DISPLAY_MS = 280;
 
 export function useAssetPreload() {
   const [progress, setProgress] = useState(0);
@@ -10,30 +11,28 @@ export function useAssetPreload() {
 
   useEffect(() => {
     let cancelled = false;
+    const started = performance.now();
+
+    const finish = () => {
+      if (cancelled) return;
+      const elapsed = performance.now() - started;
+      const wait = Math.max(0, MIN_DISPLAY_MS - elapsed);
+      setProgress(100);
+      setTimeout(() => {
+        if (!cancelled) setReady(true);
+      }, wait);
+    };
 
     const img = new Image();
-    img.onload = () => {
-      if (cancelled) return;
-      setProgress(100);
-      setTimeout(() => setReady(true), 200);
-    };
-    img.onerror = () => {
-      if (cancelled) return;
-      setProgress(100);
-      setReady(true);
-    };
-
-    const tick = setInterval(() => {
-      setProgress((p) => (p >= 90 ? p : p + 12));
-    }, 120);
-
+    img.onload = finish;
+    img.onerror = finish;
     img.src = HERO_POSTER;
 
-    const fallback = setTimeout(() => {
-      if (cancelled) return;
-      setProgress(100);
-      setReady(true);
-    }, 2500);
+    const tick = setInterval(() => {
+      setProgress((p) => (p >= 92 ? p : p + 15));
+    }, 80);
+
+    const fallback = setTimeout(finish, 1800);
 
     return () => {
       cancelled = true;

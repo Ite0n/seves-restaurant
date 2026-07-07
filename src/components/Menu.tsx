@@ -104,19 +104,19 @@ export default function Menu() {
           <AnimatePresence mode="wait">
             <motion.div
               key={cat.id}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -16 }}
-              transition={{ duration: 0.6, ease: EASE_LUXE }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.35, ease: EASE_LUXE }}
             >
               <p className="mb-8 font-serif text-xl italic text-gold/80">{cat.note}</p>
               <ul className="flex flex-col">
                 {cat.items.map((item, i) => (
                   <motion.li
                     key={item.id}
-                    initial={{ opacity: 0, x: -16 }}
+                    initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: i * 0.05, duration: 0.5, ease: EASE_LUXE }}
+                    transition={{ delay: i * 0.02, duration: 0.35, ease: EASE_LUXE }}
                     onMouseEnter={() => setActiveItem(item.id)}
                     onFocus={() => setActiveItem(item.id)}
                   >
@@ -135,6 +135,7 @@ export default function Menu() {
                           alt={item.name}
                           fill
                           sizes="64px"
+                          loading="eager"
                           className="object-cover"
                         />
                       </div>
@@ -169,10 +170,10 @@ export default function Menu() {
               <AnimatePresence mode="wait">
                 <motion.div
                   key={selected.id}
-                  initial={{ opacity: 0, scale: 1.06 }}
+                  initial={{ opacity: 0, scale: 1.03 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.7, ease: EASE_LUXE }}
+                  transition={{ duration: 0.4, ease: EASE_LUXE }}
                   className="absolute inset-0"
                 >
                   <Image
@@ -180,6 +181,8 @@ export default function Menu() {
                     alt={selected.name}
                     fill
                     sizes="40vw"
+                    priority
+                    loading="eager"
                     className="object-cover"
                     quality={85}
                   />

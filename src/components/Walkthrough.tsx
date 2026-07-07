@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -47,8 +47,12 @@ function canUseWebGLWalkthrough() {
 
 export default function Walkthrough() {
   const ref = useRef<HTMLDivElement>(null);
-  const [useWebGL, setUseWebGL] = useState(canUseWebGLWalkthrough);
+  const [useWebGL, setUseWebGL] = useState(false);
   const sceneNear = useNearViewport(ref, "600px 0px");
+
+  useEffect(() => {
+    setUseWebGL(canUseWebGLWalkthrough());
+  }, []);
 
   useWalkthroughSnap(ref, useWebGL);
 

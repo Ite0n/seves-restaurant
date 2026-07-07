@@ -29,7 +29,7 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
         variants={maskReveal}
         initial="hidden"
         whileInView="show"
-        viewport={{ once: true, amount: 0.3 }}
+        viewport={{ once: true, amount: 0.12 }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className="relative aspect-[4/5] w-full overflow-hidden rounded-sm [direction:ltr]"
@@ -43,6 +43,8 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
             sizes="(max-width: 768px) 100vw, 50vw"
             className="object-cover"
             quality={80}
+            priority={index === 0}
+            loading={index < 2 ? "eager" : "lazy"}
           />
         </motion.div>
         <AnimatePresence>
