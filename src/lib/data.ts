@@ -98,7 +98,7 @@ export const GALLERY: GalleryItem[] = [
   {
     src: "/images/exterior-firewater-city.png",
     alt: "Terrace with fire bowls and water features",
-    span: "col-span-1 row-span-2 md:col-span-4 md:row-span-2",
+    span: "col-span-1 row-span-1 md:col-span-4 md:row-span-2",
   },
   {
     src: "/images/exterior-terrace-night.png",

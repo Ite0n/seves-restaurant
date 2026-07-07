@@ -36,7 +36,7 @@ export default function Gallery() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.15 }}
               transition={{ duration: 0.75, ease: EASE_LUXE, delay: i * 0.04 }}
-              className={`group relative overflow-hidden rounded-sm ring-1 ring-inset ring-gold/12 transition-[box-shadow,ring-color] duration-700 hover:ring-gold/35 hover:shadow-[0_24px_60px_-28px_rgba(201,169,106,0.45)] ${item.span}`}
+              className={`group relative touch-manipulation overflow-hidden rounded-sm ring-1 ring-inset ring-gold/12 transition-[box-shadow,ring-color] duration-700 active:scale-[0.99] hover:ring-gold/35 hover:shadow-[0_24px_60px_-28px_rgba(201,169,106,0.45)] ${item.span}`}
               aria-label={`View: ${item.alt}`}
             >
               <Image

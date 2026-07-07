@@ -4,7 +4,11 @@ import { useEffect } from "react";
 import Lenis from "lenis";
 
 function scrollTopInstant() {
-  window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
+function anchorOffset() {
+  return window.innerWidth < 1024 ? -88 : -10;
 }
 
 export default function SmoothScroll({
@@ -70,7 +74,7 @@ export default function SmoothScroll({
 
       const el = document.querySelector(id);
       if (el) {
-        lenis.scrollTo(el as HTMLElement, { offset: -10, duration: 1.6 });
+        lenis.scrollTo(el as HTMLElement, { offset: anchorOffset(), duration: 1.6 });
       }
     };
 

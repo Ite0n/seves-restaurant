@@ -44,7 +44,7 @@ export default function Contact() {
               loading="lazy"
               sizes="(max-width: 1024px) 100vw, 50vw"
               quality={78}
-              className="object-cover object-[center_35%] transition-transform duration-[1.4s] ease-luxe group-hover:scale-105"
+              className="object-cover object-[center_28%] transition-transform duration-[1.4s] ease-luxe group-hover:scale-105 md:object-[center_35%]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 via-ink-900/20 to-transparent" />
             <div className="img-frame absolute inset-0" />
