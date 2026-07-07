@@ -97,6 +97,8 @@ const jsonLd = [
     image: `${SITE_URL}/images/exterior-facade-sign.png`,
     acceptsReservations: true,
     hasMap: RESTAURANT.mapsUrl,
+    openingHours: "Mo-Su 12:00-00:00",
+    sameAs: [RESTAURANT.social.instagram],
     geo: {
       "@type": "GeoCoordinates",
       latitude: RESTAURANT.coordinates.lat,

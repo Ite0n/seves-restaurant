@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { EXPERIENCES } from "@/lib/data";
+import { EXPERIENCES, RESTAURANT } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
@@ -68,8 +68,8 @@ export default function Experiences() {
         <Reveal delay={0.15}>
           <p className="mt-14 text-center text-xs uppercase tracking-luxe text-cream/40">
             Enquiries via{" "}
-            <a href="mailto:reserve@seves.restaurant" className="text-gold hover:text-cream">
-              reserve@seves.restaurant
+            <a href={`mailto:${RESTAURANT.email}`} className="text-gold hover:text-cream">
+              {RESTAURANT.email}
             </a>
           </p>
         </Reveal>
