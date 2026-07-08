@@ -319,7 +319,7 @@ export const EVENTS: EventItem[] = [
     id: "guest-chef-august",
     date: "2026-08-22",
     title: "Guest Chef Series",
-    subtitle: "Chef Antoine R.",
+    subtitle: "Chef Michel B.",
     description: "A two-Michelin-star guest takes the pass for one night only — a collaborative menu with Michel Bacha.",
     image: "/images/team-chefs.webp",
     price: "$220 pp",

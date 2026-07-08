@@ -236,24 +236,23 @@ export function useGalleryScroll(
     if (mode === "mobile" || reduced) {
       const items = mobileItemRefs.current?.filter(Boolean) as HTMLElement[];
       if (items.length && mode === "mobile") {
-        items.forEach((item, i) => {
+        items.forEach((item) => {
           const image = item.querySelector("[data-gallery-parallax]");
           gsap.set(item, {
             opacity: 0,
-            y: 72,
-            clipPath: "inset(12% 8% 12% 8% round 2px)",
+            y: 80,
+            clipPath: "inset(10% 6% 10% 6% round 2px)",
           });
 
           const reveal = gsap.to(item, {
             opacity: 1,
             y: 0,
             clipPath: "inset(0% 0% 0% 0% round 2px)",
-            duration: 1.25,
-            delay: (i % 2) * 0.06,
+            duration: 1.2,
             ease: "power3.out",
             scrollTrigger: {
               trigger: item,
-              start: "top 90%",
+              start: "top 88%",
               toggleActions: "play none none none",
             },
           });
@@ -263,10 +262,10 @@ export function useGalleryScroll(
           });
 
           if (image) {
-            gsap.set(image, { scale: 1.22, yPercent: 10 });
+            gsap.set(image, { scale: 1.2, yPercent: 8 });
             const parallax = gsap.to(image, {
               scale: 1.02,
-              yPercent: -6,
+              yPercent: -5,
               ease: "none",
               scrollTrigger: {
                 trigger: item,
@@ -298,7 +297,7 @@ export function useGalleryScroll(
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${getScrollDistance() * 1.45}`,
+        end: () => `+=${getScrollDistance() * 1.35}`,
         pin: true,
         scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
@@ -316,58 +315,58 @@ export function useGalleryScroll(
     });
 
     const panels = track.querySelectorAll<HTMLElement>("[data-gallery-panel]");
-    panels.forEach((panel, i) => {
+    panels.forEach((panel) => {
       const image = panel.querySelector("[data-gallery-parallax]");
-      if (!image) return;
+      if (image) {
+        const parallax = gsap.fromTo(
+          image,
+          { yPercent: -12, scale: 1.24, xPercent: -3 },
+          {
+            yPercent: 8,
+            scale: 1.06,
+            xPercent: 3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: panel,
+              containerAnimation: tween,
+              start: "left right",
+              end: "right left",
+              scrub: true,
+            },
+          }
+        );
+        cleanups.push(() => {
+          parallax.scrollTrigger?.kill();
+          parallax.kill();
+        });
+      }
 
-      const parallax = gsap.fromTo(
-        image,
-        { xPercent: -8 - i * 0.4, scale: 1.2, rotate: -0.6 },
-        {
-          xPercent: 8 + i * 0.4,
-          scale: 1.05,
-          rotate: 0.6,
-          ease: "none",
-          scrollTrigger: {
-            trigger: panel,
-            containerAnimation: tween,
-            start: "left right",
-            end: "right left",
-            scrub: true,
-          },
-        }
-      );
-      cleanups.push(() => {
-        parallax.scrollTrigger?.kill();
-        parallax.kill();
-      });
-
-      const reveal = gsap.fromTo(
+      const focus = gsap.fromTo(
         panel,
         {
-          clipPath: "inset(14% 10% 14% 10% round 2px)",
-          opacity: 0.35,
-          scale: 0.9,
-          filter: "brightness(0.65) saturate(0.85)",
+          scale: 0.88,
+          opacity: 0.45,
+          filter: "brightness(0.7)",
+          clipPath: "inset(6% 4% 6% 4% round 2px)",
         },
         {
-          clipPath: "inset(0% 0% 0% 0% round 2px)",
-          opacity: 1,
           scale: 1,
-          filter: "brightness(1) saturate(1)",
+          opacity: 1,
+          filter: "brightness(1)",
+          clipPath: "inset(0% 0% 0% 0% round 2px)",
           ease: "power2.out",
           scrollTrigger: {
             trigger: panel,
             containerAnimation: tween,
-            start: "left 95%",
-            end: "left 35%",
-            scrub: 0.85,
+            start: "left 82%",
+            end: "left 38%",
+            scrub: 0.8,
           },
         }
       );
       cleanups.push(() => {
-        reveal.scrollTrigger?.kill();
-        reveal.kill();
+        focus.scrollTrigger?.kill();
+        focus.kill();
       });
     });
 

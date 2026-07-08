@@ -269,7 +269,7 @@ const fr: LocaleData = {
       id: "guest-chef-august",
       date: "2026-08-22",
       title: "Série Chef Invité",
-      subtitle: "Chef Antoine R.",
+      subtitle: "Chef Michel B.",
       description: "Un chef deux étoiles Michelin prend les fourneaux pour une nuit — un menu collaboratif avec Michel Bacha.",
       image: "/images/team-chefs.webp",
       price: "220 $ / pers.",

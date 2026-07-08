@@ -76,10 +76,16 @@ export default function Hero() {
     const video = videoRef.current;
     if (!mounted || !video || !useVideo || videoFailed) return;
 
-    const markReady = () => setVideoReady(true);
+    let cancelled = false;
 
-    const tryPlay = async () => {
+    const markReady = () => {
+      if (!cancelled) setVideoReady(true);
+    };
+
+    const playVideo = async () => {
+      if (cancelled || videoFailed) return;
       try {
+        video.muted = true;
         await video.play();
         markReady();
       } catch {
@@ -89,17 +95,38 @@ export default function Hero() {
       }
     };
 
+    const resumeIfNeeded = () => {
+      if (document.visibilityState === "visible") {
+        void playVideo();
+      }
+    };
+
+    const onPause = () => {
+      if (!cancelled && !video.ended && document.visibilityState === "visible") {
+        void playVideo();
+      }
+    };
+
+    const mediaEvents = ["loadeddata", "canplay", "canplaythrough", "playing"] as const;
+    mediaEvents.forEach((event) => video.addEventListener(event, markReady));
+    video.addEventListener("pause", onPause);
+    document.addEventListener("visibilitychange", resumeIfNeeded);
+    window.addEventListener("pageshow", resumeIfNeeded);
+    window.addEventListener("focus", resumeIfNeeded);
+
     if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       markReady();
     }
 
-    video.addEventListener("loadeddata", markReady);
-    video.addEventListener("canplay", markReady);
-    void tryPlay();
+    void playVideo();
 
     return () => {
-      video.removeEventListener("loadeddata", markReady);
-      video.removeEventListener("canplay", markReady);
+      cancelled = true;
+      mediaEvents.forEach((event) => video.removeEventListener(event, markReady));
+      video.removeEventListener("pause", onPause);
+      document.removeEventListener("visibilitychange", resumeIfNeeded);
+      window.removeEventListener("pageshow", resumeIfNeeded);
+      window.removeEventListener("focus", resumeIfNeeded);
     };
   }, [mounted, useVideo, videoFailed]);
 
@@ -122,7 +149,7 @@ export default function Hero() {
           className="object-cover object-center"
           onLoad={() => setPosterReady(true)}
         />
-        {mounted && useVideo && posterReady && !videoFailed && (
+        {mounted && useVideo && !videoFailed && (
           <video
             ref={videoRef}
             src={HERO_VIDEO}
@@ -130,8 +157,9 @@ export default function Hero() {
             muted
             loop
             playsInline
-            preload="metadata"
+            preload="auto"
             poster={HERO_POSTER}
+            disablePictureInPicture
             aria-hidden="true"
             className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
               videoReady ? "opacity-100" : "opacity-0"
