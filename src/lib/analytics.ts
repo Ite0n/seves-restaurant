@@ -1,3 +1,7 @@
+"use client";
+
+import { track as vercelTrack } from "@vercel/analytics";
+
 type EventName =
   | "reservation_submit"
   | "walkthrough_complete"
@@ -13,6 +17,12 @@ export function trackEvent(name: EventName, props?: Record<string, string>) {
   window.dispatchEvent(
     new CustomEvent("seves-analytics", { detail: { name, ...props } })
   );
+
+  try {
+    vercelTrack(name, props);
+  } catch {
+    /* analytics optional */
+  }
 
   if (process.env.NODE_ENV === "development") {
     console.info("[analytics]", name, props ?? "");

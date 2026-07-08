@@ -6,27 +6,70 @@ import { RESTAURANT } from "@/lib/data";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
 import { useLocale } from "@/context/LocaleContext";
+import type { EnquiryInput } from "@/lib/validations";
 
 type Props = {
-  experienceId: string;
-  experienceTitle: string;
+  source: EnquiryInput["source"];
+  sourceId: string;
+  sourceTitle: string;
   open: boolean;
   onClose: () => void;
 };
 
 export default function ExperienceEnquiryModal({
-  experienceId,
-  experienceTitle,
+  source,
+  sourceId,
+  sourceTitle,
   open,
   onClose,
 }: Props) {
   const { t } = useLocale();
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    trackEvent("experience_enquire_click", { type: experienceId });
-    setSent(true);
+    setError(null);
+    setSubmitting(true);
+
+    const form = new FormData(e.currentTarget);
+    const payload = {
+      source,
+      sourceId,
+      sourceTitle,
+      name: String(form.get("name") ?? ""),
+      email: String(form.get("email") ?? ""),
+      preferredDate: String(form.get("date") ?? "") || undefined,
+      message: String(form.get("message") ?? "") || undefined,
+    };
+
+    try {
+      const res = await fetch("/api/enquiries", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        setError(json.error ?? t("modal.error"));
+        return;
+      }
+      trackEvent("experience_enquire_click", { type: sourceId });
+      setSent(true);
+    } catch {
+      setError(t("modal.error"));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleClose = () => {
+    onClose();
+    window.setTimeout(() => {
+      setSent(false);
+      setError(null);
+    }, 400);
   };
 
   return (
@@ -37,10 +80,10 @@ export default function ExperienceEnquiryModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[70] flex items-center justify-center bg-ink-900/90 p-6 backdrop-blur-md"
-          onClick={onClose}
+          onClick={handleClose}
           role="dialog"
           aria-modal="true"
-          aria-label={`${t("modal.enquiry")}: ${experienceTitle}`}
+          aria-label={`${t("modal.enquiry")}: ${sourceTitle}`}
         >
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
@@ -52,7 +95,7 @@ export default function ExperienceEnquiryModal({
           >
             <button
               type="button"
-              onClick={onClose}
+              onClick={handleClose}
               className="absolute right-6 top-6 text-xs uppercase tracking-luxe text-cream/50 hover:text-gold"
             >
               {t("modal.close")}
@@ -63,7 +106,7 @@ export default function ExperienceEnquiryModal({
                 <span className="text-[0.6rem] uppercase tracking-luxe text-gold/80">
                   {t("modal.enquiry")}
                 </span>
-                <h3 className="mt-2 font-serif text-3xl text-cream">{experienceTitle}</h3>
+                <h3 className="mt-2 font-serif text-3xl text-cream">{sourceTitle}</h3>
                 <form onSubmit={handleSubmit} className="mt-8 space-y-5">
                   <input
                     required
@@ -89,11 +132,17 @@ export default function ExperienceEnquiryModal({
                     placeholder={t("modal.messagePlaceholder")}
                     className="w-full resize-none border-b border-cream/20 bg-transparent pb-3 text-cream outline-none focus:border-gold"
                   />
+                  {error && (
+                    <p className="text-xs text-ruby/90" role="alert">
+                      {error}
+                    </p>
+                  )}
                   <button
                     type="submit"
-                    className="w-full rounded-full bg-gold py-3.5 text-[0.65rem] uppercase tracking-luxe text-ink-900"
+                    disabled={submitting}
+                    className="w-full rounded-full bg-gold py-3.5 text-[0.65rem] uppercase tracking-luxe text-ink-900 disabled:opacity-60"
                   >
-                    {t("modal.send")}
+                    {submitting ? t("modal.sending") : t("modal.send")}
                   </button>
                 </form>
               </>

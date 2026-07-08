@@ -154,9 +154,17 @@ export default function Footer() {
           <p className="text-xs font-light text-cream/40">
             © {new Date().getFullYear()} {RESTAURANT.name}. {t("footer.rights")}
           </p>
-          <p className="text-xs font-light text-cream/40">
-            {RESTAURANT.city}, {RESTAURANT.country} · {t("footer.crafted")}
-          </p>
+          <div className="flex flex-col items-center gap-2 md:items-end">
+            <a
+              href="/privacy"
+              className="text-xs font-light text-cream/40 transition-colors hover:text-gold"
+            >
+              {t("footer.privacy")}
+            </a>
+            <p className="text-xs font-light text-cream/40">
+              {RESTAURANT.city}, {RESTAURANT.country} · {t("footer.crafted")}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

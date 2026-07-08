@@ -1,78 +1,81 @@
 # Sèves — Ultra-Premium Restaurant Experience
 
-A cinematic, Michelin-star-grade website for **Sèves** — *"where every plate is
-a piece of art."* Black canvas, warm gold accents, Apple-level motion, hero
-video, and a live in-browser 3D walkthrough built from the venue's photography.
+A cinematic fine-dining website for **Sèves** in Dbayeh, Lebanon — black canvas, gold accents,
+GSAP scroll storytelling, hero video, and Supabase-backed reservations & enquiries.
 
 ## Stack
 
 - **Next.js 16** (App Router, TypeScript)
-- **Tailwind CSS** — custom luxury design system
-- **Framer Motion** — reveals, parallax, page choreography
-- **GSAP ScrollTrigger** — walkthrough snap, tasting journey pin
-- **React Three Fiber + Three.js** — hero gold-dust field & 3D walkthrough
-- **Lenis** — buttery smooth scrolling
+- **Tailwind CSS** — luxury design system
+- **Framer Motion** + **GSAP ScrollTrigger** — cinematic motion
+- **React Three Fiber** — hero gold dust & 3D walkthrough (desktop)
+- **Lenis** — smooth scrolling
+- **Supabase** — reservations, enquiries, newsletter subscribers
+- **Vercel Analytics** — conversion tracking
 
 ## Getting started
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
-npm run build    # production build
-npm run start    # serve the production build
+cp .env.example .env.local   # add your Supabase keys
+npm run dev                  # http://localhost:3000
+npm run build
+npm run start
 ```
 
-## Sections
+## Supabase setup
 
-1. **Cinematic hero** — looped terrace video (desktop) + gold dust + seasonal badge
-2. **Press marquee** — logo-style accolades
-3. **3D walkthrough** — scroll-driven WebGL with GSAP snap points
-4. **Signature dishes** — ingredient reveal on hover
-5. **Interactive menu** — category tabs with synced imagery
-6. **Tasting journey** — pinned horizontal scroll through course chapters
-7. **Wine cellar** — sommelier picks and featured bottles
-8. **Chef & story** — brigade, philosophy, timeline
-9. **Experiences** — private dining with enquiry modals
-10. **Events calendar** — upcoming wine dinners and terrace evenings
-11. **Gallery** — masonry grid, Ken Burns, swipe lightbox
-12. **Testimonials** — auto-advancing carousel
-13. **Gift experiences** — voucher enquiries
-14. **Reservation** — live slot availability + WhatsApp fallback
-15. **FAQ, contact** — embedded map, hours
-16. **Footer** — newsletter signup
+1. Create a project at [supabase.com](https://supabase.com)
+2. Open **SQL Editor** and run [`supabase/schema.sql`](supabase/schema.sql)
+3. Copy **Project URL** and **service_role** key into `.env.local`:
 
-## Enhancements
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+```
 
-- **Hero video** at `public/video/hero.mp4`
-- **i18n** — EN / FR / AR toggle (navbar)
-- **Custom cursor**, **sound toggle**, **mobile reserve bar**
-- **Time-of-day theme** — Beirut evening/day tint
-- **API routes** — `/api/reservations`, `/api/availability`, `/api/newsletter`
-- **Analytics events** — `window` custom events for conversion tracking
+> The service role key is server-only — never expose it in client code.
 
-### Optional assets
+Without Supabase, reservations fall back to local file storage; enquiries require Supabase.
 
-- Walkthrough film: see [`public/video/README.md`](public/video/README.md)
-- Ambient audio: drop `ambient.mp3` in `public/audio/`
-
-### Environment variables
+## Optional integrations
 
 ```env
 RESEND_API_KEY=           # Email notifications
 RESERVATION_EMAIL=        # Maître d' inbox
 NEWSLETTER_EMAIL=         # Newsletter signups
+CALLMEBOT_API_KEY=        # Auto WhatsApp to restaurant
 ```
+
+## API routes
+
+| Route | Purpose |
+|-------|---------|
+| `POST /api/reservations` | Table reservation requests |
+| `GET /api/availability` | Live slot availability |
+| `POST /api/enquiries` | Experience, event & gift enquiries |
+| `POST /api/newsletter` | Newsletter signups |
+
+## Sections
+
+Hero · Walkthrough · Menu · Tasting Journey · Cellar · Chef · Experiences · Events · Gallery ·
+Reservations · FAQ · Contact · Gifts
+
+## i18n
+
+English and French — toggle in the navbar.
 
 ## Performance & SEO
 
-- 3D libraries code-split (`next/dynamic`, `ssr:false`)
-- `next/image` with responsive `sizes`, lazy loading
-- Hero video on desktop; still poster on mobile
-- `prefers-reduced-motion` respected throughout
-- JSON-LD Restaurant + FAQPage, Open Graph video, hreflang alternates
+- Code-split 3D and heavy sections
+- `next/image` with responsive sizes
+- Hero video on all devices (muted autoplay)
+- JSON-LD Restaurant + FAQPage
+- `/privacy` policy page
+- Vercel Analytics events on key conversions
 
 ## Customisation
 
-- Brand, menu, hours, copy → `src/lib/data.ts`
-- Translations → `src/lib/i18n.ts`
-- Motion variants → `src/lib/motion.ts`
+- Brand, menu, events → `src/lib/data.ts`
+- French copy → `src/lib/locale-data.ts`
+- UI strings → `src/lib/i18n.ts`

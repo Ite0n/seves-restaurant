@@ -1,10 +1,12 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import SectionHeading from "./ui/SectionHeading";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
 import MagneticButton from "./ui/MagneticButton";
+import ExperienceEnquiryModal from "./ExperienceEnquiryModal";
 import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
@@ -19,6 +21,7 @@ function formatDate(iso: string, locale: string) {
 
 export default function Events() {
   const { locale, t, data } = useLocale();
+  const [enquiry, setEnquiry] = useState<{ id: string; title: string } | null>(null);
 
   return (
     <section id="events" className="relative overflow-hidden bg-ink-800 section-pad">
@@ -66,17 +69,14 @@ export default function Events() {
                 <p className="mt-4 max-w-xl font-light leading-relaxed text-cream/55">
                   {event.description}
                 </p>
-                <div className="mt-6 flex flex-wrap items-center gap-4">
-                  {event.price && (
-                    <span className="font-serif text-xl text-gold">{event.price}</span>
-                  )}
+                <div className="mt-6">
                   <MagneticButton
-                    href="#reservation"
                     className="border border-gold/40 bg-transparent px-5 py-2.5 text-xs text-gold"
                     strength={0.2}
-                    onClick={() =>
-                      trackEvent("experience_enquire_click", { type: event.id })
-                    }
+                    onClick={() => {
+                      trackEvent("experience_enquire_click", { type: event.id });
+                      setEnquiry({ id: event.id, title: event.title });
+                    }}
                   >
                     {t("events.reserve")}
                   </MagneticButton>
@@ -86,6 +86,16 @@ export default function Events() {
           ))}
         </div>
       </div>
+
+      {enquiry && (
+        <ExperienceEnquiryModal
+          source="event"
+          sourceId={enquiry.id}
+          sourceTitle={enquiry.title}
+          open={!!enquiry}
+          onClose={() => setEnquiry(null)}
+        />
+      )}
     </section>
   );
 }

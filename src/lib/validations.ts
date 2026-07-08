@@ -19,3 +19,15 @@ export type ReservationInput = z.infer<ReturnType<typeof getReservationSchema>>;
 
 /** Server-side default schema (English messages). */
 export const reservationSchema = getReservationSchema("en");
+
+export const enquirySchema = z.object({
+  source: z.enum(["experience", "event", "gift"]),
+  sourceId: z.string().min(1),
+  sourceTitle: z.string().min(1),
+  name: z.string().min(2, "Please enter your name"),
+  email: z.string().email("Please enter a valid email"),
+  preferredDate: z.string().optional(),
+  message: z.string().max(1000).optional(),
+});
+
+export type EnquiryInput = z.infer<typeof enquirySchema>;

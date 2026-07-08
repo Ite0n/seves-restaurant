@@ -1,16 +1,18 @@
 "use client";
 
 import Image from "next/image";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { RESTAURANT } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
+import ExperienceEnquiryModal from "./ExperienceEnquiryModal";
 import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
 
 export default function GiftExperiences() {
   const { t, data } = useLocale();
+  const [enquiry, setEnquiry] = useState<{ id: string; title: string } | null>(null);
 
   return (
     <section id="gifts" className="relative overflow-hidden bg-ink-900 section-pad">
@@ -56,19 +58,32 @@ export default function GiftExperiences() {
                 </p>
                 <div className="mt-6 flex items-center justify-between">
                   <span className="font-serif text-2xl text-gold">{gift.price}</span>
-                  <a
-                    href={`mailto:${RESTAURANT.email}?subject=Gift%20certificate%20—%20${encodeURIComponent(gift.title)}`}
-                    onClick={() => trackEvent("gift_enquire", { type: gift.id })}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      trackEvent("gift_enquire", { type: gift.id });
+                      setEnquiry({ id: gift.id, title: gift.title });
+                    }}
                     className="text-[0.65rem] uppercase tracking-luxe text-gold hover:text-cream"
                   >
                     {t("gifts.enquire")}
-                  </a>
+                  </button>
                 </div>
               </div>
             </motion.article>
           ))}
         </div>
       </div>
+
+      {enquiry && (
+        <ExperienceEnquiryModal
+          source="gift"
+          sourceId={enquiry.id}
+          sourceTitle={enquiry.title}
+          open={!!enquiry}
+          onClose={() => setEnquiry(null)}
+        />
+      )}
     </section>
   );
 }

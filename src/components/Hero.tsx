@@ -114,6 +114,11 @@ export default function Hero() {
     window.addEventListener("pageshow", resumeIfNeeded);
     window.addEventListener("focus", resumeIfNeeded);
 
+    const playOnTouch = () => {
+      void playVideo();
+    };
+    window.addEventListener("touchstart", playOnTouch, { once: true, passive: true });
+
     if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
       markReady();
     }
@@ -127,6 +132,7 @@ export default function Hero() {
       document.removeEventListener("visibilitychange", resumeIfNeeded);
       window.removeEventListener("pageshow", resumeIfNeeded);
       window.removeEventListener("focus", resumeIfNeeded);
+      window.removeEventListener("touchstart", playOnTouch);
     };
   }, [mounted, useVideo, videoFailed]);
 

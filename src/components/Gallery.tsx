@@ -7,14 +7,14 @@ import SectionHeading from "./ui/SectionHeading";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
 import { useLocale } from "@/context/LocaleContext";
 import { useGalleryScroll } from "@/hooks/useGsapScroll";
-import { useIsDesktop } from "@/hooks/useIsDesktop";
+import { useCinematicScrollMode } from "@/hooks/useCinematicScrollMode";
 import { EASE_LUXE } from "@/lib/motion";
 
 const PANEL_WIDTHS = [
-  "w-[52vw] lg:w-[46vw]",
-  "w-[44vw] lg:w-[38vw]",
-  "w-[56vw] lg:w-[50vw]",
-  "w-[42vw] lg:w-[36vw]",
+  "w-[78vw] sm:w-[62vw] md:w-[52vw] lg:w-[46vw]",
+  "w-[72vw] sm:w-[56vw] md:w-[44vw] lg:w-[38vw]",
+  "w-[80vw] sm:w-[64vw] md:w-[56vw] lg:w-[50vw]",
+  "w-[70vw] sm:w-[54vw] md:w-[42vw] lg:w-[36vw]",
 ];
 
 export default function Gallery() {
@@ -27,14 +27,14 @@ export default function Gallery() {
   const progressRef = useRef<HTMLDivElement>(null);
   const mobileItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
-  const { mounted, isDesktop } = useIsDesktop();
+  const scrollMode = useCinematicScrollMode();
 
   useGalleryScroll(
     scrollContainerRef,
     trackRef,
     progressRef,
     mobileItemRefs,
-    mounted ? (isDesktop ? "desktop" : "mobile") : null
+    scrollMode
   );
 
   const next = useCallback(() => {
@@ -65,141 +65,133 @@ export default function Gallery() {
   const touchStartX = useRef(0);
 
   return (
-    <section
-      id="gallery"
-      className="relative overflow-hidden bg-ink-800"
-    >
+    <section id="gallery" className="relative overflow-hidden bg-ink-800">
       <SectionAtmosphere />
 
-      {/* Desktop — pinned horizontal cinematic scroll */}
-      {mounted && isDesktop && (
-      <div
-        ref={scrollContainerRef}
-        className="relative"
-      >
-        <div className="flex h-[100svh] flex-col justify-center px-6 py-14 lg:px-10">
-          <SectionHeading
-            label={t("gallery.label")}
-            title={
-              <>
-                {t("gallery.titlePrefix")}{" "}
-                <span className="gold-gradient">{t("gallery.titleHighlight")}</span>
-              </>
-            }
-            description={t("gallery.description")}
-          />
+      {scrollMode === "desktop" && (
+        <div ref={scrollContainerRef} className="relative">
+          <div className="flex h-[100svh] flex-col justify-center px-4 py-12 sm:px-6 sm:py-14 lg:px-10">
+            <SectionHeading
+              label={t("gallery.label")}
+              title={
+                <>
+                  {t("gallery.titlePrefix")}{" "}
+                  <span className="gold-gradient">{t("gallery.titleHighlight")}</span>
+                </>
+              }
+              description={t("gallery.description")}
+            />
 
-          <div className="relative mt-10 h-[52vh] min-h-[20rem] overflow-hidden">
-            <div
-              ref={trackRef}
-              className="flex h-[52vh] min-h-[20rem] items-stretch gap-5 pr-[18vw] will-change-transform lg:gap-7"
-            >
+            <div className="relative mt-8 h-[48vh] min-h-[16rem] overflow-hidden sm:mt-10 sm:h-[52vh] sm:min-h-[20rem]">
+              <div
+                ref={trackRef}
+                className="flex h-[48vh] min-h-[16rem] items-stretch gap-4 pr-[12vw] will-change-transform sm:h-[52vh] sm:min-h-[20rem] sm:gap-5 sm:pr-[18vw] lg:gap-7"
+              >
+                {gallery.map((item, i) => (
+                  <button
+                    key={item.src}
+                    type="button"
+                    data-gallery-panel
+                    onClick={() => setActive(i)}
+                    className={`group relative shrink-0 ${PANEL_WIDTHS[i % PANEL_WIDTHS.length]} h-[48vh] min-h-[16rem] overflow-hidden rounded-sm ring-1 ring-gold/15 transition-shadow duration-700 hover:ring-gold/40 hover:shadow-[0_40px_100px_-30px_rgba(201,169,106,0.35)] sm:h-[52vh] sm:min-h-[20rem]`}
+                    aria-label={`${t("gallery.view")}: ${item.alt}`}
+                    data-cursor="hover"
+                  >
+                    <div
+                      data-gallery-parallax
+                      className="cinematic-frame absolute inset-0 scale-110"
+                    >
+                      <CinematicImage
+                        src={item.src}
+                        alt={item.alt}
+                        fill
+                        sizes="(max-width: 640px) 78vw, (max-width: 1200px) 55vw, 46vw"
+                        loading="lazy"
+                        grade="vivid"
+                        className="object-cover"
+                      />
+                    </div>
+
+                    <div className="absolute inset-0 z-[4] bg-gradient-to-t from-ink-900/90 via-ink-900/15 to-ink-900/25" />
+                    <div className="absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+
+                    <span className="absolute left-4 top-4 z-[6] font-display text-[0.65rem] tracking-[0.28em] text-cream/40 transition-colors duration-500 group-hover:text-gold sm:left-5 sm:top-5 sm:text-[0.7rem] sm:tracking-[0.32em]">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+
+                    <div className="absolute inset-x-0 bottom-0 z-[6] p-5 sm:p-6 lg:p-8">
+                      <span className="block max-w-sm translate-y-3 text-left text-[0.6rem] uppercase tracking-wide2 text-cream/0 transition-all duration-700 group-hover:translate-y-0 group-hover:text-cream/90 sm:text-[0.65rem]">
+                        {item.alt}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-6 h-px w-full overflow-hidden bg-cream/10 sm:mt-8">
+              <div
+                ref={progressRef}
+                className="gallery-scroll-progress h-full w-full origin-left bg-gradient-to-r from-gold-600 via-gold-300 to-gold-100"
+                style={{ transform: "scaleX(0)" }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {scrollMode === "mobile" && (
+        <div className="section-pad">
+          <div className="relative mx-auto max-w-7xl px-6">
+            <SectionHeading
+              label={t("gallery.label")}
+              title={
+                <>
+                  {t("gallery.titlePrefix")}{" "}
+                  <span className="gold-gradient">{t("gallery.titleHighlight")}</span>
+                </>
+              }
+              description={t("gallery.description")}
+            />
+
+            <div className="mt-12 flex flex-col gap-4">
               {gallery.map((item, i) => (
                 <button
                   key={item.src}
                   type="button"
-                  data-gallery-panel
+                  ref={(el) => {
+                    mobileItemRefs.current[i] = el;
+                  }}
                   onClick={() => setActive(i)}
-                  className={`group relative shrink-0 ${PANEL_WIDTHS[i % PANEL_WIDTHS.length]} h-[52vh] min-h-[20rem] overflow-hidden rounded-sm ring-1 ring-gold/15 transition-shadow duration-700 hover:ring-gold/40 hover:shadow-[0_40px_100px_-30px_rgba(201,169,106,0.35)]`}
+                  className="group relative aspect-[4/5] w-full overflow-hidden rounded-sm ring-1 ring-gold/15"
                   aria-label={`${t("gallery.view")}: ${item.alt}`}
-                  data-cursor="hover"
                 >
                   <div
                     data-gallery-parallax
-                    className="cinematic-frame absolute inset-0 scale-110"
+                    className="cinematic-frame absolute inset-0 will-change-transform"
                   >
                     <CinematicImage
                       src={item.src}
                       alt={item.alt}
                       fill
-                      sizes="(max-width: 1200px) 55vw, 46vw"
+                      sizes="100vw"
                       loading="lazy"
                       grade="vivid"
                       className="object-cover"
                     />
                   </div>
-
-                  <div className="absolute inset-0 z-[4] bg-gradient-to-t from-ink-900/90 via-ink-900/15 to-ink-900/25" />
-                  <div className="absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-
-                  <span className="absolute left-5 top-5 z-[6] font-display text-[0.7rem] tracking-[0.32em] text-cream/40 transition-colors duration-500 group-hover:text-gold">
+                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 to-transparent" />
+                  <span className="absolute left-4 top-4 font-display text-[0.65rem] tracking-[0.28em] text-gold/70">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-
-                  <div className="absolute inset-x-0 bottom-0 z-[6] p-6 lg:p-8">
-                    <span className="block max-w-sm translate-y-3 text-left text-[0.65rem] uppercase tracking-wide2 text-cream/0 transition-all duration-700 group-hover:translate-y-0 group-hover:text-cream/90">
-                      {item.alt}
-                    </span>
-                  </div>
+                  <p className="absolute bottom-0 left-0 right-0 p-5 text-left text-xs uppercase tracking-wide2 text-cream/80">
+                    {item.alt}
+                  </p>
                 </button>
               ))}
             </div>
           </div>
-
-          <div className="mt-8 h-px w-full overflow-hidden bg-cream/10">
-            <div
-              ref={progressRef}
-              className="gallery-scroll-progress h-full w-full origin-left bg-gradient-to-r from-gold-600 via-gold-300 to-gold-100"
-              style={{ transform: "scaleX(0)" }}
-            />
-          </div>
         </div>
-      </div>
-      )}
-
-      {/* Mobile — vertical stack with scroll reveals */}
-      {mounted && !isDesktop && (
-      <div className="section-pad">
-        <div className="relative mx-auto max-w-7xl px-6">
-          <SectionHeading
-            label={t("gallery.label")}
-            title={
-              <>
-                {t("gallery.titlePrefix")}{" "}
-                <span className="gold-gradient">{t("gallery.titleHighlight")}</span>
-              </>
-            }
-            description={t("gallery.description")}
-          />
-
-          <div className="mt-12 flex flex-col gap-4">
-            {gallery.map((item, i) => (
-              <button
-                key={item.src}
-                type="button"
-                ref={(el) => {
-                  mobileItemRefs.current[i] = el;
-                }}
-                onClick={() => setActive(i)}
-                className="group relative aspect-[4/5] w-full overflow-hidden rounded-sm ring-1 ring-gold/15"
-                aria-label={`${t("gallery.view")}: ${item.alt}`}
-              >
-                <div
-                  data-gallery-parallax
-                  className="cinematic-frame absolute inset-0 will-change-transform"
-                >
-                  <CinematicImage
-                    src={item.src}
-                    alt={item.alt}
-                    fill
-                    sizes="100vw"
-                    loading="lazy"
-                    grade="vivid"
-                    className="object-cover"
-                  />
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 to-transparent" />
-                <span className="absolute left-4 top-4 font-display text-[0.65rem] tracking-[0.28em] text-gold/70">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <p className="absolute bottom-0 left-0 right-0 p-5 text-left text-xs uppercase tracking-wide2 text-cream/80">
-                  {item.alt}
-                </p>
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
       )}
 
       <AnimatePresence>

@@ -6,23 +6,19 @@ export type SlotAvailability = {
   remaining: number;
 };
 
-/** Deterministic pseudo-random availability per date+time (no DB required). */
-export function getAvailability(date: string): SlotAvailability[] {
-  const seed = date.split("-").reduce((a, b) => a + parseInt(b, 10), 0);
+const SLOT_CAPACITY = 8;
 
-  return TIME_SLOTS.map((time, i) => {
-    const hash = (seed * 31 + i * 17 + parseInt(time, 10)) % 100;
-    const remaining = hash < 15 ? 0 : hash < 35 ? 1 : hash < 60 ? 2 : 4;
-    return {
-      time,
-      available: remaining > 0,
-      remaining,
-    };
-  });
+/** Base slot capacity — remaining seats subtracted by real reservations in the API route. */
+export function getAvailability(date: string): SlotAvailability[] {
+  void date;
+  return TIME_SLOTS.map((time) => ({
+    time,
+    available: true,
+    remaining: SLOT_CAPACITY,
+  }));
 }
 
-export function isLimitedTonight(date: string): boolean {
-  const slots = getAvailability(date);
+export function isLimitedTonight(slots: SlotAvailability[]): boolean {
   const available = slots.filter((s) => s.available).length;
   return available <= 2;
 }

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getAvailability } from "@/lib/availability";
-import { getReservationsForDate } from "@/lib/reservations-store";
+import { getAvailability, isLimitedTonight } from "@/lib/availability";
+import { getReservationsForDate } from "@/lib/db/reservations";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
     };
   });
 
-  const limited = slots.filter((s) => s.available).length <= 2;
+  const limited = isLimitedTonight(slots);
 
   return NextResponse.json({ date, slots, limited });
 }

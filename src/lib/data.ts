@@ -161,8 +161,8 @@ export const TESTIMONIALS: Testimonial[] = [
   {
     quote:
       "Refined without pretension. The heritage chicken alone is worth the journey to Beirut.",
-    author: "Chef Antoine R.",
-    role: "Two-Michelin-star Chef",
+    author: "Chef Michel B.",
+    role: "Chef & Owner",
   },
 ];
 
@@ -302,7 +302,6 @@ export type EventItem = {
   subtitle: string;
   description: string;
   image: string;
-  price?: string;
 };
 
 export const EVENTS: EventItem[] = [
@@ -313,16 +312,14 @@ export const EVENTS: EventItem[] = [
     subtitle: "Six courses · Six pours",
     description: "A French-led tasting evening — each course paired with a rare vintage from our cellar, Old World and Levantine.",
     image: "/images/interior-winecart-dusk.webp",
-    price: "$165 pp",
   },
   {
     id: "guest-chef-august",
     date: "2026-08-22",
-    title: "Guest Chef Series",
+    title: "Chef's Table Evening",
     subtitle: "Chef Michel B.",
-    description: "A two-Michelin-star guest takes the pass for one night only — a collaborative menu with Michel Bacha.",
+    description: "An intimate evening at the pass with Michel Bacha — a bespoke menu composed around the season's finest produce.",
     image: "/images/team-chefs.webp",
-    price: "$220 pp",
   },
   {
     id: "terrace-blue-hour",
@@ -331,7 +328,6 @@ export const EVENTS: EventItem[] = [
     subtitle: "Fire & Water",
     description: "Golden-hour canapés, live fire cooking, and cocktails as the city lights awaken.",
     image: "/images/exterior-terrace-night.webp",
-    price: "$95 pp",
   },
 ];
 

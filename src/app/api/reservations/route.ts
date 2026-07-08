@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
-import { saveReservation } from "@/lib/reservations-store";
+import { saveReservation } from "@/lib/db/reservations";
 import { getAvailability } from "@/lib/availability";
 import {
   formatReservationWhatsAppMessage,

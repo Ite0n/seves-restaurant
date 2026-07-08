@@ -210,7 +210,7 @@ const fr: LocaleData = {
     { quote: "Une soirée chez Sèves, c'est du théâtre. La lumière, l'assiette, le silence entre les services — cela reste des jours entiers.", author: "L'Orient Gourmand", role: "Critique gastronomique" },
     { quote: "Chaque assiette est vraiment une œuvre d'art. La cuisine la plus sereinement confiante de la ville.", author: "Maya Haddad", role: "Rédactrice culinaire" },
     { quote: "La terrasse à l'heure bleue, le feu et l'eau de chaque côté — du pur cinéma. Service irréprochable.", author: "James Whitmore", role: "Travel & Leisure" },
-    { quote: "Raffiné sans prétention. Le poulet d'héritage seul vaut le voyage jusqu'à Beyrouth.", author: "Chef Antoine R.", role: "Chef deux étoiles Michelin" },
+    { quote: "Raffiné sans prétention. Le poulet d'héritage seul vaut le voyage jusqu'à Beyrouth.", author: "Chef Michel B.", role: "Chef & Propriétaire" },
   ],
   chef: {
     title: "Chef & Propriétaire",
@@ -263,16 +263,14 @@ const fr: LocaleData = {
       subtitle: "Six services · Six verres",
       description: "Une soirée d'accords à la française — chaque plat marié à un millésime rare de notre cave, Ancien Monde et Levant.",
       image: "/images/interior-winecart-dusk.webp",
-      price: "165 $ / pers.",
     },
     {
       id: "guest-chef-august",
       date: "2026-08-22",
-      title: "Série Chef Invité",
+      title: "Soirée Table du Chef",
       subtitle: "Chef Michel B.",
-      description: "Un chef deux étoiles Michelin prend les fourneaux pour une nuit — un menu collaboratif avec Michel Bacha.",
+      description: "Une soirée intime au pass avec Michel Bacha — un menu sur mesure autour des plus beaux produits de la saison.",
       image: "/images/team-chefs.webp",
-      price: "220 $ / pers.",
     },
     {
       id: "terrace-blue-hour",
@@ -281,7 +279,6 @@ const fr: LocaleData = {
       subtitle: "Feu & Eau",
       description: "Canapés à l'heure dorée, cuisine au feu vivant et cocktails tandis que les lumières de la ville s'éveillent.",
       image: "/images/exterior-terrace-night.webp",
-      price: "95 $ / pers.",
     },
   ],
   gifts: [
