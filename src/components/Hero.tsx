@@ -34,7 +34,8 @@ export default function Hero() {
 
   useEffect(() => {
     if (!mounted) return;
-    setAllowVideo(shouldLoadHeroVideo());
+    const id = window.setTimeout(() => setAllowVideo(shouldLoadHeroVideo()), 0);
+    return () => window.clearTimeout(id);
   }, [mounted]);
 
   useEffect(() => {
