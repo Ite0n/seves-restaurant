@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
-import { saveReservation } from "@/lib/reservations-store";
-import { getAvailability } from "@/lib/availability";
+import { saveReservationIfAvailable } from "@/lib/reservations-store";
 import {
   formatReservationWhatsAppMessage,
   sendWhatsAppNotification,
@@ -23,19 +22,10 @@ export async function POST(request: Request) {
       );
     }
 
-    const slots = getAvailability(data.date);
-    const slot = slots.find((s) => s.time === data.time);
-    if (slot && !slot.available) {
-      return NextResponse.json(
-        { error: "This time slot is no longer available" },
-        { status: 409 }
-      );
-    }
-
     const reference = `SV-${Date.now().toString(36).toUpperCase()}`;
     const whatsappMessage = formatReservationWhatsAppMessage(data, reference);
 
-    await saveReservation({
+    const reservation = {
       reference,
       name: data.name,
       phone: data.phone,
@@ -45,7 +35,23 @@ export async function POST(request: Request) {
       guests: data.guests,
       notes: data.notes,
       createdAt: new Date().toISOString(),
-    });
+    };
+
+    const saveResult = await saveReservationIfAvailable(reservation);
+
+    if (saveResult === "invalid-time") {
+      return NextResponse.json(
+        { error: "Please select an available reservation time" },
+        { status: 400 }
+      );
+    }
+
+    if (saveResult === "unavailable") {
+      return NextResponse.json(
+        { error: "This time slot is no longer available" },
+        { status: 409 }
+      );
+    }
 
     const whatsappSent = await sendWhatsAppNotification(whatsappMessage);
 

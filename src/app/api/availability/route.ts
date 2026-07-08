@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getAvailability } from "@/lib/availability";
+import { getAvailabilityWithReservations } from "@/lib/availability";
 import { getReservationsForDate } from "@/lib/reservations-store";
 
 export async function GET(request: Request) {
@@ -13,18 +13,8 @@ export async function GET(request: Request) {
     );
   }
 
-  const base = getAvailability(date);
   const booked = await getReservationsForDate(date);
-
-  const slots = base.map((slot) => {
-    const count = booked.filter((r) => r.time === slot.time).length;
-    const remaining = Math.max(0, slot.remaining - count);
-    return {
-      ...slot,
-      remaining,
-      available: remaining > 0,
-    };
-  });
+  const slots = getAvailabilityWithReservations(date, booked);
 
   const limited = slots.filter((s) => s.available).length <= 2;
 
