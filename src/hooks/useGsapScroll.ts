@@ -34,6 +34,9 @@ function refreshScrollOnImages(root: HTMLElement) {
   };
 }
 
+/** Soft cinematic scrub — photos feel deliberate, not jittery. */
+const SCRUB_LUXE = 1.05;
+
 export function useWalkthroughSnap(
   sectionRef: React.RefObject<HTMLElement | null>,
   enabled = true
@@ -65,37 +68,156 @@ export function useWalkthroughSnap(
 
 export function useTastingJourneyPin(
   containerRef: React.RefObject<HTMLElement | null>,
-  trackRef: React.RefObject<HTMLElement | null>
+  trackRef: React.RefObject<HTMLElement | null>,
+  progressRef?: React.RefObject<HTMLElement | null>,
+  cardRefs?: React.RefObject<(HTMLElement | null)[]>,
+  mode: "desktop" | "mobile" | null = "desktop"
 ) {
   useEffect(() => {
+    if (!mode) return;
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const cleanups: (() => void)[] = [];
+
+    if (mode === "mobile" || reduced) {
+      const cards =
+        (cardRefs?.current?.filter(Boolean) as HTMLElement[]) ??
+        Array.from(
+          containerRef.current?.querySelectorAll<HTMLElement>("[data-journey-card]") ?? []
+        );
+
+      if (cards.length && mode === "mobile") {
+        cards.forEach((card) => {
+          gsap.set(card, { opacity: 0, y: 64, scale: 0.96 });
+          const image = card.querySelector("[data-journey-parallax]");
+
+          const reveal = gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1.15,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 92%",
+              toggleActions: "play none none none",
+            },
+          });
+          cleanups.push(() => {
+            reveal.scrollTrigger?.kill();
+            reveal.kill();
+          });
+
+          if (image) {
+            gsap.set(image, { scale: 1.18, yPercent: 8 });
+            const parallax = gsap.to(image, {
+              scale: 1,
+              yPercent: -4,
+              ease: "none",
+              scrollTrigger: {
+                trigger: card,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: SCRUB_LUXE,
+              },
+            });
+            cleanups.push(() => {
+              parallax.scrollTrigger?.kill();
+              parallax.kill();
+            });
+          }
+        });
+      }
+      return () => cleanups.forEach((fn) => fn());
+    }
+
     const container = containerRef.current;
     const track = trackRef.current;
     if (!container || !track) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.innerWidth < 768;
-    if (reduced || mobile) return;
-
-    const scrollWidth = track.scrollWidth - container.offsetWidth;
+    const getScrollDistance = () =>
+      Math.max(track.scrollWidth - container.offsetWidth, 0);
 
     const tween = gsap.to(track, {
-      x: -scrollWidth,
+      x: () => -getScrollDistance(),
       ease: "none",
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${scrollWidth}`,
+        end: () => `+=${getScrollDistance() * 1.2}`,
         pin: true,
-        scrub: 1,
+        scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
+        onUpdate: (self) => {
+          if (progressRef?.current) {
+            progressRef.current.style.transform = `scaleX(${self.progress})`;
+          }
+        },
       },
     });
-
-    return () => {
+    cleanups.push(refreshScrollOnImages(track));
+    cleanups.push(() => {
       tween.scrollTrigger?.kill();
       tween.kill();
-    };
-  }, [containerRef, trackRef]);
+    });
+
+    const cards = track.querySelectorAll<HTMLElement>("[data-journey-card]");
+    cards.forEach((card, i) => {
+      const image = card.querySelector("[data-journey-parallax]");
+      if (image) {
+        const parallax = gsap.fromTo(
+          image,
+          { scale: 1.22, xPercent: -5 },
+          {
+            scale: 1.06,
+            xPercent: 5,
+            ease: "none",
+            scrollTrigger: {
+              trigger: card,
+              containerAnimation: tween,
+              start: "left right",
+              end: "right left",
+              scrub: true,
+            },
+          }
+        );
+        cleanups.push(() => {
+          parallax.scrollTrigger?.kill();
+          parallax.kill();
+        });
+      }
+
+      const reveal = gsap.fromTo(
+        card,
+        {
+          opacity: 0.4,
+          scale: 0.92,
+          filter: "brightness(0.72)",
+          rotateY: i % 2 === 0 ? -4 : 4,
+        },
+        {
+          opacity: 1,
+          scale: 1,
+          filter: "brightness(1)",
+          rotateY: 0,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: card,
+            containerAnimation: tween,
+            start: "left 88%",
+            end: "left 42%",
+            scrub: 0.7,
+          },
+        }
+      );
+      cleanups.push(() => {
+        reveal.scrollTrigger?.kill();
+        reveal.kill();
+      });
+    });
+
+    return () => cleanups.forEach((fn) => fn());
+  }, [containerRef, trackRef, progressRef, cardRefs, mode]);
 }
 
 export function useGalleryScroll(
@@ -114,25 +236,51 @@ export function useGalleryScroll(
     if (mode === "mobile" || reduced) {
       const items = mobileItemRefs.current?.filter(Boolean) as HTMLElement[];
       if (items.length && mode === "mobile") {
-        const batch = ScrollTrigger.batch(items, {
-          start: "top 90%",
-          onEnter: (els) => {
-            gsap.fromTo(
-              els,
-              { opacity: 0, y: 48, scale: 0.94 },
-              {
-                opacity: 1,
-                y: 0,
-                scale: 1,
-                duration: 1,
-                stagger: 0.1,
-                ease: "power3.out",
-              }
-            );
-          },
-          once: true,
+        items.forEach((item, i) => {
+          const image = item.querySelector("[data-gallery-parallax]");
+          gsap.set(item, {
+            opacity: 0,
+            y: 72,
+            clipPath: "inset(12% 8% 12% 8% round 2px)",
+          });
+
+          const reveal = gsap.to(item, {
+            opacity: 1,
+            y: 0,
+            clipPath: "inset(0% 0% 0% 0% round 2px)",
+            duration: 1.25,
+            delay: (i % 2) * 0.06,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: item,
+              start: "top 90%",
+              toggleActions: "play none none none",
+            },
+          });
+          cleanups.push(() => {
+            reveal.scrollTrigger?.kill();
+            reveal.kill();
+          });
+
+          if (image) {
+            gsap.set(image, { scale: 1.22, yPercent: 10 });
+            const parallax = gsap.to(image, {
+              scale: 1.02,
+              yPercent: -6,
+              ease: "none",
+              scrollTrigger: {
+                trigger: item,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: SCRUB_LUXE,
+              },
+            });
+            cleanups.push(() => {
+              parallax.scrollTrigger?.kill();
+              parallax.kill();
+            });
+          }
         });
-        cleanups.push(() => batch.forEach((st) => st.kill()));
       }
       return () => cleanups.forEach((fn) => fn());
     }
@@ -150,9 +298,9 @@ export function useGalleryScroll(
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${getScrollDistance() * 1.35}`,
+        end: () => `+=${getScrollDistance() * 1.45}`,
         pin: true,
-        scrub: 0.65,
+        scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           if (progressRef.current) {
@@ -174,10 +322,11 @@ export function useGalleryScroll(
 
       const parallax = gsap.fromTo(
         image,
-        { xPercent: -6 - i * 0.5, scale: 1.12 },
+        { xPercent: -8 - i * 0.4, scale: 1.2, rotate: -0.6 },
         {
-          xPercent: 6 + i * 0.5,
-          scale: 1.18,
+          xPercent: 8 + i * 0.4,
+          scale: 1.05,
+          rotate: 0.6,
           ease: "none",
           scrollTrigger: {
             trigger: panel,
@@ -195,17 +344,24 @@ export function useGalleryScroll(
 
       const reveal = gsap.fromTo(
         panel,
-        { clipPath: "inset(8% 6% 8% 6% round 2px)", opacity: 0.55 },
+        {
+          clipPath: "inset(14% 10% 14% 10% round 2px)",
+          opacity: 0.35,
+          scale: 0.9,
+          filter: "brightness(0.65) saturate(0.85)",
+        },
         {
           clipPath: "inset(0% 0% 0% 0% round 2px)",
           opacity: 1,
+          scale: 1,
+          filter: "brightness(1) saturate(1)",
           ease: "power2.out",
           scrollTrigger: {
             trigger: panel,
             containerAnimation: tween,
-            start: "left 92%",
-            end: "left 38%",
-            scrub: 0.5,
+            start: "left 95%",
+            end: "left 35%",
+            scrub: 0.85,
           },
         }
       );
@@ -235,24 +391,50 @@ export function useExperiencesScroll(
     if (mode === "mobile" || reduced) {
       const cards = cardRefs.current?.filter(Boolean) as HTMLElement[];
       if (cards.length && mode === "mobile") {
-        const batch = ScrollTrigger.batch(cards, {
-          start: "top 88%",
-          onEnter: (els) => {
-            gsap.fromTo(
-              els,
-              { opacity: 0, y: 56 },
-              {
-                opacity: 1,
-                y: 0,
-                duration: 1.1,
-                stagger: 0.14,
-                ease: "power3.out",
-              }
-            );
-          },
-          once: true,
+        cards.forEach((card) => {
+          const image = card.querySelector("[data-experience-parallax]");
+          gsap.set(card, {
+            opacity: 0,
+            y: 80,
+            clipPath: "inset(10% 6% 10% 6% round 2px)",
+          });
+
+          const reveal = gsap.to(card, {
+            opacity: 1,
+            y: 0,
+            clipPath: "inset(0% 0% 0% 0% round 2px)",
+            duration: 1.2,
+            ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start: "top 88%",
+              toggleActions: "play none none none",
+            },
+          });
+          cleanups.push(() => {
+            reveal.scrollTrigger?.kill();
+            reveal.kill();
+          });
+
+          if (image) {
+            gsap.set(image, { scale: 1.2, yPercent: 8 });
+            const parallax = gsap.to(image, {
+              scale: 1.02,
+              yPercent: -5,
+              ease: "none",
+              scrollTrigger: {
+                trigger: card,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: SCRUB_LUXE,
+              },
+            });
+            cleanups.push(() => {
+              parallax.scrollTrigger?.kill();
+              parallax.kill();
+            });
+          }
         });
-        cleanups.push(() => batch.forEach((st) => st.kill()));
       }
       return () => cleanups.forEach((fn) => fn());
     }
@@ -270,9 +452,9 @@ export function useExperiencesScroll(
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${getScrollDistance() * 1.25}`,
+        end: () => `+=${getScrollDistance() * 1.35}`,
         pin: true,
-        scrub: 0.7,
+        scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
           if (progressRef.current) {
@@ -293,10 +475,11 @@ export function useExperiencesScroll(
       if (image) {
         const parallax = gsap.fromTo(
           image,
-          { yPercent: -10, scale: 1.14 },
+          { yPercent: -12, scale: 1.24, xPercent: -3 },
           {
-            yPercent: 10,
-            scale: 1.2,
+            yPercent: 8,
+            scale: 1.06,
+            xPercent: 3,
             ease: "none",
             scrollTrigger: {
               trigger: card,
@@ -315,17 +498,24 @@ export function useExperiencesScroll(
 
       const focus = gsap.fromTo(
         card,
-        { scale: 0.9, opacity: 0.65 },
+        {
+          scale: 0.88,
+          opacity: 0.45,
+          filter: "brightness(0.7)",
+          clipPath: "inset(6% 4% 6% 4% round 2px)",
+        },
         {
           scale: 1,
           opacity: 1,
+          filter: "brightness(1)",
+          clipPath: "inset(0% 0% 0% 0% round 2px)",
           ease: "power2.out",
           scrollTrigger: {
             trigger: card,
             containerAnimation: tween,
-            start: "left 78%",
-            end: "left 42%",
-            scrub: 0.6,
+            start: "left 82%",
+            end: "left 38%",
+            scrub: 0.8,
           },
         }
       );

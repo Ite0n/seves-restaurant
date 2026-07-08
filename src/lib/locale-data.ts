@@ -259,9 +259,9 @@ const fr: LocaleData = {
     {
       id: "wine-dinner-july",
       date: "2026-07-18",
-      title: "Dîner Vins de la Bekaa",
+      title: "Soirée Au Cellier",
       subtitle: "Six services · Six verres",
-      description: "Une soirée dédiée aux vignerons libanais — chaque plat accordé à un millésime rare de notre cave.",
+      description: "Une soirée d'accords à la française — chaque plat marié à un millésime rare de notre cave, Ancien Monde et Levant.",
       image: "/images/interior-winecart-dusk.webp",
       price: "165 $ / pers.",
     },
@@ -295,7 +295,7 @@ const fr: LocaleData = {
     quote: "Notre cave est un dialogue entre l'Ancien Monde et le Levant — chaque bouteille choisie pour honorer l'assiette qui la précède.",
     sommelierTitle: "Chef Sommelier",
     featured: [
-      { name: "Château Musar", vintage: "2016", region: "Vallée de la Bekaa", note: "Assemblage libanais iconique — figue, cuir, épices.", price: "18" },
+      { name: "Château Musar", vintage: "2016", region: "Liban", note: "Assemblage libanais iconique — figue, cuir, épices.", price: "18" },
       { name: "Domaine des Tourelles", vintage: "2020", region: "Liban", note: "Élégance de cinsault aux herbes méditerranéennes.", price: "14" },
       { name: "Krug", vintage: "Grande Cuvée", region: "Champagne", note: "Célébration en verre — brioche et agrumes.", price: "45" },
       { name: "Gaja", vintage: "2019", region: "Barbaresco", note: "Finesse de nebbiolo — rose, goudron, tanins soyeux.", price: "38" },

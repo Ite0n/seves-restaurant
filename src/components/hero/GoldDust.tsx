@@ -16,7 +16,7 @@ function Particles({ count }: { count: number }) {
       positions[i * 3] = (Math.random() - 0.5) * 14;
       positions[i * 3 + 1] = (Math.random() - 0.5) * 9;
       positions[i * 3 + 2] = (Math.random() - 0.5) * 6;
-      speeds[i] = 0.08 + Math.random() * 0.22;
+      speeds[i] = 0.05 + Math.random() * 0.14;
     }
     return { positions, speeds };
   });
@@ -30,7 +30,7 @@ function Particles({ count }: { count: number }) {
     const arr = pts.geometry.attributes.position.array as Float32Array;
     for (let i = 0; i < count; i++) {
       arr[i * 3 + 1] += speeds[i] * delta;
-      arr[i * 3] += Math.sin(elapsed.current * 0.3 + i) * delta * 0.04;
+      arr[i * 3] += Math.sin(elapsed.current * 0.25 + i) * delta * 0.025;
       if (arr[i * 3 + 1] > 4.6) arr[i * 3 + 1] = -4.6;
     }
     pts.geometry.attributes.position.needsUpdate = true;
@@ -72,12 +72,12 @@ function Particles({ count }: { count: number }) {
         />
       </bufferGeometry>
       <pointsMaterial
-        size={0.07}
+        size={0.055}
         map={texture}
         transparent
         depthWrite={false}
         blending={THREE.AdditiveBlending}
-        opacity={0.85}
+        opacity={0.55}
         sizeAttenuation
       />
     </points>
@@ -87,12 +87,12 @@ function Particles({ count }: { count: number }) {
 export default function GoldDust() {
   const [{ count, dprMax }] = useState(() => {
     if (typeof window === "undefined") {
-      return { count: 500, dprMax: 1.4 };
+      return { count: 220, dprMax: 1.25 };
     }
     const w = window.innerWidth;
-    if (w < 768) return { count: 320, dprMax: 1.25 };
-    if (w < 1200) return { count: 550, dprMax: 1.45 };
-    return { count: 900, dprMax: 1.6 };
+    if (w < 768) return { count: 120, dprMax: 1.1 };
+    if (w < 1200) return { count: 220, dprMax: 1.25 };
+    return { count: 340, dprMax: 1.35 };
   });
 
   return (

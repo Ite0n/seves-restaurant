@@ -287,7 +287,7 @@ export const CELLAR = {
   title: "Head Sommelier",
   quote: "Our cellar is a dialogue between the Old World and the Levant — each bottle chosen to honour the plate before it.",
   featured: [
-    { name: "Château Musar", vintage: "2016", region: "Bekaa Valley", note: "Iconic Lebanese blend — fig, leather, spice.", price: "18" },
+    { name: "Château Musar", vintage: "2016", region: "Lebanon", note: "Iconic Lebanese blend — fig, leather, spice.", price: "18" },
     { name: "Domaine des Tourelles", vintage: "2020", region: "Lebanon", note: "Cinsault elegance with Mediterranean herbs.", price: "14" },
     { name: "Krug", vintage: "Grande Cuvée", region: "Champagne", note: "Celebration in a glass — brioche and citrus.", price: "45" },
     { name: "Gaja", vintage: "2019", region: "Barbaresco", note: "Nebbiolo finesse — rose, tar, silk tannins.", price: "38" },
@@ -309,9 +309,9 @@ export const EVENTS: EventItem[] = [
   {
     id: "wine-dinner-july",
     date: "2026-07-18",
-    title: "Bekaa Valley Wine Dinner",
+    title: "Soirée Au Cellier",
     subtitle: "Six courses · Six pours",
-    description: "An evening dedicated to Lebanese winemakers — each course paired with a rare vintage from our cellar.",
+    description: "A French-led tasting evening — each course paired with a rare vintage from our cellar, Old World and Levantine.",
     image: "/images/interior-winecart-dusk.webp",
     price: "$165 pp",
   },

@@ -174,7 +174,10 @@ export default function Gallery() {
                 className="group relative aspect-[4/5] w-full overflow-hidden rounded-sm ring-1 ring-gold/15"
                 aria-label={`${t("gallery.view")}: ${item.alt}`}
               >
-                <div className="cinematic-frame absolute inset-0">
+                <div
+                  data-gallery-parallax
+                  className="cinematic-frame absolute inset-0 will-change-transform"
+                >
                   <CinematicImage
                     src={item.src}
                     alt={item.alt}
@@ -182,7 +185,7 @@ export default function Gallery() {
                     sizes="100vw"
                     loading="lazy"
                     grade="vivid"
-                    className="object-cover transition-transform duration-[1.4s] ease-luxe group-active:scale-[1.03]"
+                    className="object-cover"
                   />
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 to-transparent" />
