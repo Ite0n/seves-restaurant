@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n";
+
 export type MenuItem = {
   id: string;
   name: string;
@@ -278,3 +280,65 @@ export const MENU: MenuCategory[] = [
 
 export const MENU_CLASSICS_NOTE =
   "Sauces: sabayon aromatisée · au poivre · crème moutarde et thym · vinaigre et ail — Garnitures: légumes du moment · purée · allumettes";
+
+const CATEGORY_NOTES_EN: Record<string, string> = {
+  entrees: "To begin the experience",
+  salades: "Freshness and balance",
+  classics: "Sauce and garnish of your choice",
+  principaux: "The heart of the plate",
+  sucres: "A graceful finale",
+};
+
+const MENU_CLASSICS_NOTE_EN =
+  "Sauces: aromatised sabayon · peppercorn · mustard-thyme cream · vinegar & garlic — Garnishes: seasonal vegetables · purée · allumettes";
+
+const ITEM_DESC_EN: Record<string, string> = {
+  "fraicheur-ete": "Melon carpaccio, stracciatella, smoked duck breast, raspberry vinaigrette, basil, pine nuts",
+  "tomate-seves": "Confit tomatoes, balsamic cream, garlic point, goat labneh, arak gel, sumac, thyme coulis, zaatar puff pastry",
+  "brioche-saumon": "Gravlax salmon, lime brioche, dill-caper cream, fine herbs, marinière sauce",
+  "pate-en-croute": "Duck, foie gras, muhammara mousseline, pomegranate molasses jelly, toasted hazelnuts, dried duck breast",
+  "tartare-boeuf": "Knife-cut beef, sun-dried tomatoes, capers, parsley, olive oil, egg cream, toasted focaccia, parmesan",
+  "crudo-du-jour": "Fish of the day, confit lemon emulsion, pickled chilli, radish, coriander espuma",
+  aubergine: "Charred aubergine, labneh, red endive, pickled onions, pomegranate, focaccia croutons, basil oil",
+  "amhiye-poulet": "Plancha chicken breast, thyme wheat, kale, colourful cherry tomatoes, chives, cream fatteh",
+  "chevre-chaud": "Caramelised goat cheese on puff pastry, red berries, pecans, rocket, balsamic sauce, red berry coulis",
+  "crevettes-mangue": "Prawns, mango, grilled peppers, fine herbs, tangy mango sauce",
+  "lentilles-saumon": "Smoked salmon, Mediterranean lentil mix, spinach and avocado, spring sauce",
+  coquelet: "Deboned half spring chicken, ember-cooked, garnish and sauce of your choice",
+  "filet-boeuf": "Australian MB3 fillet heart, butter or ember finish, garnish and sauce of your choice",
+  poisson: "Mediterranean sea bass en papillote, ember-cooked, virgin sauce and garnish of your choice",
+  "ballotine-mediterranee": "Poultry stuffed with mushrooms and sun-dried tomatoes, freekeh, sautéed vegetables, spinach-yellow wine velouté",
+  "supreme-rotie": "Thyme-sumac poultry supreme, chanklich vol-au-vent, carrot purée, poultry jus",
+  "burghul-banadoura": "Risotto-style burghul, tomato-pepper coulis, grilled lamb liver, mint oil, garlic yoghurt cream",
+  entrecote: "MB7 Wagyu entrecôte, potato mille-feuille, grilled broccoli, sabayon, vinegar-garlic sauce",
+  pithivier: "Slow-cooked lamb shoulder in puff pastry, quinoa pilaf, carrots and peas, Lebanese lamb jus",
+  saumon: "Melting salmon fillet, osmaliyeh, sautéed chard and herbaceous tarator",
+  "gambas-bisque": "Grilled prawns glazed with bisque, moghrabieh, coral tuile",
+  "risotto-siyadiyeh": "Meagre fillet, siyadiyeh-style risotto, fried onion espuma, cashew tuile",
+  "steak-choux-fleurs": "Ember-finished cauliflower, muhammara tahini, chimichurri, molasses",
+  "awarma-carbonara": "Awarma, egg yolk, 36-month parmesan, linguini, zaatar powder, parmesan tuile",
+  "panacotta-mangue": "Lemongrass infusion on a chocolate canvas",
+  "tarte-chocolat": "Breton shortcrust, molten chocolate, vanilla ice cream",
+  "nutty-tarte": "Almond sablé, nut cream, soft caramel, caramelised nuts, Madagascar vanilla chantilly",
+  "cheesecake-orientale": "Crispy osmaliyeh, Eastern-spiced cheesecake, crystallised pistachio, salted pistachio ice cream",
+  pavlova: "Rum-scented meringue, mixed berries, red berry coulis, mint sorbet",
+  "tiramisu-matcha": "Matcha mascarpone, soaked biscuit, cocoa",
+  "mille-feuille": "With vanilla pod",
+};
+
+
+export function getMenu(locale: Locale): MenuCategory[] {
+  return MENU.map((cat) => ({
+    ...cat,
+    label: locale === "fr" ? cat.labelFr : cat.label,
+    note: locale === "fr" ? cat.note : (CATEGORY_NOTES_EN[cat.id] ?? cat.note),
+    items: cat.items.map((item) => ({
+      ...item,
+      desc: locale === "fr" ? item.desc : (ITEM_DESC_EN[item.id] ?? item.desc),
+    })),
+  }));
+}
+
+export function getMenuClassicsNote(locale: Locale): string {
+  return locale === "fr" ? MENU_CLASSICS_NOTE : MENU_CLASSICS_NOTE_EN;
+}

@@ -3,26 +3,16 @@
 import Image from "next/image";
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { STORY_IMAGES } from "@/lib/data";
+import { STORY_IMAGES } from "@/lib/locale-data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
+import { useLocale } from "@/context/LocaleContext";
 import { fadeUp } from "@/lib/motion";
-
-const STATS = [
-  { value: "2024", label: "Established" },
-  { value: "14", label: "Course tasting" },
-  { value: "1", label: "Open kitchen" },
-];
-
-const TIMELINE = [
-  { id: "open", year: "2024", event: "Sèves opens in Dbayeh — a garden terrace dream realised." },
-  { id: "dining-room", year: "2025", event: "The grand dining room unveils beneath cascading light." },
-  { id: "chefs-table", year: "2025", event: "Chef's table and private salon launch for intimate gatherings." },
-  { id: "recognition", year: "2026", event: "Recognised among the world's most exciting fine-dining rooms." },
-];
 
 export default function Story() {
   const ref = useRef<HTMLDivElement>(null);
+  const { t, data } = useLocale();
+  const story = data.story;
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -80,29 +70,22 @@ export default function Story() {
           <div>
             <SectionHeading
               align="left"
-              label="Our Story"
+              label={t("story.label")}
               title={
                 <>
-                  The pursuit of the
+                  {t("story.titlePrefix")}
                   <br />
-                  <span className="gold-gradient">perfect plate</span>
+                  <span className="gold-gradient">{t("story.titleHighlight")}</span>
                 </>
               }
             />
-            <Reveal delay={0.1}>
-              <p className="mt-7 max-w-md font-light leading-relaxed text-cream/65">
-                Sèves — French for the lifeblood that rises through every living
-                thing — is our devotion to the seasons. Our brigade sources from
-                local growers and the morning catch, then composes each plate with
-                the patience of an atelier.
-              </p>
-            </Reveal>
-            <Reveal delay={0.18}>
-              <p className="mt-5 max-w-md font-light leading-relaxed text-cream/65">
-                Beneath cascading light, between fire and water, we set a stage
-                where dining becomes a quiet performance.
-              </p>
-            </Reveal>
+            {story.paragraphs.map((para, i) => (
+              <Reveal key={i} delay={0.1 + i * 0.08}>
+                <p className={`max-w-md font-light leading-relaxed text-cream/65 ${i === 0 ? "mt-7" : "mt-5"}`}>
+                  {para}
+                </p>
+              </Reveal>
+            ))}
 
             <motion.div
               variants={fadeUp}
@@ -111,7 +94,7 @@ export default function Story() {
               viewport={{ once: true, amount: 0.4 }}
               className="mt-12 grid grid-cols-3 gap-6 border-t border-cream/10 pt-8"
             >
-              {STATS.map((s) => (
+              {story.stats.map((s) => (
                 <div key={s.label}>
                   <div className="font-serif text-3xl text-gold md:text-4xl">{s.value}</div>
                   <div className="mt-1 text-[0.6rem] uppercase tracking-wide2 text-cream/45">
@@ -122,13 +105,13 @@ export default function Story() {
             </motion.div>
 
             <ul className="mt-14 space-y-6 border-t border-cream/10 pt-10">
-              {TIMELINE.map((t, i) => (
-                <Reveal key={t.id} delay={i * 0.08}>
+              {story.timeline.map((item, i) => (
+                <Reveal key={item.id} delay={i * 0.08}>
                   <li className="flex gap-6">
                     <span className="shrink-0 font-display text-sm tracking-wide2 text-gold">
-                      {t.year}
+                      {item.year}
                     </span>
-                    <p className="font-light text-cream/60">{t.event}</p>
+                    <p className="font-light text-cream/60">{item.event}</p>
                   </li>
                 </Reveal>
               ))}

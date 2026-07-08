@@ -2,27 +2,29 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { FAQ } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 
 export default function Faq() {
+  const { t, data } = useLocale();
   const [open, setOpen] = useState<number | null>(0);
 
   return (
     <section id="faq" className="relative bg-ink-800 section-pad">
       <div className="mx-auto max-w-content px-6">
         <SectionHeading
-          label="Questions"
+          label={t("faq.label")}
           title={
             <>
-              Before you <span className="gold-gradient">arrive</span>
+              {t("faq.titlePrefix")}{" "}
+              <span className="gold-gradient">{t("faq.titleHighlight")}</span>
             </>
           }
         />
 
         <ul className="mx-auto mt-16 max-w-2xl divide-y divide-cream/10">
-          {FAQ.map((item, i) => {
+          {data.faq.map((item, i) => {
             const isOpen = open === i;
             return (
               <li key={item.q}>

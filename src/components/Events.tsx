@@ -2,15 +2,15 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { EVENTS } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
 import MagneticButton from "./ui/MagneticButton";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
 
-function formatDate(iso: string) {
-  return new Date(iso + "T12:00:00").toLocaleDateString("en-GB", {
+function formatDate(iso: string, locale: string) {
+  return new Date(iso + "T12:00:00").toLocaleDateString(locale === "fr" ? "fr-FR" : "en-GB", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -18,33 +18,36 @@ function formatDate(iso: string) {
 }
 
 export default function Events() {
+  const { locale, t, data } = useLocale();
+
   return (
     <section id="events" className="relative overflow-hidden bg-ink-800 section-pad">
       <SectionAtmosphere />
 
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
-          label="Calendar"
+          label={t("events.label")}
           title={
             <>
-              Upcoming <span className="gold-gradient">evenings</span>
+              {t("events.titlePrefix")}{" "}
+              <span className="gold-gradient">{t("events.titleHighlight")}</span>
             </>
           }
-          description="Wine dinners, guest chefs, and terrace celebrations — each composed as a singular event."
+          description={t("events.description")}
         />
 
         <div className="mt-20 flex flex-col gap-6">
-          {EVENTS.map((event, i) => (
+          {data.events.map((event, i) => (
             <motion.article
               key={event.id}
               initial={{ opacity: 0, y: 28 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.2 }}
               transition={{ delay: i * 0.1, duration: 0.9, ease: EASE_LUXE }}
-              className="group grid overflow-hidden rounded-sm bg-ink-900/50 md:grid-cols-[280px_1fr]"
+              className="group grid overflow-hidden rounded-sm bg-ink-900/50 md:min-h-[220px] md:grid-cols-[280px_1fr]"
               data-cursor="hover"
             >
-              <div className="relative aspect-[16/10] md:aspect-auto md:min-h-[220px]">
+              <div className="relative aspect-[16/10] min-h-[220px] w-full overflow-hidden md:aspect-auto md:h-full">
                 <Image
                   src={event.image}
                   alt={event.title}
@@ -56,7 +59,7 @@ export default function Events() {
               </div>
               <div className="flex flex-col justify-center p-8 md:p-10">
                 <time className="text-[0.6rem] uppercase tracking-luxe text-gold/80">
-                  {formatDate(event.date)}
+                  {formatDate(event.date, locale)}
                 </time>
                 <h3 className="mt-2 font-serif text-3xl text-cream">{event.title}</h3>
                 <p className="mt-1 text-sm text-gold/70">{event.subtitle}</p>
@@ -75,7 +78,7 @@ export default function Events() {
                       trackEvent("experience_enquire_click", { type: event.id })
                     }
                   >
-                    Reserve
+                    {t("events.reserve")}
                   </MagneticButton>
                 </div>
               </div>

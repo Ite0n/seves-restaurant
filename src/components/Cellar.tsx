@@ -6,22 +6,27 @@ import { CELLAR } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE, fadeUp } from "@/lib/motion";
 
 export default function Cellar() {
+  const { t, data } = useLocale();
+  const cellar = data.cellar;
+
   return (
     <section id="cellar" className="relative overflow-hidden bg-ink-900 section-pad">
       <SectionAtmosphere />
 
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
-          label="La Cave"
+          label={t("cellar.label")}
           title={
             <>
-              The <span className="gold-gradient">cellar</span>
+              {t("cellar.titlePrefix")}{" "}
+              <span className="gold-gradient">{t("cellar.titleHighlight")}</span>
             </>
           }
-          description="A curated collection of Lebanese icons and Old World classics — poured with intention."
+          description={cellar.description}
         />
 
         <div className="mt-20 grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
@@ -39,17 +44,17 @@ export default function Cellar() {
               <div className="absolute inset-0 bg-gradient-to-t from-ink-900/80 to-transparent" />
               <blockquote className="absolute bottom-8 left-8 right-8">
                 <p className="font-serif text-xl italic leading-relaxed text-cream/90 md:text-2xl">
-                  &ldquo;{CELLAR.quote}&rdquo;
+                  &ldquo;{cellar.quote}&rdquo;
                 </p>
                 <footer className="mt-4 text-[0.65rem] uppercase tracking-luxe text-gold">
-                  {CELLAR.sommelier} · {CELLAR.title}
+                  {CELLAR.sommelier} · {cellar.sommelierTitle}
                 </footer>
               </blockquote>
             </div>
           </Reveal>
 
           <div className="space-y-0">
-            {CELLAR.featured.map((wine, i) => (
+            {cellar.featured.map((wine, i) => (
               <motion.div
                 key={wine.name}
                 variants={fadeUp}

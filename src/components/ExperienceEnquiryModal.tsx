@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { RESTAURANT } from "@/lib/data";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
+import { useLocale } from "@/context/LocaleContext";
 
 type Props = {
   experienceId: string;
@@ -19,6 +20,7 @@ export default function ExperienceEnquiryModal({
   open,
   onClose,
 }: Props) {
+  const { t } = useLocale();
   const [sent, setSent] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +40,7 @@ export default function ExperienceEnquiryModal({
           onClick={onClose}
           role="dialog"
           aria-modal="true"
-          aria-label={`Enquire about ${experienceTitle}`}
+          aria-label={`${t("modal.enquiry")}: ${experienceTitle}`}
         >
           <motion.div
             initial={{ opacity: 0, y: 20, scale: 0.98 }}
@@ -46,34 +48,34 @@ export default function ExperienceEnquiryModal({
             exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 0.5, ease: EASE_LUXE }}
             onClick={(e) => e.stopPropagation()}
-            className="glass-strong w-full max-w-md rounded-lg p-8"
+            className="glass-strong relative w-full max-w-md rounded-lg p-8"
           >
             <button
               type="button"
               onClick={onClose}
               className="absolute right-6 top-6 text-xs uppercase tracking-luxe text-cream/50 hover:text-gold"
             >
-              Close
+              {t("modal.close")}
             </button>
 
             {!sent ? (
               <>
                 <span className="text-[0.6rem] uppercase tracking-luxe text-gold/80">
-                  Enquiry
+                  {t("modal.enquiry")}
                 </span>
                 <h3 className="mt-2 font-serif text-3xl text-cream">{experienceTitle}</h3>
                 <form onSubmit={handleSubmit} className="mt-8 space-y-5">
                   <input
                     required
                     name="name"
-                    placeholder="Your name"
+                    placeholder={t("modal.namePlaceholder")}
                     className="w-full border-b border-cream/20 bg-transparent pb-3 text-cream outline-none focus:border-gold"
                   />
                   <input
                     required
                     name="email"
                     type="email"
-                    placeholder="Email"
+                    placeholder={t("modal.emailPlaceholder")}
                     className="w-full border-b border-cream/20 bg-transparent pb-3 text-cream outline-none focus:border-gold"
                   />
                   <input
@@ -84,22 +86,22 @@ export default function ExperienceEnquiryModal({
                   <textarea
                     name="message"
                     rows={3}
-                    placeholder="Tell us about your occasion…"
+                    placeholder={t("modal.messagePlaceholder")}
                     className="w-full resize-none border-b border-cream/20 bg-transparent pb-3 text-cream outline-none focus:border-gold"
                   />
                   <button
                     type="submit"
                     className="w-full rounded-full bg-gold py-3.5 text-[0.65rem] uppercase tracking-luxe text-ink-900"
                   >
-                    Send enquiry
+                    {t("modal.send")}
                   </button>
                 </form>
               </>
             ) : (
               <div className="py-6 text-center">
-                <h3 className="font-serif text-2xl text-cream">Thank you</h3>
+                <h3 className="font-serif text-2xl text-cream">{t("modal.thanks")}</h3>
                 <p className="mt-3 font-light text-cream/60">
-                  Our team will reach you at {RESTAURANT.email} shortly.
+                  {t("modal.thanksBody", { email: RESTAURANT.email })}
                 </p>
               </div>
             )}

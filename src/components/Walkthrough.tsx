@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -11,8 +11,10 @@ import {
 } from "framer-motion";
 import SectionLabel from "./ui/SectionLabel";
 import { useWalkthroughSnap } from "@/hooks/useGsapScroll";
+import { useIsDesktop, usePrefersReducedMotion } from "@/hooks/useIsDesktop";
 import { useNearViewport } from "@/hooks/useNearViewport";
 import { trackEvent } from "@/lib/analytics";
+import { useLocale } from "@/context/LocaleContext";
 
 const WALKTHROUGH_VIDEO: string | null = null;
 
@@ -30,29 +32,15 @@ const FALLBACK_STATIONS = [
   "/images/exterior-firewater-city.png",
 ];
 
-const CAPTIONS = [
-  { at: 0.04, title: "Arrival", text: "The illuminated façade welcomes you into Sèves." },
-  { at: 0.22, title: "The Grand Room", text: "Cascading light over marble and emerald velvet." },
-  { at: 0.4, title: "The Table", text: "Intimate banquettes framed by living botanicals." },
-  { at: 0.58, title: "The Detail", text: "A backlit feather — craft in every surface." },
-  { at: 0.74, title: "The Bar", text: "A curated cellar and barrel-aged signatures." },
-  { at: 0.9, title: "The Terrace", text: "Fire and water beneath the Dbayeh sky." },
-];
-
-function canUseWebGLWalkthrough() {
-  if (typeof window === "undefined") return false;
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  return !reduced && window.innerWidth >= 768;
-}
-
 export default function Walkthrough() {
   const ref = useRef<HTMLDivElement>(null);
-  const [useWebGL, setUseWebGL] = useState(false);
+  const { data } = useLocale();
+  const walkthrough = data.walkthrough;
+  const captions = walkthrough.captions;
+  const { mounted, isDesktop } = useIsDesktop();
+  const reducedMotion = usePrefersReducedMotion();
+  const useWebGL = mounted && isDesktop && !reducedMotion;
   const sceneNear = useNearViewport(ref, "600px 0px");
-
-  useEffect(() => {
-    setUseWebGL(canUseWebGLWalkthrough());
-  }, []);
 
   useWalkthroughSnap(ref, useWebGL);
 
@@ -69,8 +57,8 @@ export default function Walkthrough() {
   const [completed, setCompleted] = useState(false);
   useMotionValueEvent(progress, "change", (v) => {
     let idx = 0;
-    for (let i = 0; i < CAPTIONS.length; i++) {
-      if (v >= CAPTIONS[i].at) idx = i;
+    for (let i = 0; i < captions.length; i++) {
+      if (v >= captions[i].at) idx = i;
     }
     setActive(idx);
     if (v > 0.92 && !completed) {
@@ -112,16 +100,18 @@ export default function Walkthrough() {
           {useWebGL && sceneNear ? (
             <WalkthroughScene progress={progress} />
           ) : (
-            <Image
-              key={fallbackImage}
-              src={fallbackImage}
-              alt={CAPTIONS[active].title}
-              fill
-              sizes="100vw"
-              priority={false}
-              className="object-cover"
-              quality={75}
-            />
+            <div className="relative h-full w-full">
+              <Image
+                key={fallbackImage}
+                src={fallbackImage}
+                alt={captions[active].title}
+                fill
+                sizes="100vw"
+                priority={active === 0}
+                className="object-cover"
+                quality={85}
+              />
+            </div>
           )}
         </div>
 
@@ -131,12 +121,14 @@ export default function Walkthrough() {
           style={{ opacity: introOpacity }}
           className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center text-center"
         >
-          <SectionLabel>The Experience</SectionLabel>
+          <SectionLabel>{walkthrough.label}</SectionLabel>
           <h2 className="mt-6 max-w-3xl px-6 font-serif text-4xl leading-tight text-cream md:text-6xl">
-            A cinematic walk through <span className="gold-gradient">Sèves</span>
+            {walkthrough.title.split("Sèves")[0]}
+            <span className="gold-gradient">Sèves</span>
+            {walkthrough.title.split("Sèves")[1] ?? ""}
           </h2>
           <p className="mt-4 text-xs uppercase tracking-luxe text-cream/50">
-            Scroll to move through the space
+            {walkthrough.scrollHint}
           </p>
         </motion.div>
 
@@ -149,10 +141,10 @@ export default function Walkthrough() {
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
               <span className="text-[0.65rem] uppercase tracking-luxe text-gold/80">
-                0{active + 1} — {CAPTIONS[active].title}
+                0{active + 1} — {captions[active].title}
               </span>
               <p className="mt-2 max-w-md font-serif text-2xl text-cream/90 md:text-3xl">
-                {CAPTIONS[active].text}
+                {captions[active].text}
               </p>
             </motion.div>
           </div>

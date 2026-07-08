@@ -2,10 +2,12 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useAssetPreload } from "@/hooks/useAssetPreload";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 
 export default function Preloader() {
   const { progress, ready } = useAssetPreload();
+  const { t } = useLocale();
 
   return (
     <AnimatePresence>
@@ -25,7 +27,7 @@ export default function Preloader() {
               S<span className="italic">è</span>VES
             </div>
             <p className="mt-4 text-[0.6rem] uppercase tracking-luxe text-cream/40">
-              Beirut · Dbayeh · Fine Dining
+              {t("preloader.subtitle")}
             </p>
           </motion.div>
 

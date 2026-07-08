@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { AnimatePresence, motion } from "framer-motion";
@@ -12,7 +12,7 @@ import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
 import {
-  reservationSchema,
+  getReservationSchema,
   type ReservationInput,
 } from "@/lib/validations";
 import {
@@ -58,7 +58,8 @@ export default function Reservation() {
   const [limited, setLimited] = useState(false);
   const [whatsappNotified, setWhatsappNotified] = useState(false);
   const [whatsappAutoSent, setWhatsappAutoSent] = useState(false);
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
+  const reservationSchema = useMemo(() => getReservationSchema(locale), [locale]);
 
   const {
     register,
@@ -109,7 +110,7 @@ export default function Reservation() {
       });
       const json = await res.json();
       if (!res.ok) {
-        setApiError(json.error ?? "Request failed. Please try again.");
+        setApiError(json.error ?? t("reservation.error"));
         return;
       }
       trackEvent("reservation_submit", { guests: data.guests, time: data.time });
@@ -133,7 +134,7 @@ export default function Reservation() {
 
       setReference(json.reference);
     } catch {
-      setApiError("Unable to connect. Please call us directly.");
+      setApiError(t("reservation.offline"));
     }
   };
 
@@ -154,17 +155,19 @@ export default function Reservation() {
   ];
 
   return (
-    <section id="reservation" className="relative overflow-hidden bg-ink-900 section-pad">
+    <section id="reservation" className="relative min-h-[36rem] overflow-hidden bg-ink-900 section-pad">
       <div className="absolute inset-0">
-        <Image
-          src="/images/exterior-terrace-night.png"
-          alt=""
-          fill
-          loading="lazy"
-          sizes="100vw"
-          quality={65}
-          className="object-cover opacity-20"
-        />
+        <div className="relative size-full min-h-[36rem]">
+          <Image
+            src="/images/exterior-terrace-night.png"
+            alt=""
+            fill
+            loading="lazy"
+            sizes="100vw"
+            quality={65}
+            className="object-cover opacity-20"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-r from-ink-900 via-ink-900/90 to-ink-900/70" />
       </div>
 
@@ -172,15 +175,15 @@ export default function Reservation() {
         <div>
           <SectionHeading
             align="left"
-            label="Reservations"
+            label={t("reservation.label")}
             title={
               <>
-                Reserve your
+                {t("reservation.titlePrefix")}
                 <br />
-                <span className="gold-gradient">evening</span>
+                <span className="gold-gradient">{t("reservation.titleHighlight")}</span>
               </>
             }
-            description="We welcome bookings up to 60 days in advance. For parties larger than seven or private dining, kindly contact our maître d'."
+            description={t("reservation.description")}
           />
           {date && limited && (
             <p className="mt-4 text-sm text-gold/90">{t("reserve.limited")}</p>
@@ -190,7 +193,7 @@ export default function Reservation() {
           )}
           <Reveal delay={0.16}>
             <div className="mt-8 space-y-1 font-light text-cream/70">
-              <p className="text-gold">Reservations line</p>
+              <p className="text-gold">{t("reservation.line")}</p>
               <a
                 href={`tel:${RESTAURANT.phone.replace(/\s/g, "")}`}
                 className="font-serif text-2xl transition-colors hover:text-gold"
@@ -221,15 +224,15 @@ export default function Reservation() {
                   noValidate
                 >
                   <div className="grid gap-7 sm:grid-cols-2">
-                    <Field label="Full name" error={errors.name?.message}>
+                    <Field label={t("reservation.name")} error={errors.name?.message}>
                       <input
                         {...register("name")}
-                        placeholder="Your name"
+                        placeholder={t("reservation.namePlaceholder")}
                         className={inputCls}
                         autoComplete="name"
                       />
                     </Field>
-                    <Field label="Phone" error={errors.phone?.message}>
+                    <Field label={t("reservation.phone")} error={errors.phone?.message}>
                       <input
                         {...register("phone")}
                         type="tel"
@@ -241,14 +244,14 @@ export default function Reservation() {
                   </div>
 
                   <div className="grid gap-7 sm:grid-cols-2">
-                    <Field label="Date" error={errors.date?.message}>
+                    <Field label={t("reservation.date")} error={errors.date?.message}>
                       <input
                         {...register("date")}
                         type="date"
                         className={`${inputCls} [color-scheme:dark]`}
                       />
                     </Field>
-                    <Field label="Email" error={errors.email?.message}>
+                    <Field label={t("reservation.email")} error={errors.email?.message}>
                       <input
                         {...register("email")}
                         type="email"
@@ -259,7 +262,7 @@ export default function Reservation() {
                     </Field>
                   </div>
 
-                  <Field label="Time" error={errors.time?.message}>
+                  <Field label={t("reservation.time")} error={errors.time?.message}>
                     <div className="flex flex-wrap gap-2">
                       {times.map((slot) => (
                         <button
@@ -284,7 +287,7 @@ export default function Reservation() {
                     </div>
                   </Field>
 
-                  <Field label="Guests" error={errors.guests?.message}>
+                  <Field label={t("reservation.guests")} error={errors.guests?.message}>
                     <div className="flex flex-wrap gap-2">
                       {GUESTS.map((g) => (
                         <button
@@ -303,11 +306,11 @@ export default function Reservation() {
                     </div>
                   </Field>
 
-                  <Field label="Special requests">
+                  <Field label={t("reservation.notes")}>
                     <textarea
                       {...register("notes")}
                       rows={2}
-                      placeholder="Allergies, celebrations, seating preferences…"
+                      placeholder={t("reservation.notesPlaceholder")}
                       className={`${inputCls} resize-none`}
                     />
                   </Field>
@@ -324,7 +327,7 @@ export default function Reservation() {
                     className="group relative w-full overflow-hidden rounded-full bg-gold py-4 text-[0.7rem] uppercase tracking-luxe text-ink-900 disabled:opacity-60"
                   >
                     <span className="relative z-10">
-                      {isSubmitting ? "Sending…" : "Request Reservation"}
+                      {isSubmitting ? t("reservation.sending") : t("reservation.submit")}
                     </span>
                     <span className="absolute inset-0 -translate-x-full bg-cream transition-transform duration-700 ease-luxe group-hover:translate-x-0" />
                   </button>
@@ -349,22 +352,21 @@ export default function Reservation() {
                     </svg>
                   </div>
                   <h3 className="mt-6 font-serif text-3xl text-cream">
-                    Request received
+                    {t("reservation.successTitle")}
                   </h3>
                   <p className="mt-3 max-w-xs font-light text-cream/60">
-                    Thank you. Our maître d&apos; will confirm your table for{" "}
-                    {guests} at {time} shortly.
+                    {t("reservation.successBody", { guests, time })}
                   </p>
                   {whatsappNotified && (
                     <p className="mt-2 max-w-xs text-xs font-light text-cream/45">
                       {whatsappAutoSent
-                        ? "Your request was delivered to us on WhatsApp."
-                        : "WhatsApp opened with your reservation — tap send to confirm."}
+                        ? t("reservation.whatsappAuto")
+                        : t("reservation.whatsappManual")}
                     </p>
                   )}
                   {reference && (
                     <p className="mt-4 font-display text-xs tracking-luxe text-gold/70">
-                      Ref · {reference}
+                      {t("reservation.ref")} · {reference}
                     </p>
                   )}
                   <button
@@ -372,7 +374,7 @@ export default function Reservation() {
                     onClick={handleReset}
                     className="mt-8 text-xs uppercase tracking-luxe text-gold hover:text-cream"
                   >
-                    Make another request
+                    {t("reservation.another")}
                   </button>
                 </motion.div>
               )}

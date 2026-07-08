@@ -3,13 +3,17 @@
 import Image from "next/image";
 import { useEffect, useState, useCallback } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { TESTIMONIALS } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
+import { useLocale } from "@/context/LocaleContext";
+import { useIsLargeScreen } from "@/hooks/useIsDesktop";
 import { EASE_LUXE } from "@/lib/motion";
 
 export default function Testimonials() {
+  const { t, data } = useLocale();
+  const { mounted, isLarge } = useIsLargeScreen();
+  const testimonials = data.testimonials;
   const [index, setIndex] = useState(0);
-  const count = TESTIMONIALS.length;
+  const count = testimonials.length;
 
   const next = useCallback(() => setIndex((i) => (i + 1) % count), [count]);
   const prev = useCallback(() => setIndex((i) => (i - 1 + count) % count), [count]);
@@ -19,7 +23,7 @@ export default function Testimonials() {
     return () => clearInterval(id);
   }, [next]);
 
-  const t = TESTIMONIALS[index];
+  const item = testimonials[index];
 
   return (
     <section id="testimonials" className="relative overflow-hidden bg-ink-900 section-pad">
@@ -27,7 +31,8 @@ export default function Testimonials() {
 
       <div className="relative mx-auto max-w-content px-6">
         <div className="grid items-center gap-14 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
-          <div className="relative hidden aspect-[4/5] overflow-hidden rounded-sm lg:block">
+          {mounted && isLarge && (
+          <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
             <Image
               src="/images/interior-pendant-room.png"
               alt="Sèves dining room"
@@ -39,14 +44,16 @@ export default function Testimonials() {
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900/70 to-transparent" />
             <div className="img-frame absolute inset-0" />
           </div>
+          )}
 
           <div className="text-center lg:text-left">
             <SectionHeading
               align="left"
-              label="In Their Words"
+              label={t("testimonials.label")}
               title={
                 <>
-                  Voices from the <span className="gold-gradient">table</span>
+                  {t("testimonials.titlePrefix")}{" "}
+                  <span className="gold-gradient">{t("testimonials.titleHighlight")}</span>
                 </>
               }
             />
@@ -68,12 +75,12 @@ export default function Testimonials() {
                   className="relative"
                 >
                   <p className="font-serif text-2xl font-light italic leading-relaxed text-cream/90 md:text-3xl lg:text-4xl">
-                    {t.quote}
+                    {item.quote}
                   </p>
                   <footer className="mt-9">
-                    <div className="font-display tracking-wide2 text-gold">{t.author}</div>
+                    <div className="font-display tracking-wide2 text-gold">{item.author}</div>
                     <div className="mt-1 text-[0.65rem] uppercase tracking-wide2 text-cream/45">
-                      {t.role}
+                      {item.role}
                     </div>
                   </footer>
                 </motion.blockquote>
@@ -83,16 +90,16 @@ export default function Testimonials() {
             <div className="mt-10 flex items-center justify-center gap-4 lg:justify-start">
               <button
                 onClick={prev}
-                aria-label="Previous testimonial"
+                aria-label={t("testimonials.prev")}
                 className="rounded-full border border-cream/20 px-4 py-2 text-xs text-cream/60 transition-colors hover:border-gold hover:text-gold"
               >
-                Prev
+                {t("testimonials.prev")}
               </button>
               <div className="flex items-center gap-2">
-                {TESTIMONIALS.map((_, i) => (
+                {testimonials.map((_, i) => (
                   <button
                     key={i}
-                    aria-label={`Testimonial ${i + 1}`}
+                    aria-label={`${t("testimonials.label")} ${i + 1}`}
                     onClick={() => setIndex(i)}
                     className="h-2 rounded-full transition-all duration-500"
                     style={{
@@ -104,10 +111,10 @@ export default function Testimonials() {
               </div>
               <button
                 onClick={next}
-                aria-label="Next testimonial"
+                aria-label={t("testimonials.next")}
                 className="rounded-full border border-cream/20 px-4 py-2 text-xs text-cream/60 transition-colors hover:border-gold hover:text-gold"
               >
-                Next
+                {t("testimonials.next")}
               </button>
             </div>
           </div>

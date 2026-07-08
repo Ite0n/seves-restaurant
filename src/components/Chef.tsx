@@ -6,10 +6,13 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { CHEF } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
+import { useLocale } from "@/context/LocaleContext";
 import { fadeUp, slideInRight } from "@/lib/motion";
 
 export default function Chef() {
   const ref = useRef<HTMLDivElement>(null);
+  const { t, data } = useLocale();
+  const chef = data.chef;
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
@@ -26,13 +29,14 @@ export default function Chef() {
 
       <div className="mx-auto max-w-content px-6">
         <SectionHeading
-          label="The Chef"
+          label={t("chef.label")}
           title={
             <>
-              Meet <span className="gold-gradient">{CHEF.shortName}</span>
+              {t("chef.titlePrefix")}{" "}
+              <span className="gold-gradient">{CHEF.shortName}</span>
             </>
           }
-          description={CHEF.quote}
+          description={chef.quote}
         />
 
         <div className="mt-20 grid items-center gap-14 lg:grid-cols-2 lg:gap-20">
@@ -44,27 +48,29 @@ export default function Chef() {
             className="relative aspect-[4/5] overflow-hidden rounded-sm"
           >
             <motion.div style={{ y: imgY }} className="absolute inset-[-8%]">
-              <Image
-                src={CHEF.portrait}
-                alt={CHEF.name}
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover"
-                quality={80}
-              />
+              <div className="relative size-full">
+                <Image
+                  src={CHEF.portrait}
+                  alt={CHEF.name}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 50vw"
+                  className="object-cover"
+                  quality={80}
+                />
+              </div>
             </motion.div>
             <div className="absolute inset-0 bg-gradient-to-t from-ink-900/60 to-transparent" />
             <div className="img-frame absolute inset-0" />
             <div className="absolute bottom-6 left-6 right-6">
               <p className="font-display text-xs uppercase tracking-luxe text-gold/80">
-                {CHEF.title}
+                {chef.title}
               </p>
               <p className="mt-1 font-serif text-2xl text-cream">{CHEF.name}</p>
             </div>
           </motion.div>
 
           <div>
-            {CHEF.bio.map((para, i) => (
+            {chef.bio.map((para, i) => (
               <Reveal key={i} delay={i * 0.1}>
                 <p className="font-light leading-relaxed text-cream/65 first:mt-0 mt-6">
                   {para}
@@ -79,7 +85,7 @@ export default function Chef() {
               viewport={{ once: true, amount: 0.4 }}
               className="mt-12 space-y-4 border-t border-cream/10 pt-8"
             >
-              {CHEF.accolades.map((a) => (
+              {chef.accolades.map((a) => (
                 <li
                   key={a}
                   className="flex items-center gap-4 text-sm font-light text-cream/70"
@@ -92,7 +98,7 @@ export default function Chef() {
 
             <Reveal delay={0.2}>
               <a href="#reservation" className="btn-outline mt-10 inline-block">
-                Dine at the Chef&apos;s Table
+                {chef.cta}
               </a>
             </Reveal>
           </div>

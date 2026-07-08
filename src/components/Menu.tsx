@@ -3,18 +3,20 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
-import { MENU, MENU_CLASSICS_NOTE } from "@/lib/menu";
-import { TASTING_MENU } from "@/lib/data";
+import { getMenu, getMenuClassicsNote } from "@/lib/menu";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
 import MagneticButton from "./ui/MagneticButton";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
 
 export default function Menu() {
-  const [activeCat, setActiveCat] = useState(MENU[0].id);
-  const cat = MENU.find((c) => c.id === activeCat)!;
+  const { locale, t, data } = useLocale();
+  const menu = getMenu(locale);
+  const [activeCat, setActiveCat] = useState(menu[0].id);
+  const cat = menu.find((c) => c.id === activeCat)!;
   const [activeItem, setActiveItem] = useState(cat.items[0].id);
 
   const selected =
@@ -22,23 +24,27 @@ export default function Menu() {
 
   const handleCategoryChange = (id: string) => {
     setActiveCat(id);
-    const next = MENU.find((c) => c.id === id)!;
+    const next = menu.find((c) => c.id === id)!;
     setActiveItem(next.items[0].id);
     trackEvent("menu_category_switch", { category: id });
   };
+
+  const tasting = data.tastingMenu;
 
   return (
     <section id="menu" className="relative overflow-hidden bg-ink-800 section-pad">
       <SectionAtmosphere />
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
-          label="La Carte"
+          label={t("menu.label")}
           title={
             <>
-              Le menu <span className="gold-gradient">Sèves</span>
+              {t("menu.titlePrefix")}{" "}
+              <span className="gold-gradient">Sèves</span>
+              {t("menu.titleSuffix") ? ` ${t("menu.titleSuffix")}` : ""}
             </>
           }
-          description="Cuisine libanaise contemporaine et technique française — chaque assiette composée comme une œuvre."
+          description={t("menu.description")}
         />
 
         <Reveal delay={0.1}>
@@ -46,24 +52,24 @@ export default function Menu() {
             <div className="grid md:grid-cols-[1fr_auto]">
               <div className="p-8 md:p-10">
                 <span className="text-[0.6rem] uppercase tracking-luxe text-gold/80">
-                  Menu Dégustation
+                  {t("menu.tasting")}
                 </span>
                 <h3 className="mt-2 font-serif text-3xl text-cream md:text-4xl">
-                  {TASTING_MENU.title}
+                  {tasting.title}
                 </h3>
                 <p className="mt-4 font-light leading-relaxed text-cream/60">
-                  {TASTING_MENU.description}
+                  {tasting.description}
                 </p>
                 <div className="mt-6 flex flex-wrap gap-6 text-xs uppercase tracking-wide2 text-cream/45">
-                  <span>{TASTING_MENU.courses} services</span>
-                  <span>{TASTING_MENU.duration}</span>
-                  <span>Accord mets-vins · ${TASTING_MENU.winePairing}</span>
+                  <span>14 {t("menu.courses")}</span>
+                  <span>{tasting.duration}</span>
+                  <span>{tasting.winePairing}</span>
                 </div>
               </div>
               <div className="flex flex-col items-center justify-center border-t border-gold/10 bg-gold/5 p-8 md:border-l md:border-t-0">
-                <span className="font-serif text-5xl text-gold">${TASTING_MENU.price}</span>
+                <span className="font-serif text-5xl text-gold">$185</span>
                 <span className="mt-2 text-[0.6rem] uppercase tracking-luxe text-cream/40">
-                  par personne
+                  {t("menu.perPerson")}
                 </span>
                 <div className="mt-6">
                   <MagneticButton
@@ -71,7 +77,7 @@ export default function Menu() {
                     className="border border-gold/40 bg-transparent px-6 py-3 text-xs text-gold"
                     strength={0.2}
                   >
-                    Réserver
+                    {t("menu.reserve")}
                   </MagneticButton>
                 </div>
               </div>
@@ -80,7 +86,7 @@ export default function Menu() {
         </Reveal>
 
         <div className="mt-16 flex flex-wrap items-center justify-center gap-2 md:gap-3">
-          {MENU.map((c) => (
+          {menu.map((c) => (
             <button
               key={c.id}
               onClick={() => handleCategoryChange(c.id)}
@@ -95,7 +101,7 @@ export default function Menu() {
                   transition={{ duration: 0.5, ease: EASE_LUXE }}
                 />
               )}
-              <span className="relative z-10">{c.labelFr}</span>
+              <span className="relative z-10">{c.label}</span>
             </button>
           ))}
         </div>
@@ -159,7 +165,7 @@ export default function Menu() {
               </ul>
               {cat.id === "classics" && (
                 <p className="mt-6 text-xs font-light leading-relaxed text-cream/40">
-                  {MENU_CLASSICS_NOTE}
+                  {getMenuClassicsNote(locale)}
                 </p>
               )}
             </motion.div>
@@ -192,7 +198,7 @@ export default function Menu() {
               </AnimatePresence>
               <div className="absolute bottom-6 left-6 right-6 z-10">
                 <span className="text-[0.6rem] uppercase tracking-luxe text-gold/80">
-                  {cat.labelFr}
+                  {cat.label}
                 </span>
                 <p className="mt-1 font-serif text-2xl text-cream">{selected.name}</p>
                 <p className="mt-1 font-serif text-lg text-gold">${selected.price}</p>
@@ -203,7 +209,7 @@ export default function Menu() {
 
         <Reveal delay={0.1}>
           <p className="mt-16 text-center text-xs uppercase tracking-luxe text-cream/40">
-            Service 12% · Régimes alimentaires accueillis avec plaisir
+            {t("menu.serviceNote")}
           </p>
         </Reveal>
       </div>

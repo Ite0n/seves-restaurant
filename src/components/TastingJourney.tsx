@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import { useRef } from "react";
-import { TASTING_COURSES, TASTING_MENU } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import { useTastingJourneyPin } from "@/hooks/useGsapScroll";
+import { useLocale } from "@/context/LocaleContext";
 
 export default function TastingJourney() {
   const containerRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const { t, data } = useLocale();
   useTastingJourneyPin(containerRef, trackRef);
 
   return (
@@ -20,19 +21,19 @@ export default function TastingJourney() {
       <div className="flex h-[100svh] flex-col justify-center px-6 py-16">
         <SectionHeading
           align="left"
-          label="The Journey"
+          label={t("tasting.label")}
           title={
             <>
-              {TASTING_MENU.courses} courses ·{" "}
-              <span className="gold-gradient">{TASTING_MENU.title}</span>
+              {t("tasting.titlePrefix")}{" "}
+              <span className="gold-gradient">{data.tastingMenu.title}</span>
             </>
           }
-          description="Scroll through the choreographed progression — from garden to fire, cellar to sweet."
+          description={t("tasting.description")}
         />
 
         <div className="mt-12 overflow-hidden">
           <div ref={trackRef} className="flex w-max gap-6 pr-[20vw]">
-            {TASTING_COURSES.map((course, i) => (
+            {data.tastingCourses.map((course, i) => (
               <article
                 key={course.chapter}
                 className="relative w-[72vw] shrink-0 overflow-hidden rounded-sm bg-ink-800/80 md:w-[380px]"

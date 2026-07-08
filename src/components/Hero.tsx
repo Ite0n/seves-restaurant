@@ -8,36 +8,25 @@ import { RESTAURANT } from "@/lib/data";
 import MagneticButton from "./ui/MagneticButton";
 import SeasonalBadge from "./ui/SeasonalBadge";
 import { useLocale } from "@/context/LocaleContext";
+import { useIsDesktop, usePrefersReducedMotion } from "@/hooks/useIsDesktop";
 import { EASE_LUXE } from "@/lib/motion";
 import { HERO_POSTER, HERO_VIDEO } from "@/lib/critical-assets";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 
-function prefersReducedMotion() {
-  if (typeof window === "undefined") return true;
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-}
-
-function canPlayHeroVideo() {
-  if (typeof window === "undefined") return false;
-  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  return !reduced && window.innerWidth >= 768;
-}
-
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [useVideo, setUseVideo] = useState(false);
+  const { mounted, isDesktop } = useIsDesktop();
+  const reducedMotion = usePrefersReducedMotion();
+  const useVideo = mounted && isDesktop && !reducedMotion;
+  const [videoFailed, setVideoFailed] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [showDust, setShowDust] = useState(false);
   const { t } = useLocale();
 
   useEffect(() => {
-    setUseVideo(canPlayHeroVideo());
-  }, []);
-
-  useEffect(() => {
-    if (prefersReducedMotion()) return;
+    if (reducedMotion) return;
 
     let idle: ReturnType<typeof setTimeout> | number;
     if ("requestIdleCallback" in window) {
@@ -53,7 +42,7 @@ export default function Hero() {
         clearTimeout(idle as ReturnType<typeof setTimeout>);
       }
     };
-  }, []);
+  }, [reducedMotion]);
 
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -68,9 +57,34 @@ export default function Hero() {
 
   useEffect(() => {
     const video = videoRef.current;
-    if (!video || !useVideo) return;
-    video.play().catch(() => setUseVideo(false));
-  }, [useVideo]);
+    if (!mounted || !video || !useVideo || videoFailed) return;
+
+    const markReady = () => setVideoReady(true);
+
+    const tryPlay = async () => {
+      try {
+        await video.play();
+        markReady();
+      } catch {
+        if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+          markReady();
+        }
+      }
+    };
+
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      markReady();
+    }
+
+    video.addEventListener("loadeddata", markReady);
+    video.addEventListener("canplay", markReady);
+    void tryPlay();
+
+    return () => {
+      video.removeEventListener("loadeddata", markReady);
+      video.removeEventListener("canplay", markReady);
+    };
+  }, [mounted, useVideo, videoFailed]);
 
   const title = RESTAURANT.name;
 
@@ -90,9 +104,10 @@ export default function Hero() {
           sizes="100vw"
           className="object-cover object-center"
         />
-        {useVideo && (
+        {mounted && useVideo && !videoFailed && (
           <video
             ref={videoRef}
+            src={HERO_VIDEO}
             autoPlay
             muted
             loop
@@ -100,14 +115,11 @@ export default function Hero() {
             preload="auto"
             poster={HERO_POSTER}
             aria-hidden="true"
-            onCanPlay={() => setVideoReady(true)}
             className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
               videoReady ? "opacity-100" : "opacity-0"
             }`}
-            onError={() => setUseVideo(false)}
-          >
-            <source src={HERO_VIDEO} type="video/mp4" />
-          </video>
+            onError={() => setVideoFailed(true)}
+          />
         )}
         <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-ink-900/70" />
@@ -139,7 +151,7 @@ export default function Hero() {
           transition={{ duration: 0.7, ease: EASE_LUXE, delay: 0.18 }}
           className="mb-6 text-[0.7rem] uppercase tracking-luxe text-gold/90"
         >
-          {RESTAURANT.descriptor} · {RESTAURANT.city}
+          {t("restaurant.descriptor")} · {RESTAURANT.city}
         </motion.p>
 
         <h1 className="flex overflow-hidden font-display text-[22vw] leading-none md:text-[15vw] lg:text-[11rem]">
@@ -175,7 +187,7 @@ export default function Hero() {
           transition={{ duration: 0.7, ease: EASE_LUXE, delay: 0.5 }}
           className="mt-5 max-w-md font-serif text-xl font-light italic text-cream/85 md:text-2xl"
         >
-          {RESTAURANT.tagline}
+          {t("restaurant.tagline")}
         </motion.p>
 
         <motion.div

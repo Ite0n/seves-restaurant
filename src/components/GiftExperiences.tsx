@@ -2,30 +2,34 @@
 
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { GIFT_EXPERIENCES, RESTAURANT } from "@/lib/data";
+import { RESTAURANT } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import SectionAtmosphere from "./ui/SectionAtmosphere";
+import { useLocale } from "@/context/LocaleContext";
 import { EASE_LUXE } from "@/lib/motion";
 import { trackEvent } from "@/lib/analytics";
 
 export default function GiftExperiences() {
+  const { t, data } = useLocale();
+
   return (
     <section id="gifts" className="relative overflow-hidden bg-ink-900 section-pad">
       <SectionAtmosphere />
 
       <div className="relative mx-auto max-w-content px-6">
         <SectionHeading
-          label="Gift"
+          label={t("gifts.label")}
           title={
             <>
-              Give the <span className="gold-gradient">experience</span>
+              {t("gifts.titlePrefix")}{" "}
+              <span className="gold-gradient">{t("gifts.titleHighlight")}</span>
             </>
           }
-          description="Gift certificates for tasting menus, chef's table evenings, and private dining — valid twelve months."
+          description={t("gifts.description")}
         />
 
         <div className="mt-20 grid gap-6 md:grid-cols-3">
-          {GIFT_EXPERIENCES.map((gift, i) => (
+          {data.gifts.map((gift, i) => (
             <motion.article
               key={gift.id}
               initial={{ opacity: 0, y: 24 }}
@@ -57,7 +61,7 @@ export default function GiftExperiences() {
                     onClick={() => trackEvent("gift_enquire", { type: gift.id })}
                     className="text-[0.65rem] uppercase tracking-luxe text-gold hover:text-cream"
                   >
-                    Enquire
+                    {t("gifts.enquire")}
                   </a>
                 </div>
               </div>

@@ -3,12 +3,13 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { SIGNATURE_DISHES, type Dish } from "@/lib/data";
+import type { Dish } from "@/lib/data";
 import SectionHeading from "./ui/SectionHeading";
 import Reveal from "./ui/Reveal";
+import { useLocale } from "@/context/LocaleContext";
 import { fadeUp, maskReveal } from "@/lib/motion";
 
-function DishRow({ dish, index }: { dish: Dish; index: number }) {
+function DishRow({ dish, index, signatureLabel }: { dish: Dish; index: number; signatureLabel: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const [hovered, setHovered] = useState(false);
   const { scrollYProgress } = useScroll({
@@ -36,16 +37,18 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
         data-cursor="hover"
       >
         <motion.div style={{ y }} className="absolute inset-[-10%]">
-          <Image
-            src={dish.image}
-            alt={dish.name}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="object-cover"
-            quality={80}
-            priority={index === 0}
-            loading={index < 2 ? "eager" : "lazy"}
-          />
+          <div className="relative size-full">
+            <Image
+              src={dish.image}
+              alt={dish.name}
+              fill
+              sizes="(max-width: 768px) 100vw, 50vw"
+              className="object-cover"
+              quality={80}
+              priority={index === 0}
+              loading={index < 2 ? "eager" : "lazy"}
+            />
+          </div>
         </motion.div>
         <AnimatePresence>
           {hovered && (
@@ -81,7 +84,7 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
       <div className="[direction:ltr]">
         <Reveal variants={fadeUp}>
           <span className="font-display text-sm tracking-wide2 text-gold/70">
-            Signature · 0{index + 1}
+            {signatureLabel} · 0{index + 1}
           </span>
           <h3 className="mt-3 font-serif text-4xl text-cream md:text-5xl lg:text-6xl">
             {dish.name}
@@ -100,22 +103,30 @@ function DishRow({ dish, index }: { dish: Dish; index: number }) {
 }
 
 export default function Dishes() {
+  const { t, data } = useLocale();
+
   return (
     <section id="dishes" className="relative bg-ink-900 section-pad">
       <div className="mx-auto max-w-content px-6">
         <SectionHeading
-          label="Signature Plates"
+          label={t("dishes.label")}
           title={
             <>
-              Compositions from the <span className="gold-gradient">kitchen</span>
+              {t("dishes.titlePrefix")}{" "}
+              <span className="gold-gradient">{t("dishes.titleHighlight")}</span>
             </>
           }
-          description="Seasonal, sculptural, and quietly daring — each dish is plated to be admired before it is savoured."
+          description={t("dishes.description")}
         />
 
         <div className="mt-28 flex flex-col gap-28 md:gap-40">
-          {SIGNATURE_DISHES.map((dish, i) => (
-            <DishRow key={dish.name} dish={dish} index={i} />
+          {data.dishes.map((dish, i) => (
+            <DishRow
+              key={dish.name}
+              dish={dish}
+              index={i}
+              signatureLabel={t("dishes.signature")}
+            />
           ))}
         </div>
       </div>
