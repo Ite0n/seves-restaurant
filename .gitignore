@@ -29,4 +29,5 @@ yarn-error.log*
 next-env.d.ts
 
 /data/
+public/images/_originals/
 !.vscode/extensions.json

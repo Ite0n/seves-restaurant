@@ -56,7 +56,7 @@ export const metadata: Metadata = {
       "A cinematic fine-dining experience in Dbayeh, Lebanon. Where every plate is a piece of art.",
     images: [
       {
-        url: "/images/interior-dining-banquette.png",
+        url: "/images/interior-dining-banquette.webp",
         width: 1200,
         height: 1600,
         alt: "Sèves dining room",
@@ -75,7 +75,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: `${RESTAURANT.name} — ${RESTAURANT.tagline}`,
     description: "A cinematic fine-dining experience in Dbayeh, Lebanon.",
-    images: ["/images/interior-dining-banquette.png"],
+    images: ["/images/interior-dining-banquette.webp"],
   },
   robots: { index: true, follow: true },
   alternates: {
@@ -110,7 +110,7 @@ const jsonLd = [
       addressCountry: "LB",
     },
     url: SITE_URL,
-    image: `${SITE_URL}/images/exterior-facade-sign.png`,
+    image: `${SITE_URL}/images/exterior-facade-sign.webp`,
     hasMenu: `${SITE_URL}/#menu`,
     menu: `${SITE_URL}/#menu`,
     acceptsReservations: true,
@@ -145,14 +145,6 @@ export default function RootLayout({
       lang="fr"
       className={`${cormorant.variable} ${cinzel.variable} ${jost.variable}`}
     >
-      <head>
-        <link
-          rel="preload"
-          as="image"
-          href="/images/hero-terrace-firewater.png"
-          fetchPriority="high"
-        />
-      </head>
       <body className="bg-ink-900 text-cream antialiased">
         <ScrollRestorationInit />
         <Script

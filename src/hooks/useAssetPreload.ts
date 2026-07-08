@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { HERO_POSTER } from "@/lib/critical-assets";
+import { heroPosterUrl } from "@/lib/critical-assets";
 
 const MIN_DISPLAY_MS = 280;
 
@@ -26,7 +26,7 @@ export function useAssetPreload() {
     const img = new Image();
     img.onload = finish;
     img.onerror = finish;
-    img.src = HERO_POSTER;
+    img.src = heroPosterUrl();
 
     const tick = setInterval(() => {
       setProgress((p) => (p >= 92 ? p : p + 15));

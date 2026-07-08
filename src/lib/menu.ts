@@ -16,7 +16,7 @@ export type MenuCategory = {
   items: MenuItem[];
 };
 
-const img = (id: string) => `/images/menu/${id}.png`;
+const img = (id: string) => `/images/menu/${id}.webp`;
 
 export const MENU: MenuCategory[] = [
   {

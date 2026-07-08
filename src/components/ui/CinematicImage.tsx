@@ -14,7 +14,7 @@ const gradeClass: Record<NonNullable<CinematicImageProps["grade"]>, string> = {
 /** High-quality image with subtle cinematic color grading. */
 export default function CinematicImage({
   className = "",
-  quality = 92,
+  quality = 80,
   grade = "rich",
   alt,
   fill,

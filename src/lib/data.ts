@@ -16,7 +16,7 @@ export const RESTAURANT = {
   },
   mapsUrl: "https://maps.app.goo.gl/jSBUZVytPz7Qz9qD6",
   coordinates: { lat: 33.9495, lng: 35.5925 },
-  contactImage: "/images/exterior-terrace-night.png",
+  contactImage: "/images/exterior-terrace-night.webp",
 } as const;
 
 export type Dish = {
@@ -34,7 +34,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Caramelised fig tart crowned with torched goat-cheese mousse, wild berries, candied pecans and aged balsamic.",
     price: "32",
-    image: "/images/menu/nutty-tarte.png",
+    image: "/images/menu/nutty-tarte.webp",
     tag: "Signature",
     ingredients: ["Fig", "Goat cheese", "Wild berries", "Pecan", "Balsamic"],
   },
@@ -43,7 +43,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Corn-fed poularde, charred over embers, laid on a tarragon-herb risotto with rosé jus and confit tomatoes.",
     price: "44",
-    image: "/images/menu/supreme-rotie.png",
+    image: "/images/menu/supreme-rotie.webp",
     tag: "From the fire",
     ingredients: ["Corn-fed poularde", "Tarragon risotto", "Rosé jus", "Confit tomato"],
   },
@@ -52,7 +52,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Hand-shaved mortadella over whipped pistachio ricotta, lingonberries, lemon zest and lace tuile.",
     price: "28",
-    image: "/images/menu/pate-en-croute.png",
+    image: "/images/menu/pate-en-croute.webp",
     tag: "Cold cuts",
     ingredients: ["Mortadella", "Pistachio ricotta", "Lingonberry", "Lemon zest"],
   },
@@ -61,7 +61,7 @@ export const SIGNATURE_DISHES: Dish[] = [
     blurb:
       "Strained labneh, sourdough croutons, pickled radish, pomegranate and a whisper of Aleppo pepper oil.",
     price: "26",
-    image: "/images/menu/tomate-seves.png",
+    image: "/images/menu/tomate-seves.webp",
     tag: "Garden",
     ingredients: ["Labneh", "Sourdough", "Pickled radish", "Pomegranate", "Aleppo oil"],
   },
@@ -81,57 +81,57 @@ export type GalleryItem = { src: string; alt: string; span: string };
 
 export const GALLERY: GalleryItem[] = [
   {
-    src: "/images/interior-dining-banquette.png",
+    src: "/images/interior-dining-banquette.webp",
     alt: "Main dining room with emerald velvet banquettes",
     span: "col-span-2 row-span-2 md:col-span-6 md:row-span-2",
   },
   {
-    src: "/images/interior-feather-art.png",
+    src: "/images/interior-feather-art.webp",
     alt: "Backlit feather sculpture and bar",
     span: "col-span-1 row-span-1 md:col-span-3",
   },
   {
-    src: "/images/bar-bonsai-night.png",
+    src: "/images/bar-bonsai-night.webp",
     alt: "Bar with bonsai and curated spirits",
     span: "col-span-1 row-span-1 md:col-span-3",
   },
   {
-    src: "/images/interior-pendant-room.png",
+    src: "/images/interior-pendant-room.webp",
     alt: "Dining room beneath cascading pendant lights",
     span: "col-span-2 row-span-1 md:col-span-6",
   },
   {
-    src: "/images/exterior-firewater-city.png",
+    src: "/images/exterior-firewater-city.webp",
     alt: "Terrace with fire bowls and water features",
     span: "col-span-1 row-span-1 md:col-span-4 md:row-span-2",
   },
   {
-    src: "/images/exterior-terrace-night.png",
+    src: "/images/exterior-terrace-night.webp",
     alt: "Garden terrace at twilight",
     span: "col-span-1 row-span-1 md:col-span-4",
   },
   {
-    src: "/images/interior-banquette-windows.png",
+    src: "/images/interior-banquette-windows.webp",
     alt: "Window seating at dusk",
     span: "col-span-1 row-span-1 md:col-span-4",
   },
   {
-    src: "/images/interior-winecart-dusk.png",
+    src: "/images/interior-winecart-dusk.webp",
     alt: "Wine service at golden hour",
     span: "col-span-2 row-span-1 md:col-span-5",
   },
   {
-    src: "/images/interior-bonsai-window.png",
+    src: "/images/interior-bonsai-window.webp",
     alt: "Bonsai centerpiece on marble",
     span: "col-span-1 row-span-1 md:col-span-4",
   },
   {
-    src: "/images/bar-stools-night.png",
+    src: "/images/bar-stools-night.webp",
     alt: "The bar after dark",
     span: "col-span-1 row-span-1 md:col-span-3",
   },
   {
-    src: "/images/interior-banquette-garden.png",
+    src: "/images/interior-banquette-garden.webp",
     alt: "Garden-view banquette",
     span: "col-span-1 row-span-1 md:col-span-4",
   },
@@ -167,17 +167,17 @@ export const TESTIMONIALS: Testimonial[] = [
 ];
 
 export const STORY_IMAGES = {
-  team: "/images/team-chefs.png",
-  ambience: "/images/ambience-table-setting.png",
-  plateArt: "/images/brand-monument-sign.png",
+  team: "/images/team-chefs.webp",
+  ambience: "/images/ambience-table-setting.webp",
+  plateArt: "/images/brand-monument-sign.webp",
 } as const;
 
 export const CHEF = {
   name: "Chef Michel Bacha",
   shortName: "Michel",
   title: "Chef & Owner",
-  image: "/images/team-chefs.png",
-  portrait: "/images/interior-banquette-corner.png",
+  image: "/images/team-chefs.webp",
+  portrait: "/images/interior-banquette-corner.webp",
   quote:
     "We cook what the land offers that morning — nothing more, nothing less. Every plate should feel inevitable.",
   bio: [
@@ -208,7 +208,7 @@ export const EXPERIENCES: Experience[] = [
     subtitle: "The Garden Room",
     description:
       "An enclosed salon overlooking the terrace — bespoke menus, dedicated service, and a cellar selection curated for your occasion.",
-    image: "/images/interior-banquette-garden.png",
+    image: "/images/interior-banquette-garden.webp",
     capacity: "Up to 14 guests",
     from: "On request",
   },
@@ -218,7 +218,7 @@ export const EXPERIENCES: Experience[] = [
     subtitle: "At the Pass",
     description:
       "Six seats at the heart of the kitchen. Watch the brigade compose each course as the evening unfolds in real time.",
-    image: "/images/interior-dining-banquette.png",
+    image: "/images/interior-dining-banquette.webp",
     capacity: "6 guests",
     from: "$220 pp",
   },
@@ -228,7 +228,7 @@ export const EXPERIENCES: Experience[] = [
     subtitle: "Fire & Water",
     description:
       "Celebrate beneath the Beirut sky — fire bowls, reflecting pools, and a menu designed for golden-hour gatherings.",
-    image: "/images/venue-pool-night.png",
+    image: "/images/venue-pool-night.webp",
     capacity: "Up to 80 guests",
     from: "On request",
   },
@@ -274,12 +274,12 @@ export const NAV_LINKS = [
 ] as const;
 
 export const TASTING_COURSES = [
-  { chapter: "Garden", title: "Amuse & Garden", desc: "Tomate Sèves, labneh, herbs from the terrace beds.", image: "/images/menu/tomate-seves.png" },
-  { chapter: "Sea", title: "From the Coast", desc: "Crudo du jour, ceviche of Mediterranean catch.", image: "/images/menu/crudo-du-jour.png" },
-  { chapter: "Fire", title: "Embers & Smoke", desc: "Heritage roast, charred vegetables, jus reduction.", image: "/images/menu/supreme-rotie.png" },
-  { chapter: "Land", title: "Terroir", desc: "Wagyu entrecôte, lamb pithivier, burghul revisité.", image: "/images/menu/entrecote.png" },
-  { chapter: "Cellar", title: "Interlude", desc: "Sommelier pour — a bridge between savoury and sweet.", image: "/images/interior-winecart-dusk.png" },
-  { chapter: "Sweet", title: "Finale", desc: "Nutty tarte, pavlova, mille-feuille — grace notes.", image: "/images/menu/nutty-tarte.png" },
+  { chapter: "Garden", title: "Amuse & Garden", desc: "Tomate Sèves, labneh, herbs from the terrace beds.", image: "/images/menu/tomate-seves.webp" },
+  { chapter: "Sea", title: "From the Coast", desc: "Crudo du jour, ceviche of Mediterranean catch.", image: "/images/menu/crudo-du-jour.webp" },
+  { chapter: "Fire", title: "Embers & Smoke", desc: "Heritage roast, charred vegetables, jus reduction.", image: "/images/menu/supreme-rotie.webp" },
+  { chapter: "Land", title: "Terroir", desc: "Wagyu entrecôte, lamb pithivier, burghul revisité.", image: "/images/menu/entrecote.webp" },
+  { chapter: "Cellar", title: "Interlude", desc: "Sommelier pour — a bridge between savoury and sweet.", image: "/images/interior-winecart-dusk.webp" },
+  { chapter: "Sweet", title: "Finale", desc: "Nutty tarte, pavlova, mille-feuille — grace notes.", image: "/images/menu/nutty-tarte.webp" },
 ] as const;
 
 export const CELLAR = {
@@ -292,7 +292,7 @@ export const CELLAR = {
     { name: "Krug", vintage: "Grande Cuvée", region: "Champagne", note: "Celebration in a glass — brioche and citrus.", price: "45" },
     { name: "Gaja", vintage: "2019", region: "Barbaresco", note: "Nebbiolo finesse — rose, tar, silk tannins.", price: "38" },
   ],
-  image: "/images/interior-winecart-dusk.png",
+  image: "/images/interior-winecart-dusk.webp",
 } as const;
 
 export type EventItem = {
@@ -312,7 +312,7 @@ export const EVENTS: EventItem[] = [
     title: "Bekaa Valley Wine Dinner",
     subtitle: "Six courses · Six pours",
     description: "An evening dedicated to Lebanese winemakers — each course paired with a rare vintage from our cellar.",
-    image: "/images/interior-winecart-dusk.png",
+    image: "/images/interior-winecart-dusk.webp",
     price: "$165 pp",
   },
   {
@@ -321,7 +321,7 @@ export const EVENTS: EventItem[] = [
     title: "Guest Chef Series",
     subtitle: "Chef Antoine R.",
     description: "A two-Michelin-star guest takes the pass for one night only — a collaborative menu with Michel Bacha.",
-    image: "/images/team-chefs.png",
+    image: "/images/team-chefs.webp",
     price: "$220 pp",
   },
   {
@@ -330,7 +330,7 @@ export const EVENTS: EventItem[] = [
     title: "Blue Hour on the Terrace",
     subtitle: "Fire & Water",
     description: "Golden-hour canapés, live fire cooking, and cocktails as the city lights awaken.",
-    image: "/images/exterior-terrace-night.png",
+    image: "/images/exterior-terrace-night.webp",
     price: "$95 pp",
   },
 ];
@@ -341,21 +341,21 @@ export const GIFT_EXPERIENCES = [
     title: "The Sèves Journey",
     description: "Gift certificate for our 14-course tasting menu — valid 12 months.",
     price: "$185",
-    image: "/images/brand-monument-sign.png",
+    image: "/images/brand-monument-sign.webp",
   },
   {
     id: "chefs-table-gift",
     title: "Chef's Table",
     description: "Six seats at the pass — an unforgettable evening for two.",
     price: "$440",
-    image: "/images/interior-dining-banquette.png",
+    image: "/images/interior-dining-banquette.webp",
   },
   {
     id: "private-dining-gift",
     title: "Private Dining",
     description: "The Garden Room — bespoke menu for up to 14 guests.",
     price: "On request",
-    image: "/images/interior-banquette-garden.png",
+    image: "/images/interior-banquette-garden.webp",
   },
 ] as const;
 

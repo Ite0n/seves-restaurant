@@ -113,8 +113,7 @@ export default function Gallery() {
                       alt={item.alt}
                       fill
                       sizes="(max-width: 1200px) 55vw, 46vw"
-                      priority={i < 4}
-                      loading={i < 6 ? "eager" : "lazy"}
+                      loading="lazy"
                       grade="vivid"
                       className="object-cover"
                     />
@@ -181,7 +180,7 @@ export default function Gallery() {
                     alt={item.alt}
                     fill
                     sizes="100vw"
-                    priority={i < 2}
+                    loading="lazy"
                     grade="vivid"
                     className="object-cover transition-transform duration-[1.4s] ease-luxe group-active:scale-[1.03]"
                   />
@@ -267,7 +266,7 @@ export default function Gallery() {
                 fill
                 sizes="(max-width: 768px) 100vw, 90vw"
                 grade="vivid"
-                quality={95}
+                quality={85}
                 className="object-contain"
               />
               <p className="absolute bottom-0 left-0 right-0 z-[5] bg-gradient-to-t from-ink-900/95 to-transparent p-6 text-center text-sm text-cream/80">

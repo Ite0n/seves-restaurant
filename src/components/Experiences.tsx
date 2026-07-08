@@ -69,8 +69,7 @@ export default function Experiences() {
                 ? "(max-width: 1280px) 86vw, 64vw"
                 : "100vw"
             }
-            priority={i === 0}
-            loading={i < 2 ? "eager" : "lazy"}
+            loading="lazy"
             grade="vivid"
             className="object-cover"
           />

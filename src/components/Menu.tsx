@@ -141,7 +141,8 @@ export default function Menu() {
                           alt={item.name}
                           fill
                           sizes="64px"
-                          loading="eager"
+                          loading="lazy"
+                          quality={72}
                           className="object-cover"
                         />
                       </div>
@@ -187,10 +188,9 @@ export default function Menu() {
                     alt={selected.name}
                     fill
                     sizes="40vw"
-                    priority
-                    loading="eager"
+                    loading="lazy"
                     className="object-cover"
-                    quality={85}
+                    quality={78}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-900/90 via-ink-900/10 to-transparent" />
                   <div className="img-frame absolute inset-0" />

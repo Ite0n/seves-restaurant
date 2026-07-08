@@ -1,42 +1,32 @@
 "use client";
 
 import { useEffect } from "react";
-import { getWarmupImages, HERO_VIDEO } from "@/lib/critical-assets";
+import { getWarmupImages } from "@/lib/critical-assets";
+import { optimizedImageUrl } from "@/lib/image-url";
 
 function preloadImage(src: string) {
   const img = new Image();
-  img.src = src;
+  img.src = optimizedImageUrl(src, 1200, 78);
 }
 
-function preloadVideo() {
-  const video = document.createElement("video");
-  video.preload = "auto";
-  video.muted = true;
-  video.src = HERO_VIDEO;
-  video.load();
-}
-
-/** Prefetch hero video and below-fold images without blocking the UI. */
+/** Prefetch near-viewport images after first paint without blocking the UI. */
 export function useImageWarmup(enabled = true) {
   useEffect(() => {
     if (!enabled) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const mobile = window.innerWidth < 768;
     const images = getWarmupImages();
+    if (images.length === 0) return;
 
     const warm = () => {
-      if (!mobile && !reduced) preloadVideo();
-
       let i = 0;
       const batch = () => {
-        const end = Math.min(i + 4, images.length);
+        const end = Math.min(i + 2, images.length);
         for (; i < end; i++) preloadImage(images[i]);
         if (i < images.length) {
           if ("requestIdleCallback" in window) {
-            window.requestIdleCallback(batch, { timeout: 1200 });
+            window.requestIdleCallback(batch, { timeout: 2000 });
           } else {
-            setTimeout(batch, 80);
+            setTimeout(batch, 120);
           }
         }
       };
@@ -44,11 +34,11 @@ export function useImageWarmup(enabled = true) {
     };
 
     if ("requestIdleCallback" in window) {
-      const id = window.requestIdleCallback(warm, { timeout: 800 });
+      const id = window.requestIdleCallback(warm, { timeout: 1500 });
       return () => window.cancelIdleCallback(id);
     }
 
-    const t = setTimeout(warm, 300);
+    const t = setTimeout(warm, 600);
     return () => clearTimeout(t);
   }, [enabled]);
 }

@@ -34,7 +34,7 @@ export default function Testimonials() {
           {mounted && isLarge && (
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
             <Image
-              src="/images/interior-pendant-room.png"
+              src="/images/interior-pendant-room.webp"
               alt="Sèves dining room"
               fill
               sizes="40vw"

@@ -24,12 +24,12 @@ const WalkthroughScene = dynamic(
 );
 
 const FALLBACK_STATIONS = [
-  "/images/exterior-facade-sign.png",
-  "/images/interior-pendant-room.png",
-  "/images/interior-dining-banquette.png",
-  "/images/interior-feather-art.png",
-  "/images/bar-bonsai-night.png",
-  "/images/exterior-firewater-city.png",
+  "/images/exterior-facade-sign.webp",
+  "/images/interior-pendant-room.webp",
+  "/images/interior-dining-banquette.webp",
+  "/images/interior-feather-art.webp",
+  "/images/bar-bonsai-night.webp",
+  "/images/exterior-firewater-city.webp",
 ];
 
 export default function Walkthrough() {
@@ -107,9 +107,9 @@ export default function Walkthrough() {
                 alt={captions[active].title}
                 fill
                 sizes="100vw"
-                priority={active === 0}
+                loading="lazy"
                 className="object-cover"
-                quality={85}
+                quality={80}
               />
             </div>
           )}

@@ -8,22 +8,39 @@ import { RESTAURANT } from "@/lib/data";
 import MagneticButton from "./ui/MagneticButton";
 import SeasonalBadge from "./ui/SeasonalBadge";
 import { useLocale } from "@/context/LocaleContext";
-import { useIsDesktop, usePrefersReducedMotion } from "@/hooks/useIsDesktop";
+import { useIsClient, usePrefersReducedMotion } from "@/hooks/useIsDesktop";
 import { EASE_LUXE } from "@/lib/motion";
-import { HERO_POSTER, HERO_VIDEO } from "@/lib/critical-assets";
+import {
+  HERO_POSTER,
+  HERO_POSTER_QUALITY,
+  HERO_VIDEO,
+} from "@/lib/critical-assets";
+import { shouldLoadHeroVideo } from "@/lib/connection";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { mounted, isDesktop } = useIsDesktop();
+  const mounted = useIsClient();
   const reducedMotion = usePrefersReducedMotion();
-  const useVideo = mounted && isDesktop && !reducedMotion;
+  const [allowVideo, setAllowVideo] = useState(false);
+  const useVideo = mounted && !reducedMotion && allowVideo;
+  const [posterReady, setPosterReady] = useState(false);
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [showDust, setShowDust] = useState(false);
   const { t } = useLocale();
+
+  useEffect(() => {
+    if (!mounted) return;
+    setAllowVideo(shouldLoadHeroVideo());
+  }, [mounted]);
+
+  useEffect(() => {
+    const fallback = setTimeout(() => setPosterReady(true), 600);
+    return () => clearTimeout(fallback);
+  }, []);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -100,11 +117,12 @@ export default function Hero() {
           alt="Sèves garden terrace at blue hour with fire bowls and water features"
           fill
           priority
-          quality={85}
+          quality={HERO_POSTER_QUALITY}
           sizes="100vw"
           className="object-cover object-center"
+          onLoad={() => setPosterReady(true)}
         />
-        {mounted && useVideo && !videoFailed && (
+        {mounted && useVideo && posterReady && !videoFailed && (
           <video
             ref={videoRef}
             src={HERO_VIDEO}
@@ -112,7 +130,7 @@ export default function Hero() {
             muted
             loop
             playsInline
-            preload="auto"
+            preload="metadata"
             poster={HERO_POSTER}
             aria-hidden="true"
             className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${

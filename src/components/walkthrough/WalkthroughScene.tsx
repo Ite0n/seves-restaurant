@@ -8,13 +8,13 @@ import type { MotionValue } from "framer-motion";
 import { optimizedImageUrl } from "@/lib/image-url";
 
 const STATIONS = [
-  "/images/exterior-facade-sign.png",
-  "/images/interior-pendant-room.png",
-  "/images/interior-dining-banquette.png",
-  "/images/interior-feather-art.png",
-  "/images/bar-bonsai-night.png",
-  "/images/interior-winecart-dusk.png",
-  "/images/exterior-firewater-city.png",
+  "/images/exterior-facade-sign.webp",
+  "/images/interior-pendant-room.webp",
+  "/images/interior-dining-banquette.webp",
+  "/images/interior-feather-art.webp",
+  "/images/bar-bonsai-night.webp",
+  "/images/interior-winecart-dusk.webp",
+  "/images/exterior-firewater-city.webp",
 ].map((src) => optimizedImageUrl(src, 2048, 85));
 
 const SPACING = 7;

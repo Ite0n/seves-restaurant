@@ -159,7 +159,7 @@ export default function Reservation() {
       <div className="absolute inset-0">
         <div className="relative size-full min-h-[36rem]">
           <Image
-            src="/images/exterior-terrace-night.png"
+            src="/images/exterior-terrace-night.webp"
             alt=""
             fill
             loading="lazy"

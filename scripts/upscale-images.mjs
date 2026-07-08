@@ -15,18 +15,18 @@ const imagesDir = path.join(root, "public", "images");
 const backupDir = path.join(imagesDir, "_originals");
 
 const FILES = [
-  "interior-dining-banquette.png",
-  "interior-feather-art.png",
-  "bar-bonsai-night.png",
-  "interior-pendant-room.png",
-  "exterior-firewater-city.png",
-  "exterior-terrace-night.png",
-  "interior-banquette-windows.png",
-  "interior-winecart-dusk.png",
-  "interior-bonsai-window.png",
-  "bar-stools-night.png",
-  "interior-banquette-garden.png",
-  "venue-pool-night.png",
+  "interior-dining-banquette.webp",
+  "interior-feather-art.webp",
+  "bar-bonsai-night.webp",
+  "interior-pendant-room.webp",
+  "exterior-firewater-city.webp",
+  "exterior-terrace-night.webp",
+  "interior-banquette-windows.webp",
+  "interior-winecart-dusk.webp",
+  "interior-bonsai-window.webp",
+  "bar-stools-night.webp",
+  "interior-banquette-garden.webp",
+  "venue-pool-night.webp",
 ];
 
 async function upscaleOne(filename) {
@@ -56,7 +56,7 @@ async function upscaleOne(filename) {
     })
     .modulate({ saturation: 1.14, brightness: 1.04 })
     .sharpen({ sigma: 0.65, m1: 0.5, m2: 0.35 })
-    .png({ compressionLevel: 6, quality: 95, effort: 10 })
+    .webp({ quality: 82, effort: 6 })
     .toFile(tmp);
 
   fs.renameSync(tmp, input);
