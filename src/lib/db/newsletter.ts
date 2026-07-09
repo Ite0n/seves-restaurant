@@ -1,12 +1,14 @@
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
-export async function saveNewsletterSubscriber(email: string): Promise<boolean> {
+export async function saveNewsletterSubscriber(email: string): Promise<void> {
   const supabase = getSupabaseAdmin();
-  if (!supabase) return false;
+  if (!supabase) {
+    throw new Error("Database not configured");
+  }
 
   const { error } = await supabase
     .from("newsletter_subscribers")
     .upsert({ email: email.toLowerCase().trim() }, { onConflict: "email" });
 
-  return !error;
+  if (error) throw error;
 }

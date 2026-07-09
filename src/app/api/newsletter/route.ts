@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { saveNewsletterSubscriber } from "@/lib/db/newsletter";
 
 const schema = z.object({
@@ -31,7 +31,14 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({ success: true });
-  } catch {
-    return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+  } catch (err) {
+    if (err instanceof ZodError) {
+      return NextResponse.json({ error: "Invalid email" }, { status: 400 });
+    }
+
+    return NextResponse.json(
+      { error: "Newsletter signups are temporarily unavailable. Please try again later." },
+      { status: 503 }
+    );
   }
 }
