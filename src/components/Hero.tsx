@@ -95,7 +95,30 @@ export default function Hero() {
       ref={ref}
       className="relative h-[100svh] w-full overflow-hidden bg-ink-900 grain"
     >
-      <motion.div style={{ y: imgY, scale: imgScale }} className="absolute inset-0">
+      {/* Video must sit outside any transformed ancestor — Chrome/Edge won't paint it otherwise. */}
+      {showVideo && !videoFailed && (
+        <video
+          ref={bindVideoRef}
+          src={HERO_VIDEO}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          poster={HERO_POSTER}
+          disablePictureInPicture
+          aria-hidden="true"
+          className={`absolute inset-0 z-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+            videoReady ? "opacity-100" : "opacity-0"
+          }`}
+          onError={() => setVideoFailed(true)}
+        />
+      )}
+
+      <motion.div
+        style={{ y: imgY, scale: imgScale }}
+        className="pointer-events-none absolute inset-0 z-[1]"
+      >
         <Image
           src={HERO_POSTER}
           alt="Sèves garden terrace at blue hour with fire bowls and water features"
@@ -103,26 +126,10 @@ export default function Hero() {
           priority
           quality={HERO_POSTER_QUALITY}
           sizes="100vw"
-          className="object-cover object-center"
+          className={`object-cover object-center transition-opacity duration-700 ${
+            showVideo && videoReady && !videoFailed ? "opacity-0" : "opacity-100"
+          }`}
         />
-        {showVideo && !videoFailed && (
-          <video
-            ref={bindVideoRef}
-            src={HERO_VIDEO}
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="auto"
-            poster={HERO_POSTER}
-            disablePictureInPicture
-            aria-hidden="true"
-            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
-              videoReady ? "opacity-100" : "opacity-0"
-            }`}
-            onError={() => setVideoFailed(true)}
-          />
-        )}
         <div className="absolute inset-0 bg-gradient-to-b from-ink-900/75 via-ink-900/35 to-ink-900" />
         <div className="absolute inset-0 bg-gradient-to-t from-ink-900 via-transparent to-ink-900/70" />
         <div className="absolute inset-0 vignette-strong" />

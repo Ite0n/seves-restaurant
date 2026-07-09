@@ -34,6 +34,12 @@ export function bindMutedAutoplay(
     onPlaying?.();
   };
 
+  const syncReadyState = () => {
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+      handleReady();
+    }
+  };
+
   const resumeIfVisible = () => {
     if (document.visibilityState === "visible") void play();
   };
@@ -62,18 +68,29 @@ export function bindMutedAutoplay(
   window.addEventListener("touchstart", unlock, { once: true, passive: true });
   window.addEventListener("keydown", unlock, { once: true });
 
-  void video.load();
+  syncReadyState();
+
+  if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+    void video.load();
+  }
+
   void play();
 
-  const retry300 = window.setTimeout(() => void play(), 300);
-  const retry1200 = window.setTimeout(() => void play(), 1200);
-  const retry3000 = window.setTimeout(() => void play(), 3000);
+  const retry300 = window.setTimeout(() => {
+    syncReadyState();
+    void play();
+  }, 300);
+  const retry1200 = window.setTimeout(() => {
+    syncReadyState();
+    void play();
+  }, 1200);
+  const readyFallback = window.setTimeout(syncReadyState, 1500);
 
   return () => {
     disposed = true;
     window.clearTimeout(retry300);
     window.clearTimeout(retry1200);
-    window.clearTimeout(retry3000);
+    window.clearTimeout(readyFallback);
     video.removeEventListener("loadeddata", handleReady);
     video.removeEventListener("canplay", handleReady);
     video.removeEventListener("canplaythrough", handleReady);
