@@ -10,20 +10,29 @@ export default function Footer() {
   const { t } = useLocale();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [newsletterError, setNewsletterError] = useState<string | null>(null);
 
   const handleNewsletter = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
+    setNewsletterError(null);
+
     try {
-      await fetch("/api/newsletter", {
+      const response = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email }),
       });
+
+      if (!response.ok) {
+        throw new Error("Newsletter signup failed");
+      }
+
       trackEvent("newsletter_subscribe");
       setSubscribed(true);
+      setEmail("");
     } catch {
-      setSubscribed(true);
+      setNewsletterError(t("footer.newsletterError"));
     }
   };
 
@@ -129,22 +138,34 @@ export default function Footer() {
             {subscribed ? (
               <p className="mt-4 text-sm text-gold">{t("footer.thanks")}</p>
             ) : (
-              <form onSubmit={handleNewsletter} className="mt-4 flex gap-2">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t("footer.emailPlaceholder")}
-                  className="flex-1 border-b border-cream/20 bg-transparent pb-2 text-sm text-cream placeholder:text-cream/30 outline-none focus:border-gold"
-                  aria-label="Email for newsletter"
-                />
-                <button
-                  type="submit"
-                  className="shrink-0 text-xs uppercase tracking-luxe text-gold hover:text-cream"
-                >
-                  {t("footer.join")}
-                </button>
+              <form onSubmit={handleNewsletter} className="mt-4" noValidate>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    required
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (newsletterError) setNewsletterError(null);
+                    }}
+                    placeholder={t("footer.emailPlaceholder")}
+                    className="flex-1 border-b border-cream/20 bg-transparent pb-2 text-sm text-cream placeholder:text-cream/30 outline-none focus:border-gold"
+                    aria-label="Email for newsletter"
+                    aria-describedby={newsletterError ? "newsletter-error" : undefined}
+                    aria-invalid={newsletterError ? "true" : undefined}
+                  />
+                  <button
+                    type="submit"
+                    className="shrink-0 text-xs uppercase tracking-luxe text-gold hover:text-cream"
+                  >
+                    {t("footer.join")}
+                  </button>
+                </div>
+                {newsletterError ? (
+                  <p id="newsletter-error" className="mt-3 text-xs text-cream/60" role="alert">
+                    {newsletterError}
+                  </p>
+                ) : null}
               </form>
             )}
           </div>
