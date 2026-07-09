@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { RESTAURANT } from "@/lib/data";
 import MagneticButton from "./ui/MagneticButton";
 import SeasonalBadge from "./ui/SeasonalBadge";
@@ -16,31 +16,25 @@ import {
   HERO_VIDEO,
 } from "@/lib/critical-assets";
 import { shouldLoadHeroVideo } from "@/lib/connection";
+import { bindMutedAutoplay, preloadHeroVideo } from "@/lib/video-autoplay";
 
 const GoldDust = dynamic(() => import("./hero/GoldDust"), { ssr: false });
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const cleanupRef = useRef<(() => void) | null>(null);
   const mounted = useIsClient();
   const reducedMotion = usePrefersReducedMotion();
-  const [allowVideo, setAllowVideo] = useState(false);
-  const useVideo = mounted && !reducedMotion && allowVideo;
-  const [posterReady, setPosterReady] = useState(false);
+  const showVideo = mounted && !reducedMotion && shouldLoadHeroVideo();
   const [videoFailed, setVideoFailed] = useState(false);
   const [videoReady, setVideoReady] = useState(false);
   const [showDust, setShowDust] = useState(false);
   const { t } = useLocale();
 
   useEffect(() => {
-    if (!mounted) return;
-    setAllowVideo(shouldLoadHeroVideo());
-  }, [mounted]);
-
-  useEffect(() => {
-    const fallback = setTimeout(() => setPosterReady(true), 600);
-    return () => clearTimeout(fallback);
-  }, []);
+    if (!mounted || reducedMotion || !shouldLoadHeroVideo()) return;
+    return preloadHeroVideo(HERO_VIDEO);
+  }, [mounted, reducedMotion]);
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -72,69 +66,26 @@ export default function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.75], [1, 0]);
   const lineWidth = useTransform(scrollYProgress, [0, 0.5], ["0%", "100%"]);
 
+  const bindVideoRef = useCallback(
+    (node: HTMLVideoElement | null) => {
+      cleanupRef.current?.();
+      cleanupRef.current = null;
+
+      if (!node || !showVideo || videoFailed) return;
+
+      cleanupRef.current = bindMutedAutoplay(node, {
+        onReady: () => setVideoReady(true),
+        onPlaying: () => setVideoReady(true),
+      });
+    },
+    [showVideo, videoFailed]
+  );
+
   useEffect(() => {
-    const video = videoRef.current;
-    if (!mounted || !video || !useVideo || videoFailed) return;
-
-    let cancelled = false;
-
-    const markReady = () => {
-      if (!cancelled) setVideoReady(true);
-    };
-
-    const playVideo = async () => {
-      if (cancelled || videoFailed) return;
-      try {
-        video.muted = true;
-        await video.play();
-        markReady();
-      } catch {
-        if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-          markReady();
-        }
-      }
-    };
-
-    const resumeIfNeeded = () => {
-      if (document.visibilityState === "visible") {
-        void playVideo();
-      }
-    };
-
-    const onPause = () => {
-      if (!cancelled && !video.ended && document.visibilityState === "visible") {
-        void playVideo();
-      }
-    };
-
-    const mediaEvents = ["loadeddata", "canplay", "canplaythrough", "playing"] as const;
-    mediaEvents.forEach((event) => video.addEventListener(event, markReady));
-    video.addEventListener("pause", onPause);
-    document.addEventListener("visibilitychange", resumeIfNeeded);
-    window.addEventListener("pageshow", resumeIfNeeded);
-    window.addEventListener("focus", resumeIfNeeded);
-
-    const playOnTouch = () => {
-      void playVideo();
-    };
-    window.addEventListener("touchstart", playOnTouch, { once: true, passive: true });
-
-    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-      markReady();
-    }
-
-    void playVideo();
-
     return () => {
-      cancelled = true;
-      mediaEvents.forEach((event) => video.removeEventListener(event, markReady));
-      video.removeEventListener("pause", onPause);
-      document.removeEventListener("visibilitychange", resumeIfNeeded);
-      window.removeEventListener("pageshow", resumeIfNeeded);
-      window.removeEventListener("focus", resumeIfNeeded);
-      window.removeEventListener("touchstart", playOnTouch);
+      cleanupRef.current?.();
     };
-  }, [mounted, useVideo, videoFailed]);
+  }, []);
 
   const title = RESTAURANT.name;
 
@@ -153,11 +104,10 @@ export default function Hero() {
           quality={HERO_POSTER_QUALITY}
           sizes="100vw"
           className="object-cover object-center"
-          onLoad={() => setPosterReady(true)}
         />
-        {mounted && useVideo && !videoFailed && (
+        {showVideo && !videoFailed && (
           <video
-            ref={videoRef}
+            ref={bindVideoRef}
             src={HERO_VIDEO}
             autoPlay
             muted

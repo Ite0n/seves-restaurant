@@ -10,12 +10,13 @@ import { useGalleryScroll } from "@/hooks/useGsapScroll";
 import { useCinematicScrollMode } from "@/hooks/useCinematicScrollMode";
 import { EASE_LUXE } from "@/lib/motion";
 
-const PANEL_WIDTHS = [
-  "w-[78vw] sm:w-[62vw] md:w-[52vw] lg:w-[46vw]",
-  "w-[72vw] sm:w-[56vw] md:w-[44vw] lg:w-[38vw]",
-  "w-[80vw] sm:w-[64vw] md:w-[56vw] lg:w-[50vw]",
-  "w-[70vw] sm:w-[54vw] md:w-[42vw] lg:w-[36vw]",
-];
+/** Compact editorial frames — varied size, not full-bleed panels. */
+const FRAMES = [
+  { width: "w-[9.25rem] sm:w-[11rem] md:w-[12.5rem]", aspect: "aspect-[3/4]", lift: "translate-y-5" },
+  { width: "w-[7.75rem] sm:w-[9.5rem] md:w-[10.5rem]", aspect: "aspect-square", lift: "-translate-y-3" },
+  { width: "w-[10.25rem] sm:w-[12rem] md:w-[14rem]", aspect: "aspect-[5/4]", lift: "translate-y-8" },
+  { width: "w-[8.25rem] sm:w-[10rem] md:w-[11rem]", aspect: "aspect-[4/5]", lift: "-translate-y-5" },
+] as const;
 
 export default function Gallery() {
   const { t, data } = useLocale();
@@ -64,13 +65,75 @@ export default function Gallery() {
 
   const touchStartX = useRef(0);
 
+  const renderFrame = (
+    item: (typeof gallery)[number],
+    i: number,
+    variant: "strip" | "grid"
+  ) => {
+    const frame = FRAMES[i % FRAMES.length];
+
+    return (
+      <button
+        key={item.src}
+        type="button"
+        data-gallery-panel
+        ref={
+          variant === "grid"
+            ? (el) => {
+                mobileItemRefs.current[i] = el;
+              }
+            : undefined
+        }
+        onClick={() => setActive(i)}
+        className={`gallery-frame group relative shrink-0 overflow-hidden rounded-sm ring-1 ring-gold/10 transition-shadow duration-500 hover:shadow-[0_28px_70px_-24px_rgba(201,169,106,0.35)] focus-visible:outline focus-visible:outline-1 focus-visible:outline-gold/50 ${
+          variant === "strip"
+            ? `${frame.width} ${frame.aspect} ${frame.lift}`
+            : `${frame.aspect} w-full`
+        }`}
+        aria-label={`${t("gallery.view")}: ${item.alt}`}
+        data-cursor="hover"
+      >
+        <div data-gallery-float className="absolute inset-0">
+          <div
+            data-gallery-parallax
+            className="cinematic-frame absolute inset-0 scale-[1.12]"
+          >
+            <CinematicImage
+              src={item.src}
+              alt={item.alt}
+              fill
+              sizes={
+                variant === "strip"
+                  ? "(max-width: 640px) 148px, 200px"
+                  : "(max-width: 640px) 45vw, 220px"
+              }
+              loading="lazy"
+              grade="vivid"
+              className="object-cover ken-burns"
+            />
+          </div>
+        </div>
+
+        <div className="absolute inset-0 z-[6] bg-gradient-to-t from-ink-900/75 via-transparent to-ink-900/10" />
+
+        <span className="absolute left-2.5 top-2.5 z-[7] font-display text-[0.55rem] tracking-[0.26em] text-cream/35 transition-colors duration-500 group-hover:text-gold sm:text-[0.6rem]">
+          {String(i + 1).padStart(2, "0")}
+        </span>
+
+        <span className="absolute bottom-0 left-0 right-0 z-[7] px-2.5 pb-2.5 pt-6 text-left text-[0.55rem] uppercase leading-snug tracking-wide2 text-cream/0 transition-all duration-500 group-hover:text-cream/85 sm:text-[0.6rem]">
+          {item.alt}
+        </span>
+      </button>
+    );
+  };
+
   return (
     <section id="gallery" className="relative overflow-hidden bg-ink-800">
       <SectionAtmosphere />
 
       {scrollMode === "desktop" && (
         <div ref={scrollContainerRef} className="relative">
-          <div className="flex h-[100svh] flex-col justify-center px-4 py-12 sm:px-6 sm:py-14 lg:px-10">
+          <div className="flex min-h-[100svh] flex-col justify-center px-4 py-14 sm:px-6 lg:px-10">
             <SectionHeading
               label={t("gallery.label")}
               title={
@@ -82,54 +145,23 @@ export default function Gallery() {
               description={t("gallery.description")}
             />
 
-            <div className="relative mt-8 h-[48vh] min-h-[16rem] overflow-hidden sm:mt-10 sm:h-[52vh] sm:min-h-[20rem]">
+            <div className="relative mt-10 overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-12 bg-gradient-to-r from-ink-800 to-transparent sm:w-20" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-12 bg-gradient-to-l from-ink-800 to-transparent sm:w-20" />
+
               <div
                 ref={trackRef}
-                className="flex h-[48vh] min-h-[16rem] items-stretch gap-4 pr-[12vw] will-change-transform sm:h-[52vh] sm:min-h-[20rem] sm:gap-5 sm:pr-[18vw] lg:gap-7"
+                className="flex min-h-[min(38vh,17.5rem)] items-center gap-3 py-4 pr-[28vw] will-change-transform sm:min-h-[min(42vh,20rem)] sm:gap-4 md:gap-5 lg:gap-6"
               >
-                {gallery.map((item, i) => (
-                  <button
-                    key={item.src}
-                    type="button"
-                    data-gallery-panel
-                    onClick={() => setActive(i)}
-                    className={`group relative shrink-0 ${PANEL_WIDTHS[i % PANEL_WIDTHS.length]} h-[48vh] min-h-[16rem] overflow-hidden rounded-sm ring-1 ring-gold/15 transition-shadow duration-700 hover:ring-gold/40 hover:shadow-[0_40px_100px_-30px_rgba(201,169,106,0.35)] sm:h-[52vh] sm:min-h-[20rem]`}
-                    aria-label={`${t("gallery.view")}: ${item.alt}`}
-                    data-cursor="hover"
-                  >
-                    <div
-                      data-gallery-parallax
-                      className="cinematic-frame absolute inset-0 scale-110"
-                    >
-                      <CinematicImage
-                        src={item.src}
-                        alt={item.alt}
-                        fill
-                        sizes="(max-width: 640px) 78vw, (max-width: 1200px) 55vw, 46vw"
-                        loading="lazy"
-                        grade="vivid"
-                        className="object-cover"
-                      />
-                    </div>
-
-                    <div className="absolute inset-0 z-[4] bg-gradient-to-t from-ink-900/90 via-ink-900/15 to-ink-900/25" />
-                    <div className="absolute inset-x-0 top-0 z-[5] h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
-
-                    <span className="absolute left-4 top-4 z-[6] font-display text-[0.65rem] tracking-[0.28em] text-cream/40 transition-colors duration-500 group-hover:text-gold sm:left-5 sm:top-5 sm:text-[0.7rem] sm:tracking-[0.32em]">
-                      {String(i + 1).padStart(2, "0")}
-                    </span>
-
-                    <div className="absolute inset-x-0 bottom-0 z-[6] p-5 sm:p-6 lg:p-8">
-                      <span className="block max-w-sm translate-y-3 text-left text-[0.6rem] uppercase tracking-wide2 text-cream/0 transition-all duration-700 group-hover:translate-y-0 group-hover:text-cream/90 sm:text-[0.65rem]">
-                        {item.alt}
-                      </span>
-                    </div>
-                  </button>
-                ))}
+                {gallery.map((item, i) => renderFrame(item, i, "strip"))}
               </div>
             </div>
 
-            <div className="mt-6 h-px w-full overflow-hidden bg-cream/10 sm:mt-8">
+            <p className="mt-6 text-center text-[0.6rem] uppercase tracking-luxe text-cream/35">
+              {t("gallery.view")} · scroll
+            </p>
+
+            <div className="mx-auto mt-5 h-px w-full max-w-md overflow-hidden bg-cream/10">
               <div
                 ref={progressRef}
                 className="gallery-scroll-progress h-full w-full origin-left bg-gradient-to-r from-gold-600 via-gold-300 to-gold-100"
@@ -142,7 +174,7 @@ export default function Gallery() {
 
       {scrollMode === "mobile" && (
         <div className="section-pad">
-          <div className="relative mx-auto max-w-7xl px-6">
+          <div className="relative mx-auto max-w-lg px-6">
             <SectionHeading
               label={t("gallery.label")}
               title={
@@ -154,41 +186,8 @@ export default function Gallery() {
               description={t("gallery.description")}
             />
 
-            <div className="mt-12 flex flex-col gap-4">
-              {gallery.map((item, i) => (
-                <button
-                  key={item.src}
-                  type="button"
-                  ref={(el) => {
-                    mobileItemRefs.current[i] = el;
-                  }}
-                  onClick={() => setActive(i)}
-                  className="group relative aspect-[4/5] w-full overflow-hidden rounded-sm ring-1 ring-gold/15"
-                  aria-label={`${t("gallery.view")}: ${item.alt}`}
-                >
-                  <div
-                    data-gallery-parallax
-                    className="cinematic-frame absolute inset-0 will-change-transform"
-                  >
-                    <CinematicImage
-                      src={item.src}
-                      alt={item.alt}
-                      fill
-                      sizes="100vw"
-                      loading="lazy"
-                      grade="vivid"
-                      className="object-cover"
-                    />
-                  </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-ink-900/85 to-transparent" />
-                  <span className="absolute left-4 top-4 font-display text-[0.65rem] tracking-[0.28em] text-gold/70">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <p className="absolute bottom-0 left-0 right-0 p-5 text-left text-xs uppercase tracking-wide2 text-cream/80">
-                    {item.alt}
-                  </p>
-                </button>
-              ))}
+            <div className="mt-12 grid grid-cols-2 gap-3 sm:gap-4">
+              {gallery.map((item, i) => renderFrame(item, i, "grid"))}
             </div>
           </div>
         </div>
@@ -242,7 +241,7 @@ export default function Gallery() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.55, ease: EASE_LUXE }}
-              className="cinematic-frame relative h-[82vh] w-full max-w-6xl overflow-hidden rounded-sm ring-1 ring-gold/25"
+              className="cinematic-frame relative h-[min(78vh,42rem)] w-full max-w-4xl overflow-hidden rounded-sm ring-1 ring-gold/25"
               onClick={(e) => e.stopPropagation()}
               onTouchStart={(e) => {
                 touchStartX.current = e.touches[0].clientX;
@@ -259,7 +258,7 @@ export default function Gallery() {
                 src={gallery[active].src}
                 alt={gallery[active].alt}
                 fill
-                sizes="(max-width: 768px) 100vw, 90vw"
+                sizes="(max-width: 768px) 100vw, 896px"
                 grade="vivid"
                 quality={85}
                 className="object-contain"

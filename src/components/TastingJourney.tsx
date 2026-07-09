@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import SectionHeading from "./ui/SectionHeading";
 import { useTastingJourneyPin } from "@/hooks/useGsapScroll";
 import { useCinematicScrollMode } from "@/hooks/useCinematicScrollMode";
@@ -23,41 +23,56 @@ export default function TastingJourney() {
     scrollMode
   );
 
-  const cardWidth =
-    "relative w-[78vw] shrink-0 overflow-hidden rounded-sm bg-ink-800/80 ring-1 ring-gold/12 sm:w-[56vw] md:w-[380px]";
-
-  const renderCard = (course: (typeof data.tastingCourses)[number], i: number) => (
+  const renderCard = (
+    course: (typeof data.tastingCourses)[number],
+    i: number,
+    variant: "strip" | "stack"
+  ) => (
     <article
       key={course.chapter}
       data-journey-card
       ref={(el) => {
         cardRefs.current[i] = el;
       }}
-      className={cardWidth}
+      className={`journey-card group relative shrink-0 overflow-hidden rounded-sm bg-ink-800/70 ring-1 ring-gold/12 ${
+        variant === "strip"
+          ? "w-[min(72vw,20rem)] sm:w-[18.5rem] md:w-[20rem]"
+          : "w-full"
+      }`}
       data-cursor="hover"
     >
-      <div className="relative aspect-[3/4] overflow-hidden">
+      <div className="relative aspect-[16/10] overflow-hidden sm:aspect-[5/3]">
         <div
-          data-journey-parallax
-          className="absolute inset-0 scale-110 will-change-transform"
+          data-journey-mask
+          className="absolute inset-0 overflow-hidden"
         >
-          <Image
-            src={course.image}
-            alt={course.title}
-            fill
-            sizes="(max-width: 640px) 78vw, 380px"
-            className="object-cover"
-            quality={82}
-          />
+          <div
+            data-journey-parallax
+            className="absolute inset-0 scale-110 will-change-transform"
+          >
+            <Image
+              src={course.image}
+              alt={course.title}
+              fill
+              sizes={
+                variant === "strip"
+                  ? "(max-width: 640px) 72vw, 320px"
+                  : "100vw"
+              }
+              className="object-cover"
+              quality={80}
+            />
+          </div>
         </div>
-        <div className="absolute inset-0 z-[2] bg-gradient-to-t from-ink-900 via-ink-900/20 to-transparent" />
-        <span className="absolute left-5 top-5 z-[3] font-display text-[0.65rem] tracking-[0.3em] text-gold/80">
+        <div className="absolute inset-0 z-[2] bg-gradient-to-t from-ink-900 via-ink-900/15 to-transparent" />
+        <div className="absolute inset-x-0 top-0 z-[3] h-px bg-gradient-to-r from-transparent via-gold/35 to-transparent opacity-0 transition-opacity duration-700 group-hover:opacity-100" />
+        <span className="absolute left-4 top-4 z-[3] font-display text-[0.6rem] tracking-[0.28em] text-gold/75">
           0{i + 1} · {course.chapter}
         </span>
       </div>
-      <div className="relative z-[3] p-6">
-        <h3 className="font-serif text-2xl text-cream">{course.title}</h3>
-        <p className="mt-2 font-light text-sm leading-relaxed text-cream/55">
+      <div className="relative z-[3] px-5 py-4 sm:px-6 sm:py-5">
+        <h3 className="font-serif text-xl text-cream sm:text-2xl">{course.title}</h3>
+        <p className="mt-1.5 font-light text-sm leading-relaxed text-cream/55">
           {course.desc}
         </p>
       </div>
@@ -69,10 +84,9 @@ export default function TastingJourney() {
       id="tasting-journey"
       ref={containerRef}
       className="relative overflow-hidden bg-ink-900"
-      style={{ perspective: "1200px" }}
     >
       {scrollMode === "desktop" && (
-        <div className="flex h-[100svh] flex-col justify-center px-4 py-12 sm:px-6 sm:py-16">
+        <div className="flex min-h-[100svh] flex-col justify-center px-4 py-14 sm:px-6 sm:py-16">
           <SectionHeading
             align="left"
             label={t("tasting.label")}
@@ -85,16 +99,20 @@ export default function TastingJourney() {
             description={t("tasting.description")}
           />
 
-          <div className="mt-8 overflow-hidden sm:mt-12">
+          <div className="relative mt-10 overflow-hidden">
+            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-ink-900 to-transparent sm:w-16" />
+            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-ink-900 to-transparent sm:w-16" />
             <div
               ref={trackRef}
-              className="flex w-max gap-5 pr-[14vw] will-change-transform [transform-style:preserve-3d] sm:gap-7 sm:pr-[20vw]"
+              className="flex w-max items-stretch gap-4 pr-[18vw] will-change-transform sm:gap-5 sm:pr-[22vw] md:gap-6"
             >
-              {data.tastingCourses.map((course, i) => renderCard(course, i))}
+              {data.tastingCourses.map((course, i) =>
+                renderCard(course, i, "strip")
+              )}
             </div>
           </div>
 
-          <div className="mt-6 h-px w-full overflow-hidden bg-cream/10 sm:mt-8">
+          <div className="mt-8 h-px w-full overflow-hidden bg-cream/10">
             <div
               ref={progressRef}
               className="h-full w-full origin-left bg-gradient-to-r from-gold-600 via-gold-300 to-gold-100"
@@ -119,8 +137,10 @@ export default function TastingJourney() {
               description={t("tasting.description")}
             />
 
-            <div className="mt-12 flex flex-col gap-6">
-              {data.tastingCourses.map((course, i) => renderCard(course, i))}
+            <div className="mt-12 flex flex-col gap-5">
+              {data.tastingCourses.map((course, i) =>
+                renderCard(course, i, "stack")
+              )}
             </div>
           </div>
         </div>

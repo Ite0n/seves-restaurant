@@ -48,55 +48,64 @@ export default function Experiences() {
             }
           : undefined
       }
-      className={`group relative flex shrink-0 flex-col overflow-hidden rounded-sm bg-ink-900/60 ring-1 ring-gold/12 transition-shadow duration-700 ${
+      className={`experience-showcase group relative flex shrink-0 overflow-hidden rounded-sm bg-ink-900/50 ring-1 ring-gold/12 ${
         variant === "scroll"
-          ? "experience-card-glow w-[88vw] sm:w-[80vw] md:w-[72vw] lg:w-[64vw]"
-          : "experience-card-glow w-full"
+          ? "w-[min(88vw,34rem)] flex-col sm:w-[30rem] md:w-[34rem] lg:w-[36rem]"
+          : "w-full flex-col"
       }`}
       data-cursor="hover"
     >
-      <div className="relative aspect-[16/10] min-h-[11rem] w-full overflow-hidden sm:min-h-[12rem] md:aspect-[21/10]">
+      <div className="relative aspect-[16/9] w-full overflow-hidden">
         <div
-          data-experience-parallax
-          className="cinematic-frame absolute inset-0 scale-110"
+          data-experience-veil
+          className="pointer-events-none absolute inset-0 z-[5] bg-ink-900"
+        />
+        <div
+          data-experience-mask
+          className="absolute inset-0 overflow-hidden"
         >
-          <CinematicImage
-            src={exp.image}
-            alt={exp.title}
-            fill
-            sizes={
-              variant === "scroll"
-                ? "(max-width: 640px) 88vw, (max-width: 1280px) 80vw, 64vw"
-                : "100vw"
-            }
-            loading="lazy"
-            grade="vivid"
-            className="object-cover"
-          />
+          <div
+            data-experience-parallax
+            className="cinematic-frame absolute inset-0 scale-[1.15]"
+          >
+            <CinematicImage
+              src={exp.image}
+              alt={exp.title}
+              fill
+              sizes={
+                variant === "scroll"
+                  ? "(max-width: 640px) 88vw, 576px"
+                  : "100vw"
+              }
+              loading="lazy"
+              grade="vivid"
+              className="object-cover"
+            />
+          </div>
         </div>
-        <div className="absolute inset-0 z-[2] bg-gradient-to-t from-ink-900 via-ink-900/25 to-ink-900/10" />
-        <div className="img-frame absolute inset-0 z-[3]" />
-        <span className="absolute left-5 top-5 z-[4] font-display text-[0.65rem] tracking-[0.3em] text-gold/80 sm:left-6 sm:top-6">
+        <div className="absolute inset-0 z-[2] bg-gradient-to-t from-ink-900/80 via-ink-900/10 to-ink-900/20" />
+        <div className="absolute inset-x-6 top-0 z-[4] h-px origin-left scale-x-0 bg-gradient-to-r from-transparent via-gold/50 to-transparent transition-transform duration-700 group-hover:scale-x-100" />
+        <span className="absolute left-5 top-5 z-[4] font-display text-[0.65rem] tracking-[0.3em] text-gold/80">
           0{i + 1}
         </span>
       </div>
 
-      <div className="relative z-[4] flex flex-1 flex-col p-6 sm:p-7 md:p-9 lg:p-10">
+      <div className="relative z-[4] flex flex-1 flex-col px-6 py-6 sm:px-8 sm:py-7">
         <span className="text-[0.6rem] uppercase tracking-luxe text-gold/75">
           {exp.subtitle}
         </span>
-        <h3 className="mt-2 font-serif text-2xl text-cream sm:text-3xl md:text-4xl">{exp.title}</h3>
-        <p className="mt-4 max-w-2xl flex-1 font-light text-sm leading-relaxed text-cream/60 md:text-base">
+        <h3 className="mt-2 font-serif text-2xl text-cream sm:text-3xl">{exp.title}</h3>
+        <p className="mt-3 max-w-xl flex-1 font-light text-sm leading-relaxed text-cream/60">
           {exp.description}
         </p>
-        <div className="mt-8 flex items-center justify-between border-t border-cream/10 pt-6 text-xs uppercase tracking-wide2">
+        <div className="mt-6 flex items-center justify-between border-t border-cream/10 pt-5 text-xs uppercase tracking-wide2">
           <span className="text-cream/45">{exp.capacity}</span>
           <span className="font-serif text-lg text-gold">{exp.from}</span>
         </div>
         <button
           type="button"
           onClick={() => setEnquiry({ id: exp.id, title: exp.title })}
-          className="mt-6 w-full rounded-full border border-gold/40 py-3.5 text-[0.65rem] uppercase tracking-luxe text-gold transition-all duration-500 hover:bg-gold hover:text-ink-900 md:max-w-xs"
+          className="mt-5 w-full rounded-full border border-gold/40 py-3 text-[0.65rem] uppercase tracking-luxe text-gold transition-all duration-500 hover:bg-gold hover:text-ink-900 md:max-w-xs"
         >
           {t("experiences.enquire")}
         </button>
@@ -110,7 +119,7 @@ export default function Experiences() {
 
       {scrollMode === "desktop" && (
         <div ref={scrollContainerRef} className="relative">
-          <div className="flex h-[100svh] flex-col justify-center px-4 py-12 sm:px-6 sm:py-14 lg:px-10">
+          <div className="flex min-h-[100svh] flex-col justify-center px-4 py-14 sm:px-6 lg:px-10">
             <SectionHeading
               label={t("experiences.label")}
               title={
@@ -122,16 +131,18 @@ export default function Experiences() {
               description={t("experiences.description")}
             />
 
-            <div className="relative mt-8 h-[54vh] min-h-[18rem] overflow-hidden sm:mt-10 sm:h-[58vh] sm:min-h-[22rem]">
+            <div className="relative mt-10 overflow-hidden">
+              <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-10 bg-gradient-to-r from-ink-800 to-transparent sm:w-16" />
+              <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-10 bg-gradient-to-l from-ink-800 to-transparent sm:w-16" />
               <div
                 ref={trackRef}
-                className="flex h-[54vh] min-h-[18rem] items-stretch gap-4 pr-[10vw] will-change-transform sm:h-[58vh] sm:min-h-[22rem] sm:gap-6 sm:pr-[14vw] lg:gap-8"
+                className="flex items-stretch gap-5 pr-[14vw] will-change-transform sm:gap-6 sm:pr-[16vw] lg:gap-8"
               >
                 {data.experiences.map((exp, i) => renderCard(exp, i, "scroll"))}
               </div>
             </div>
 
-            <div className="mt-6 h-px w-full overflow-hidden bg-cream/10 sm:mt-8">
+            <div className="mt-8 h-px w-full overflow-hidden bg-cream/10">
               <div
                 ref={progressRef}
                 className="gallery-scroll-progress h-full w-full origin-left bg-gradient-to-r from-gold-600 via-gold-300 to-gold-100"
@@ -163,7 +174,7 @@ export default function Experiences() {
               description={t("experiences.description")}
             />
 
-            <div className="mt-14 flex flex-col gap-8">
+            <div className="mt-12 flex flex-col gap-7">
               {data.experiences.map((exp, i) => renderCard(exp, i, "stack"))}
             </div>
 

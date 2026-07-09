@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Cormorant_Garamond, Cinzel, Jost } from "next/font/google";
 import { FAQ, RESTAURANT } from "@/lib/data";
+import { HERO_VIDEO } from "@/lib/critical-assets";
 import ScrollRestorationInit from "@/components/ScrollRestorationInit";
 import "./globals.css";
 
@@ -145,6 +146,9 @@ export default function RootLayout({
       lang="fr"
       className={`${cormorant.variable} ${cinzel.variable} ${jost.variable}`}
     >
+      <head>
+        <link rel="preload" href={HERO_VIDEO} as="video" type="video/mp4" />
+      </head>
       <body className="bg-ink-900 text-cream antialiased">
         <ScrollRestorationInit />
         <Script

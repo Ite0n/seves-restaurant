@@ -87,19 +87,21 @@ export function useTastingJourneyPin(
         );
 
       if (cards.length && mode === "mobile") {
-        cards.forEach((card) => {
-          gsap.set(card, { opacity: 0, y: 64, scale: 0.96 });
+        cards.forEach((card, i) => {
           const image = card.querySelector("[data-journey-parallax]");
+          const mask = card.querySelector("[data-journey-mask]");
+
+          gsap.set(card, { opacity: 0, x: i % 2 === 0 ? -28 : 28 });
+          if (mask) gsap.set(mask, { clipPath: "inset(0 100% 0 0)" });
 
           const reveal = gsap.to(card, {
             opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 1.15,
+            x: 0,
+            duration: 0.85,
             ease: "power3.out",
             scrollTrigger: {
               trigger: card,
-              start: "top 92%",
+              start: "top 90%",
               toggleActions: "play none none none",
             },
           });
@@ -108,11 +110,28 @@ export function useTastingJourneyPin(
             reveal.kill();
           });
 
+          if (mask) {
+            const wipe = gsap.to(mask, {
+              clipPath: "inset(0 0% 0 0)",
+              duration: 1.05,
+              ease: "power3.inOut",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 90%",
+                toggleActions: "play none none none",
+              },
+            });
+            cleanups.push(() => {
+              wipe.scrollTrigger?.kill();
+              wipe.kill();
+            });
+          }
+
           if (image) {
-            gsap.set(image, { scale: 1.18, yPercent: 8 });
-            const parallax = gsap.to(image, {
+            gsap.set(image, { scale: 1.12, xPercent: 6 });
+            const drift = gsap.to(image, {
               scale: 1,
-              yPercent: -4,
+              xPercent: -3,
               ease: "none",
               scrollTrigger: {
                 trigger: card,
@@ -122,8 +141,8 @@ export function useTastingJourneyPin(
               },
             });
             cleanups.push(() => {
-              parallax.scrollTrigger?.kill();
-              parallax.kill();
+              drift.scrollTrigger?.kill();
+              drift.kill();
             });
           }
         });
@@ -144,7 +163,7 @@ export function useTastingJourneyPin(
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${getScrollDistance() * 1.2}`,
+        end: () => `+=${getScrollDistance() * 1.15}`,
         pin: true,
         scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
@@ -162,15 +181,39 @@ export function useTastingJourneyPin(
     });
 
     const cards = track.querySelectorAll<HTMLElement>("[data-journey-card]");
-    cards.forEach((card, i) => {
+    cards.forEach((card) => {
       const image = card.querySelector("[data-journey-parallax]");
-      if (image) {
-        const parallax = gsap.fromTo(
-          image,
-          { scale: 1.22, xPercent: -5 },
+      const mask = card.querySelector("[data-journey-mask]");
+
+      if (mask) {
+        const wipe = gsap.fromTo(
+          mask,
+          { clipPath: "inset(0 100% 0 0)" },
           {
-            scale: 1.06,
-            xPercent: 5,
+            clipPath: "inset(0 0% 0 0)",
+            ease: "power2.inOut",
+            scrollTrigger: {
+              trigger: card,
+              containerAnimation: tween,
+              start: "left 92%",
+              end: "left 55%",
+              scrub: 0.55,
+            },
+          }
+        );
+        cleanups.push(() => {
+          wipe.scrollTrigger?.kill();
+          wipe.kill();
+        });
+      }
+
+      if (image) {
+        const drift = gsap.fromTo(
+          image,
+          { scale: 1.16, xPercent: 8 },
+          {
+            scale: 1.02,
+            xPercent: -4,
             ease: "none",
             scrollTrigger: {
               trigger: card,
@@ -182,37 +225,30 @@ export function useTastingJourneyPin(
           }
         );
         cleanups.push(() => {
-          parallax.scrollTrigger?.kill();
-          parallax.kill();
+          drift.scrollTrigger?.kill();
+          drift.kill();
         });
       }
 
-      const reveal = gsap.fromTo(
+      const rise = gsap.fromTo(
         card,
-        {
-          opacity: 0.4,
-          scale: 0.92,
-          filter: "brightness(0.72)",
-          rotateY: i % 2 === 0 ? -4 : 4,
-        },
+        { opacity: 0.45, y: 28 },
         {
           opacity: 1,
-          scale: 1,
-          filter: "brightness(1)",
-          rotateY: 0,
+          y: 0,
           ease: "power2.out",
           scrollTrigger: {
             trigger: card,
             containerAnimation: tween,
-            start: "left 88%",
-            end: "left 42%",
-            scrub: 0.7,
+            start: "left 90%",
+            end: "left 50%",
+            scrub: 0.6,
           },
         }
       );
       cleanups.push(() => {
-        reveal.scrollTrigger?.kill();
-        reveal.kill();
+        rise.scrollTrigger?.kill();
+        rise.kill();
       });
     });
 
@@ -236,23 +272,26 @@ export function useGalleryScroll(
     if (mode === "mobile" || reduced) {
       const items = mobileItemRefs.current?.filter(Boolean) as HTMLElement[];
       if (items.length && mode === "mobile") {
-        items.forEach((item) => {
+        items.forEach((item, i) => {
           const image = item.querySelector("[data-gallery-parallax]");
           gsap.set(item, {
             opacity: 0,
-            y: 80,
-            clipPath: "inset(10% 6% 10% 6% round 2px)",
+            y: 40,
+            scale: 0.94,
+            rotate: i % 2 === 0 ? -2 : 2,
           });
 
           const reveal = gsap.to(item, {
             opacity: 1,
             y: 0,
-            clipPath: "inset(0% 0% 0% 0% round 2px)",
-            duration: 1.2,
+            scale: 1,
+            rotate: 0,
+            duration: 0.9,
+            delay: (i % 3) * 0.05,
             ease: "power3.out",
             scrollTrigger: {
               trigger: item,
-              start: "top 88%",
+              start: "top 92%",
               toggleActions: "play none none none",
             },
           });
@@ -297,7 +336,7 @@ export function useGalleryScroll(
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${getScrollDistance() * 1.35}`,
+        end: () => `+=${getScrollDistance() * 1.55}`,
         pin: true,
         scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
@@ -315,16 +354,23 @@ export function useGalleryScroll(
     });
 
     const panels = track.querySelectorAll<HTMLElement>("[data-gallery-panel]");
-    panels.forEach((panel) => {
+    panels.forEach((panel, i) => {
       const image = panel.querySelector("[data-gallery-parallax]");
+      const float = panel.querySelector("[data-gallery-float]");
+      const lift = i % 2 === 0 ? 14 : -10;
+
+      if (float) {
+        gsap.set(float, { y: lift });
+      }
+
       if (image) {
         const parallax = gsap.fromTo(
           image,
-          { yPercent: -12, scale: 1.24, xPercent: -3 },
+          { scale: 1.14, xPercent: -4, yPercent: -3 },
           {
-            yPercent: 8,
-            scale: 1.06,
-            xPercent: 3,
+            scale: 1.02,
+            xPercent: 4,
+            yPercent: 3,
             ease: "none",
             scrollTrigger: {
               trigger: panel,
@@ -344,23 +390,25 @@ export function useGalleryScroll(
       const focus = gsap.fromTo(
         panel,
         {
-          scale: 0.88,
-          opacity: 0.45,
-          filter: "brightness(0.7)",
-          clipPath: "inset(6% 4% 6% 4% round 2px)",
+          scale: 0.82,
+          opacity: 0.35,
+          rotate: i % 2 === 0 ? -2.5 : 2.5,
+          filter: "brightness(0.55) blur(1px)",
+          clipPath: "inset(18% 12% 18% 12% round 3px)",
         },
         {
           scale: 1,
           opacity: 1,
-          filter: "brightness(1)",
-          clipPath: "inset(0% 0% 0% 0% round 2px)",
-          ease: "power2.out",
+          rotate: 0,
+          filter: "brightness(1) blur(0px)",
+          clipPath: "inset(0% 0% 0% 0% round 3px)",
+          ease: "power3.out",
           scrollTrigger: {
             trigger: panel,
             containerAnimation: tween,
-            start: "left 82%",
-            end: "left 38%",
-            scrub: 0.8,
+            start: "left 88%",
+            end: "left 46%",
+            scrub: 0.65,
           },
         }
       );
@@ -392,17 +440,17 @@ export function useExperiencesScroll(
       if (cards.length && mode === "mobile") {
         cards.forEach((card) => {
           const image = card.querySelector("[data-experience-parallax]");
-          gsap.set(card, {
-            opacity: 0,
-            y: 80,
-            clipPath: "inset(10% 6% 10% 6% round 2px)",
-          });
+          const mask = card.querySelector("[data-experience-mask]");
+          const veil = card.querySelector("[data-experience-veil]");
+
+          gsap.set(card, { opacity: 0, y: 48 });
+          if (mask) gsap.set(mask, { clipPath: "inset(100% 0 0 0)" });
+          if (veil) gsap.set(veil, { opacity: 1 });
 
           const reveal = gsap.to(card, {
             opacity: 1,
             y: 0,
-            clipPath: "inset(0% 0% 0% 0% round 2px)",
-            duration: 1.2,
+            duration: 0.95,
             ease: "power3.out",
             scrollTrigger: {
               trigger: card,
@@ -415,11 +463,45 @@ export function useExperiencesScroll(
             reveal.kill();
           });
 
+          if (mask) {
+            const curtain = gsap.to(mask, {
+              clipPath: "inset(0% 0 0 0)",
+              duration: 1.15,
+              ease: "power3.inOut",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 88%",
+                toggleActions: "play none none none",
+              },
+            });
+            cleanups.push(() => {
+              curtain.scrollTrigger?.kill();
+              curtain.kill();
+            });
+          }
+
+          if (veil) {
+            const fade = gsap.to(veil, {
+              opacity: 0,
+              duration: 1.2,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: card,
+                start: "top 88%",
+                toggleActions: "play none none none",
+              },
+            });
+            cleanups.push(() => {
+              fade.scrollTrigger?.kill();
+              fade.kill();
+            });
+          }
+
           if (image) {
-            gsap.set(image, { scale: 1.2, yPercent: 8 });
+            gsap.set(image, { scale: 1.18, yPercent: 10 });
             const parallax = gsap.to(image, {
               scale: 1.02,
-              yPercent: -5,
+              yPercent: -4,
               ease: "none",
               scrollTrigger: {
                 trigger: card,
@@ -451,7 +533,7 @@ export function useExperiencesScroll(
       scrollTrigger: {
         trigger: container,
         start: "top top",
-        end: () => `+=${getScrollDistance() * 1.35}`,
+        end: () => `+=${getScrollDistance() * 1.4}`,
         pin: true,
         scrub: SCRUB_LUXE,
         invalidateOnRefresh: true,
@@ -471,14 +553,60 @@ export function useExperiencesScroll(
     const cards = track.querySelectorAll<HTMLElement>("[data-experience-card]");
     cards.forEach((card) => {
       const image = card.querySelector("[data-experience-parallax]");
+      const mask = card.querySelector("[data-experience-mask]");
+      const veil = card.querySelector("[data-experience-veil]");
+
+      if (mask) {
+        const curtain = gsap.fromTo(
+          mask,
+          { clipPath: "inset(100% 0 0 0)" },
+          {
+            clipPath: "inset(0% 0 0 0)",
+            ease: "power3.inOut",
+            scrollTrigger: {
+              trigger: card,
+              containerAnimation: tween,
+              start: "left 90%",
+              end: "left 48%",
+              scrub: 0.7,
+            },
+          }
+        );
+        cleanups.push(() => {
+          curtain.scrollTrigger?.kill();
+          curtain.kill();
+        });
+      }
+
+      if (veil) {
+        const fade = gsap.fromTo(
+          veil,
+          { opacity: 0.85 },
+          {
+            opacity: 0,
+            ease: "power2.out",
+            scrollTrigger: {
+              trigger: card,
+              containerAnimation: tween,
+              start: "left 86%",
+              end: "left 45%",
+              scrub: 0.6,
+            },
+          }
+        );
+        cleanups.push(() => {
+          fade.scrollTrigger?.kill();
+          fade.kill();
+        });
+      }
+
       if (image) {
         const parallax = gsap.fromTo(
           image,
-          { yPercent: -12, scale: 1.24, xPercent: -3 },
+          { scale: 1.2, yPercent: 12 },
           {
-            yPercent: 8,
-            scale: 1.06,
-            xPercent: 3,
+            scale: 1.04,
+            yPercent: -6,
             ease: "none",
             scrollTrigger: {
               trigger: card,
@@ -498,23 +626,21 @@ export function useExperiencesScroll(
       const focus = gsap.fromTo(
         card,
         {
-          scale: 0.88,
-          opacity: 0.45,
-          filter: "brightness(0.7)",
-          clipPath: "inset(6% 4% 6% 4% round 2px)",
+          opacity: 0.5,
+          y: 36,
+          filter: "brightness(0.75)",
         },
         {
-          scale: 1,
           opacity: 1,
+          y: 0,
           filter: "brightness(1)",
-          clipPath: "inset(0% 0% 0% 0% round 2px)",
           ease: "power2.out",
           scrollTrigger: {
             trigger: card,
             containerAnimation: tween,
-            start: "left 82%",
-            end: "left 38%",
-            scrub: 0.8,
+            start: "left 88%",
+            end: "left 42%",
+            scrub: 0.75,
           },
         }
       );
