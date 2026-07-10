@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
 import { saveReservation } from "@/lib/db/reservations";
 import { getAvailability } from "@/lib/availability";
+import { isSupabaseConfigured } from "@/lib/supabase/server";
 import {
   formatReservationWhatsAppMessage,
   sendWhatsAppNotification,
@@ -10,6 +11,13 @@ import {
 
 export async function POST(request: Request) {
   try {
+    if (!isSupabaseConfigured()) {
+      return NextResponse.json(
+        { error: "Reservations are temporarily unavailable. Please call us directly." },
+        { status: 503 }
+      );
+    }
+
     const body = await request.json();
     const data = reservationSchema.parse(body);
 
