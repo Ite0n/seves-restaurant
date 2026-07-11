@@ -1,8 +1,15 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
-import { saveReservation } from "@/lib/db/reservations";
-import { getAvailability } from "@/lib/availability";
+import {
+  getReservationsForDate,
+  saveReservation,
+} from "@/lib/db/reservations";
+import {
+  getAvailability,
+  getRemainingSeats,
+  parseGuestCount,
+} from "@/lib/availability";
 import {
   formatReservationWhatsAppMessage,
   sendWhatsAppNotification,
@@ -23,9 +30,26 @@ export async function POST(request: Request) {
       );
     }
 
+    const requestedGuests = parseGuestCount(data.guests);
+    if (!requestedGuests) {
+      return NextResponse.json(
+        { error: "Please select a valid party size" },
+        { status: 400 }
+      );
+    }
+
     const slots = getAvailability(data.date);
     const slot = slots.find((s) => s.time === data.time);
-    if (slot && !slot.available) {
+    if (!slot) {
+      return NextResponse.json(
+        { error: "Please select a valid time slot" },
+        { status: 400 }
+      );
+    }
+
+    const booked = await getReservationsForDate(data.date);
+    const remainingSeats = getRemainingSeats(slot, booked);
+    if (!slot.available || requestedGuests > remainingSeats) {
       return NextResponse.json(
         { error: "This time slot is no longer available" },
         { status: 409 }

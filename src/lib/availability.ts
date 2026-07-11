@@ -7,6 +7,43 @@ export type SlotAvailability = {
 };
 
 const SLOT_CAPACITY = 8;
+const UNKNOWN_GUEST_COUNT = SLOT_CAPACITY;
+
+type ReservationSeats = {
+  time: string;
+  guests: string;
+};
+
+export function parseGuestCount(guests: string): number | null {
+  const match = /^(\d+)\+?$/.exec(guests.trim());
+  if (!match) return null;
+
+  const count = Number.parseInt(match[1], 10);
+  return Number.isSafeInteger(count) && count > 0 ? count : null;
+}
+
+function getBookedSeatsForSlot(
+  reservations: ReservationSeats[],
+  time: string
+): number {
+  return reservations
+    .filter((reservation) => reservation.time === time)
+    .reduce(
+      (total, reservation) =>
+        total + (parseGuestCount(reservation.guests) ?? UNKNOWN_GUEST_COUNT),
+      0
+    );
+}
+
+export function getRemainingSeats(
+  slot: SlotAvailability,
+  reservations: ReservationSeats[]
+): number {
+  return Math.max(
+    0,
+    slot.remaining - getBookedSeatsForSlot(reservations, slot.time)
+  );
+}
 
 /** Base slot capacity — remaining seats subtracted by real reservations in the API route. */
 export function getAvailability(date: string): SlotAvailability[] {
