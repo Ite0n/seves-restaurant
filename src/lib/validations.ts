@@ -10,7 +10,10 @@ export function getReservationSchema(locale: Locale) {
     phone: z.string().min(8, m.phone),
     email: z.union([z.string().email(m.email), z.literal("")]).optional(),
     date: z.string().min(1, m.date),
-    time: z.string().min(1, m.time).refine(isTimeSlot, { message: m.time }),
+    time: z
+      .string()
+      .min(1, m.time)
+      .refine((time) => isTimeSlot(time), { message: m.time }),
     guests: z.string().min(1, m.guests),
     notes: z.string().max(500).optional(),
   });
