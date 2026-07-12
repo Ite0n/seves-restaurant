@@ -1,7 +1,15 @@
 export const TIME_SLOTS = ["18:00", "19:00", "20:00", "21:00", "22:00"] as const;
 
+export type TimeSlot = (typeof TIME_SLOTS)[number];
+
+const TIME_SLOT_SET = new Set<string>(TIME_SLOTS);
+
+export function isTimeSlot(time: string): time is TimeSlot {
+  return TIME_SLOT_SET.has(time);
+}
+
 export type SlotAvailability = {
-  time: string;
+  time: TimeSlot;
   available: boolean;
   remaining: number;
 };
