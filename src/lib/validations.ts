@@ -13,7 +13,7 @@ export function getReservationSchema(locale: Locale) {
     time: z
       .string()
       .min(1, m.time)
-      .refine((time) => isTimeSlot(time), { message: m.time }),
+      .refine((time): boolean => isTimeSlot(time), { message: m.time }),
     guests: z.string().min(1, m.guests),
     notes: z.string().max(500).optional(),
   });
