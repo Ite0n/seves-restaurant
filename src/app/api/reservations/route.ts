@@ -25,7 +25,14 @@ export async function POST(request: Request) {
 
     const slots = getAvailability(data.date);
     const slot = slots.find((s) => s.time === data.time);
-    if (slot && !slot.available) {
+    if (!slot) {
+      return NextResponse.json(
+        { error: "Please select a valid time slot" },
+        { status: 400 }
+      );
+    }
+
+    if (!slot.available) {
       return NextResponse.json(
         { error: "This time slot is no longer available" },
         { status: 409 }
