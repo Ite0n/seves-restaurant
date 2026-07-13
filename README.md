@@ -23,6 +23,9 @@ npm run build
 npm run start
 ```
 
+See [`docs/developer-workflows.md`](docs/developer-workflows.md) for API
+payloads, environment behavior, local fallbacks, and troubleshooting.
+
 ## Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com)
@@ -55,6 +58,10 @@ CALLMEBOT_API_KEY=        # Auto WhatsApp to restaurant
 | `GET /api/availability` | Live slot availability |
 | `POST /api/enquiries` | Experience, event & gift enquiries |
 | `POST /api/newsletter` | Newsletter signups |
+
+Route contracts, example requests, persistence behavior, and notification
+fallbacks are documented in
+[`docs/developer-workflows.md`](docs/developer-workflows.md).
 
 ## Sections
 
