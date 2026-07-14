@@ -7,9 +7,27 @@ import {
 } from "@/lib/db/enquiries";
 import { sendWhatsAppNotification } from "@/lib/whatsapp";
 import { isSupabaseConfigured } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+const ENQUIRY_RATE_LIMIT = {
+  namespace: "enquiry",
+  limit: 5,
+  windowMs: 15 * 60 * 1000,
+} as const;
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = checkRateLimit(request, ENQUIRY_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many enquiry attempts. Please try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfter) },
+        }
+      );
+    }
+
     if (!isSupabaseConfigured()) {
       return NextResponse.json(
         { error: "Enquiries are temporarily unavailable. Please email us directly." },

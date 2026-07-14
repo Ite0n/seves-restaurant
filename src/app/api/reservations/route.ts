@@ -3,13 +3,31 @@ import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
 import { saveReservation } from "@/lib/db/reservations";
 import { getAvailability } from "@/lib/availability";
+import { checkRateLimit } from "@/lib/rate-limit";
 import {
   formatReservationWhatsAppMessage,
   sendWhatsAppNotification,
 } from "@/lib/whatsapp";
 
+const RESERVATION_RATE_LIMIT = {
+  namespace: "reservation",
+  limit: 5,
+  windowMs: 15 * 60 * 1000,
+} as const;
+
 export async function POST(request: Request) {
   try {
+    const rateLimit = checkRateLimit(request, RESERVATION_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many reservation attempts. Please try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfter) },
+        }
+      );
+    }
+
     const body = await request.json();
     const data = reservationSchema.parse(body);
 
