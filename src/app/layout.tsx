@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Cormorant_Garamond, Cinzel, Jost } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { FAQ, RESTAURANT } from "@/lib/data";
 import { HERO_VIDEO } from "@/lib/critical-assets";
 import ScrollRestorationInit from "@/components/ScrollRestorationInit";
@@ -158,6 +159,7 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         {children}
+        <Analytics />
       </body>
     </html>
   );
