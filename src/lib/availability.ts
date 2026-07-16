@@ -59,10 +59,10 @@ export function isFutureRestaurantSlot(
 }
 
 /** Base slot capacity - remaining seats are subtracted by real reservations in the API route. */
-export function getAvailability(date: string): SlotAvailability[] {
+export function getAvailability(date: string, now = new Date()): SlotAvailability[] {
   return TIME_SLOTS.map((time) => ({
     time,
-    available: isFutureRestaurantSlot(date, time),
+    available: isFutureRestaurantSlot(date, time, now),
     remaining: SLOT_CAPACITY,
   }));
 }
