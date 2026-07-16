@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
 import { saveReservation } from "@/lib/db/reservations";
-import { getAvailability } from "@/lib/availability";
+import { getAvailability, isFutureRestaurantSlot } from "@/lib/availability";
 import {
   formatReservationWhatsAppMessage,
   sendWhatsAppNotification,
@@ -13,12 +13,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = reservationSchema.parse(body);
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const selected = new Date(data.date);
-    if (selected < today) {
+    if (!isFutureRestaurantSlot(data.date, data.time)) {
       return NextResponse.json(
-        { error: "Please select a future date" },
+        { error: "Please select a future date and time" },
         { status: 400 }
       );
     }

@@ -22,7 +22,7 @@ export async function GET(request: Request) {
     return {
       ...slot,
       remaining,
-      available: remaining > 0,
+      available: slot.available && remaining > 0,
     };
   });
 
