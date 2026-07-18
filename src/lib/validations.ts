@@ -22,8 +22,8 @@ export const reservationSchema = getReservationSchema("en");
 
 export const enquirySchema = z.object({
   source: z.enum(["experience", "event", "gift"]),
-  sourceId: z.string().min(1),
-  sourceTitle: z.string().min(1),
+  sourceId: z.string().min(1).max(120),
+  sourceTitle: z.string().min(1).max(160),
   name: z.string().min(2, "Please enter your name"),
   email: z.string().email("Please enter a valid email"),
   preferredDate: z.string().optional(),
