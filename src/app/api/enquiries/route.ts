@@ -41,24 +41,30 @@ export async function POST(request: Request) {
     });
 
     const whatsappSent = await sendWhatsAppNotification(whatsappMessage);
+    let emailSent = false;
 
     if (process.env.RESEND_API_KEY && process.env.RESERVATION_EMAIL) {
-      await fetch("https://api.resend.com/emails", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          from: "Sèves <info@seveslb.com>",
-          to: process.env.RESERVATION_EMAIL,
-          subject: `Enquiry — ${data.sourceTitle}`,
-          text: whatsappMessage.replace(/\*/g, ""),
-        }),
-      });
+      try {
+        const emailResponse = await fetch("https://api.resend.com/emails", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            from: "Sèves <info@seveslb.com>",
+            to: process.env.RESERVATION_EMAIL,
+            subject: `Enquiry — ${data.sourceTitle}`,
+            text: whatsappMessage.replace(/\*/g, ""),
+          }),
+        });
+        emailSent = emailResponse.ok;
+      } catch {
+        emailSent = false;
+      }
     }
 
-    return NextResponse.json({ success: true, whatsappSent });
+    return NextResponse.json({ success: true, whatsappSent, emailSent });
   } catch (err) {
     if (err instanceof ZodError) {
       return NextResponse.json(
