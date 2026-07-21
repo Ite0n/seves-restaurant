@@ -8,6 +8,13 @@ import {
   sendWhatsAppNotification,
 } from "@/lib/whatsapp";
 
+function generateReservationReference(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const entropy = crypto.randomUUID().replace(/-/g, "").slice(0, 8).toUpperCase();
+
+  return `SV-${timestamp}-${entropy}`;
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -32,7 +39,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const reference = `SV-${Date.now().toString(36).toUpperCase()}`;
+    const reference = generateReservationReference();
     const whatsappMessage = formatReservationWhatsAppMessage(data, reference);
 
     await saveReservation({
