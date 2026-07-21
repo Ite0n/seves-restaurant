@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
 import { getAvailability, isLimitedTonight } from "@/lib/availability";
 import { getReservationsForDate } from "@/lib/db/reservations";
+import { isValidDateOnlyString } from "@/lib/validations";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const date = searchParams.get("date");
 
-  if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+  if (!date || !isValidDateOnlyString(date)) {
     return NextResponse.json(
       { error: "Valid date parameter required (YYYY-MM-DD)" },
       { status: 400 }
