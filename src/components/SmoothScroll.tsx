@@ -11,6 +11,30 @@ function anchorOffset() {
   return window.innerWidth < 1024 ? -88 : -10;
 }
 
+function initialHashTarget() {
+  const hash = window.location.hash;
+  if (!hash || hash === "#top") return null;
+
+  try {
+    return document.getElementById(decodeURIComponent(hash.slice(1)));
+  } catch {
+    return null;
+  }
+}
+
+function hasTopInitialTarget() {
+  return !window.location.hash || window.location.hash === "#top";
+}
+
+function hasSectionInitialTarget() {
+  return Boolean(window.location.hash && window.location.hash !== "#top");
+}
+
+function scrollToElementInstant(el: HTMLElement) {
+  const top = window.scrollY + el.getBoundingClientRect().top + anchorOffset();
+  window.scrollTo({ top, left: 0, behavior: "auto" });
+}
+
 export default function SmoothScroll({
   children,
 }: {
@@ -20,8 +44,6 @@ export default function SmoothScroll({
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
     }
-
-    scrollTopInstant();
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -36,8 +58,28 @@ export default function SmoothScroll({
     };
 
     if (reduced) {
+      const restoreNativeInitialPosition = () => {
+        const target = initialHashTarget();
+        if (target) {
+          scrollToElementInstant(target);
+        } else if (hasTopInitialTarget()) {
+          scrollTopInstant();
+        }
+      };
+
+      const hashRestoreTimeouts = hasSectionInitialTarget()
+        ? [0, 150, 500, 1000, 2000].map((delay) =>
+            window.setTimeout(restoreNativeInitialPosition, delay)
+          )
+        : [];
+
+      restoreNativeInitialPosition();
+
       document.addEventListener("click", onLogoClick);
-      return () => document.removeEventListener("click", onLogoClick);
+      return () => {
+        hashRestoreTimeouts.forEach((timeout) => window.clearTimeout(timeout));
+        document.removeEventListener("click", onLogoClick);
+      };
     }
 
     const lenis = new Lenis({
@@ -47,7 +89,26 @@ export default function SmoothScroll({
       touchMultiplier: 1.4,
     });
 
-    lenis.scrollTo(0, { immediate: true });
+    const restoreInitialHash = () => {
+      const target = initialHashTarget();
+      if (target) {
+        lenis.scrollTo(target, { offset: anchorOffset(), immediate: true });
+        return;
+      }
+
+      if (hasTopInitialTarget()) {
+        lenis.scrollTo(0, { immediate: true });
+        return;
+      }
+    };
+
+    const hashRestoreTimeouts = hasSectionInitialTarget()
+      ? [0, 150, 500, 1000, 2000].map((delay) =>
+          window.setTimeout(restoreInitialHash, delay)
+        )
+      : [];
+
+    restoreInitialHash();
 
     let frame = 0;
     function raf(time: number) {
@@ -81,6 +142,7 @@ export default function SmoothScroll({
     document.addEventListener("click", onClick);
 
     return () => {
+      hashRestoreTimeouts.forEach((timeout) => window.clearTimeout(timeout));
       cancelAnimationFrame(frame);
       document.removeEventListener("click", onClick);
       lenis.destroy();

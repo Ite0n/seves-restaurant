@@ -7,6 +7,9 @@ export default function ScrollRestorationInit() {
     if ("scrollRestoration" in history) {
       history.scrollRestoration = "manual";
     }
+    if (window.location.hash) {
+      return;
+    }
     window.scrollTo(0, 0);
   }, []);
 
