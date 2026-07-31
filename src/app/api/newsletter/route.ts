@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { saveNewsletterSubscriber } from "@/lib/db/newsletter";
+import { checkRateLimit } from "@/lib/rate-limit";
+
+const NEWSLETTER_RATE_LIMIT = {
+  namespace: "newsletter",
+  limit: 5,
+  windowMs: 15 * 60 * 1000,
+} as const;
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -8,6 +15,17 @@ const schema = z.object({
 
 export async function POST(request: Request) {
   try {
+    const rateLimit = checkRateLimit(request, NEWSLETTER_RATE_LIMIT);
+    if (!rateLimit.allowed) {
+      return NextResponse.json(
+        { error: "Too many newsletter attempts. Please try again shortly." },
+        {
+          status: 429,
+          headers: { "Retry-After": String(rateLimit.retryAfter) },
+        }
+      );
+    }
+
     const body = await request.json();
     const { email } = schema.parse(body);
     const normalized = email.toLowerCase().trim();
