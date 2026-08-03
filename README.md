@@ -73,6 +73,7 @@ English and French — toggle in the navbar.
 - JSON-LD Restaurant + FAQPage
 - `/privacy` policy page
 - Vercel Analytics events on key conversions
+- Media and motion runbook → [`public/video/README.md`](public/video/README.md)
 
 ## Customisation
 
