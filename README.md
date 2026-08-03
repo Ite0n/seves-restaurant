@@ -56,6 +56,8 @@ CALLMEBOT_API_KEY=        # Auto WhatsApp to restaurant
 | `POST /api/enquiries` | Experience, event & gift enquiries |
 | `POST /api/newsletter` | Newsletter signups |
 
+API persistence and operational notes → [`docs/api-and-persistence.md`](docs/api-and-persistence.md)
+
 ## Sections
 
 Hero · Walkthrough · Menu · Tasting Journey · Cellar · Chef · Experiences · Events · Gallery ·
