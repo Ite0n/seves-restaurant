@@ -468,6 +468,31 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+
+  [data-gallery-panel],
+  [data-experience-card],
+  [data-journey-card] {
+    opacity: 1 !important;
+    transform: none !important;
+    filter: none !important;
+    clip-path: none !important;
+  }
+
+  [data-gallery-float],
+  [data-gallery-parallax],
+  [data-experience-parallax],
+  [data-journey-parallax] {
+    transform: none !important;
+  }
+
+  [data-experience-mask],
+  [data-journey-mask] {
+    clip-path: none !important;
+  }
+
+  [data-experience-veil] {
+    opacity: 0 !important;
+  }
 }
 
 /* Custom cursor (desktop) */
