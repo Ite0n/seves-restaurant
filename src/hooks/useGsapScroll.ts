@@ -79,7 +79,9 @@ export function useTastingJourneyPin(
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: (() => void)[] = [];
 
-    if (mode === "mobile" || reduced) {
+    if (reduced) return;
+
+    if (mode === "mobile") {
       const cards =
         (cardRefs?.current?.filter(Boolean) as HTMLElement[]) ??
         Array.from(
@@ -269,7 +271,9 @@ export function useGalleryScroll(
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: (() => void)[] = [];
 
-    if (mode === "mobile" || reduced) {
+    if (reduced) return;
+
+    if (mode === "mobile") {
       const items = mobileItemRefs.current?.filter(Boolean) as HTMLElement[];
       if (items.length && mode === "mobile") {
         items.forEach((item, i) => {
@@ -435,7 +439,9 @@ export function useExperiencesScroll(
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cleanups: (() => void)[] = [];
 
-    if (mode === "mobile" || reduced) {
+    if (reduced) return;
+
+    if (mode === "mobile") {
       const cards = cardRefs.current?.filter(Boolean) as HTMLElement[];
       if (cards.length && mode === "mobile") {
         cards.forEach((card) => {
