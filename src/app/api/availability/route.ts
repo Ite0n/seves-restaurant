@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { getAvailability, isLimitedTonight } from "@/lib/availability";
+import {
+  getAvailability,
+  getClosedAvailability,
+  isLimitedTonight,
+} from "@/lib/availability";
 import { getReservationsForDate } from "@/lib/db/reservations";
 
 export async function GET(request: Request) {
@@ -14,7 +18,24 @@ export async function GET(request: Request) {
   }
 
   const base = getAvailability(date);
-  const booked = await getReservationsForDate(date);
+  let booked: Awaited<ReturnType<typeof getReservationsForDate>>;
+
+  try {
+    booked = await getReservationsForDate(date);
+  } catch {
+    const slots = getClosedAvailability(date);
+
+    return NextResponse.json(
+      {
+        date,
+        slots,
+        limited: isLimitedTonight(slots),
+        error:
+          "Availability is temporarily unavailable. Please call us directly.",
+      },
+      { status: 503 }
+    );
+  }
 
   const slots = base.map((slot) => {
     const count = booked.filter((r) => r.time === slot.time).length;
