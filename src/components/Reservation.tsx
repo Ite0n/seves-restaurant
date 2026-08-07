@@ -19,6 +19,7 @@ import {
   buildWhatsAppUrl,
   formatReservationWhatsAppMessage,
 } from "@/lib/whatsapp";
+import { TIME_SLOTS } from "@/lib/availability";
 
 const GUESTS = ["2", "3", "4", "5", "6", "7+"];
 
@@ -51,11 +52,50 @@ const inputCls =
 
 type Slot = { time: string; available: boolean; remaining: number };
 
+const DEFAULT_SLOTS: Slot[] = TIME_SLOTS.map((time) => ({
+  time,
+  available: true,
+  remaining: 4,
+}));
+
+const CLOSED_SLOTS: Slot[] = TIME_SLOTS.map((time) => ({
+  time,
+  available: false,
+  remaining: 0,
+}));
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null;
+}
+
+function isSlot(value: unknown): value is Slot {
+  return (
+    isRecord(value) &&
+    typeof value.time === "string" &&
+    typeof value.available === "boolean" &&
+    typeof value.remaining === "number"
+  );
+}
+
+function parseAvailabilityPayload(
+  value: unknown
+): { slots: Slot[]; limited: boolean } | null {
+  if (!isRecord(value) || !Array.isArray(value.slots)) return null;
+  if (!value.slots.every(isSlot)) return null;
+
+  return {
+    slots: value.slots,
+    limited: typeof value.limited === "boolean" ? value.limited : false,
+  };
+}
+
 export default function Reservation() {
   const [reference, setReference] = useState<string | null>(null);
   const [apiError, setApiError] = useState<string | null>(null);
   const [slots, setSlots] = useState<Slot[]>([]);
   const [limited, setLimited] = useState(false);
+  const [availabilityLoading, setAvailabilityLoading] = useState(false);
+  const [availabilityError, setAvailabilityError] = useState(false);
   const [whatsappNotified, setWhatsappNotified] = useState(false);
   const [whatsappAutoSent, setWhatsappAutoSent] = useState(false);
   const { locale, t } = useLocale();
@@ -64,6 +104,7 @@ export default function Reservation() {
   const {
     register,
     handleSubmit,
+    getValues,
     setValue,
     watch,
     reset,
@@ -83,22 +124,62 @@ export default function Reservation() {
   const date = watch("date");
 
   useEffect(() => {
-    if (!date) return;
-    fetch(`/api/availability?date=${date}`)
-      .then((r) => r.json())
+    if (!date) {
+      setSlots([]);
+      setLimited(false);
+      setAvailabilityLoading(false);
+      setAvailabilityError(false);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    setAvailabilityLoading(true);
+    setAvailabilityError(false);
+    setSlots(CLOSED_SLOTS);
+    setLimited(false);
+
+    fetch(`/api/availability?date=${encodeURIComponent(date)}`, {
+      signal: controller.signal,
+    })
+      .then(async (response) => {
+        const payload = parseAvailabilityPayload(
+          await response.json().catch(() => null)
+        );
+
+        if (!response.ok || !payload) {
+          throw new Error("Availability unavailable");
+        }
+
+        return payload;
+      })
       .then((data) => {
-        if (data.slots) {
-          setSlots(data.slots);
-          setLimited(data.limited);
-          const current = data.slots.find((s: Slot) => s.time === time);
-          if (current && !current.available) {
-            const first = data.slots.find((s: Slot) => s.available);
-            if (first) setValue("time", first.time);
-          }
+        setSlots(data.slots);
+        setLimited(data.limited);
+
+        const current = data.slots.find((slot) => slot.time === getValues("time"));
+        if (current && !current.available) {
+          const first = data.slots.find((slot) => slot.available);
+          if (first) setValue("time", first.time);
         }
       })
-      .catch(() => {});
-  }, [date, setValue, time]);
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") {
+          return;
+        }
+
+        setSlots(CLOSED_SLOTS);
+        setLimited(false);
+        setAvailabilityError(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setAvailabilityLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [date, getValues, setValue]);
 
   const onSubmit = async (data: ReservationInput) => {
     setApiError(null);
@@ -146,13 +227,11 @@ export default function Reservation() {
     setWhatsappAutoSent(false);
   };
 
-  const times = slots.length > 0 ? slots : [
-    { time: "18:00", available: true, remaining: 4 },
-    { time: "19:00", available: true, remaining: 4 },
-    { time: "20:00", available: true, remaining: 4 },
-    { time: "21:00", available: true, remaining: 4 },
-    { time: "22:00", available: true, remaining: 4 },
-  ];
+  const times = date ? (slots.length > 0 ? slots : CLOSED_SLOTS) : DEFAULT_SLOTS;
+  const selectedSlot = times.find((slot) => slot.time === time);
+  const availabilityBlocksSubmit =
+    Boolean(date) &&
+    (availabilityLoading || availabilityError || !selectedSlot?.available);
 
   return (
     <section id="reservation" className="relative min-h-[36rem] overflow-hidden bg-ink-900 section-pad">
@@ -185,10 +264,20 @@ export default function Reservation() {
             }
             description={t("reservation.description")}
           />
-          {date && limited && (
+          {date && availabilityLoading && (
+            <p className="mt-4 text-sm text-cream/50">
+              {t("reservation.availabilityLoading")}
+            </p>
+          )}
+          {date && availabilityError && (
+            <p className="mt-4 text-sm text-ruby/90" role="alert">
+              {t("reservation.availabilityError")}
+            </p>
+          )}
+          {date && !availabilityLoading && !availabilityError && limited && (
             <p className="mt-4 text-sm text-gold/90">{t("reserve.limited")}</p>
           )}
-          {date && !limited && slots.length > 0 && (
+          {date && !availabilityLoading && !availabilityError && !limited && slots.length > 0 && (
             <p className="mt-4 text-sm text-cream/50">{t("reserve.available")}</p>
           )}
           <Reveal delay={0.16}>
@@ -323,7 +412,7 @@ export default function Reservation() {
 
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || availabilityBlocksSubmit}
                     className="group relative w-full overflow-hidden rounded-full bg-gold py-4 text-[0.7rem] uppercase tracking-luxe text-ink-900 disabled:opacity-60"
                   >
                     <span className="relative z-10">
