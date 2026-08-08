@@ -64,21 +64,6 @@ export async function POST(request: Request) {
         }),
       });
 
-      if (data.email) {
-        await fetch("https://api.resend.com/emails", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            from: "Sèves <info@seveslb.com>",
-            to: data.email,
-            subject: "Your reservation request — Sèves",
-            text: `Dear ${data.name},\n\nThank you for your reservation request for ${data.guests} guests on ${data.date} at ${data.time}.\n\nReference: ${reference}\n\nOur maître d' will confirm shortly.\n\nSèves`,
-          }),
-        });
-      }
     }
 
     return NextResponse.json({
