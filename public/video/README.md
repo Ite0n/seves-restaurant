@@ -1,5 +1,9 @@
 # Cinematic video assets
 
+For hero playback behavior, autoplay retries, reduced-motion/data-saver gates,
+and browser placement constraints, see
+[`../../docs/media-and-assets.md`](../../docs/media-and-assets.md).
+
 ## Hero (`hero.mp4`)
 
 Fullscreen autoplay loop on the homepage hero. Place your file at:
