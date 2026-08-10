@@ -56,8 +56,11 @@ CALLMEBOT_API_KEY=        # Auto WhatsApp to restaurant
 | `POST /api/enquiries` | Experience, event & gift enquiries |
 | `POST /api/newsletter` | Newsletter signups |
 
-See [`docs/api-and-persistence.md`](docs/api-and-persistence.md) for request
-contracts, Supabase persistence, notification integrations, and troubleshooting.
+## Documentation
+
+- [`docs/api-and-persistence.md`](docs/api-and-persistence.md) — request contracts, Supabase persistence, notification integrations, and troubleshooting.
+- [`docs/cinematic-scroll.md`](docs/cinematic-scroll.md) — GSAP ScrollTrigger architecture, reduced-motion behavior, and section animation hooks.
+- [`docs/media-and-assets.md`](docs/media-and-assets.md) — hero video constraints, autoplay behavior, image optimization, and asset scripts.
 
 ## Sections
 
