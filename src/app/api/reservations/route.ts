@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { reservationSchema } from "@/lib/validations";
@@ -7,6 +8,15 @@ import {
   formatReservationWhatsAppMessage,
   sendWhatsAppNotification,
 } from "@/lib/whatsapp";
+
+const REFERENCE_RANDOM_BYTES = 6;
+
+function createReservationReference(): string {
+  const timestamp = Date.now().toString(36).toUpperCase();
+  const entropy = randomBytes(REFERENCE_RANDOM_BYTES).toString("hex").toUpperCase();
+
+  return `SV-${timestamp}-${entropy}`;
+}
 
 export async function POST(request: Request) {
   try {
@@ -32,7 +42,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const reference = `SV-${Date.now().toString(36).toUpperCase()}`;
+    const reference = createReservationReference();
     const whatsappMessage = formatReservationWhatsAppMessage(data, reference);
 
     await saveReservation({
