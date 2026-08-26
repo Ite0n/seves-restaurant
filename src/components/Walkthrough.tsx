@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { Component, type ReactNode, useRef, useState } from "react";
 import {
   motion,
   useScroll,
@@ -23,6 +23,39 @@ const WalkthroughScene = dynamic(
   { ssr: false }
 );
 
+type WalkthroughSceneBoundaryProps = {
+  children: ReactNode;
+  fallback: ReactNode;
+  onError: () => void;
+};
+
+type WalkthroughSceneBoundaryState = {
+  hasError: boolean;
+};
+
+class WalkthroughSceneBoundary extends Component<
+  WalkthroughSceneBoundaryProps,
+  WalkthroughSceneBoundaryState
+> {
+  state: WalkthroughSceneBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): WalkthroughSceneBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(): void {
+    this.props.onError();
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback;
+    }
+
+    return this.props.children;
+  }
+}
+
 const FALLBACK_STATIONS = [
   "/images/exterior-facade-sign.webp",
   "/images/interior-pendant-room.webp",
@@ -32,6 +65,29 @@ const FALLBACK_STATIONS = [
   "/images/exterior-firewater-city.webp",
 ];
 
+function WalkthroughFallbackImage({
+  src,
+  alt,
+}: {
+  src: string;
+  alt: string;
+}) {
+  return (
+    <div className="relative h-full w-full">
+      <Image
+        key={src}
+        src={src}
+        alt={alt}
+        fill
+        sizes="100vw"
+        loading="lazy"
+        className="object-cover"
+        quality={80}
+      />
+    </div>
+  );
+}
+
 export default function Walkthrough() {
   const ref = useRef<HTMLDivElement>(null);
   const { data } = useLocale();
@@ -39,7 +95,8 @@ export default function Walkthrough() {
   const captions = walkthrough.captions;
   const { mounted, isDesktop } = useIsDesktop();
   const reducedMotion = usePrefersReducedMotion();
-  const useWebGL = mounted && isDesktop && !reducedMotion;
+  const [sceneFailed, setSceneFailed] = useState(false);
+  const useWebGL = mounted && isDesktop && !reducedMotion && !sceneFailed;
   const sceneNear = useNearViewport(ref, "600px 0px");
 
   useWalkthroughSnap(ref, useWebGL);
@@ -88,6 +145,12 @@ export default function Walkthrough() {
 
   const fallbackImage =
     FALLBACK_STATIONS[Math.min(active, FALLBACK_STATIONS.length - 1)];
+  const fallback = (
+    <WalkthroughFallbackImage
+      src={fallbackImage}
+      alt={captions[active].title}
+    />
+  );
 
   return (
     <section
@@ -98,20 +161,14 @@ export default function Walkthrough() {
       <div className="sticky top-0 h-[100svh] w-full overflow-hidden">
         <div className="absolute inset-0">
           {useWebGL && sceneNear ? (
-            <WalkthroughScene progress={progress} />
+            <WalkthroughSceneBoundary
+              fallback={fallback}
+              onError={() => setSceneFailed(true)}
+            >
+              <WalkthroughScene progress={progress} />
+            </WalkthroughSceneBoundary>
           ) : (
-            <div className="relative h-full w-full">
-              <Image
-                key={fallbackImage}
-                src={fallbackImage}
-                alt={captions[active].title}
-                fill
-                sizes="100vw"
-                loading="lazy"
-                className="object-cover"
-                quality={80}
-              />
-            </div>
+            fallback
           )}
         </div>
 
