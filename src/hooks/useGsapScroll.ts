@@ -527,6 +527,26 @@ export function useExperiencesScroll(
     const getScrollDistance = () =>
       Math.max(track.scrollWidth - container.clientWidth, 0);
 
+    // On ultrawide screens the cards can fit without horizontal travel.
+    // In that case, scrubbed reveal states would never advance.
+    if (getScrollDistance() <= 1) {
+      if (progressRef.current) {
+        progressRef.current.style.transform = "scaleX(1)";
+      }
+
+      const cards = track.querySelectorAll<HTMLElement>("[data-experience-card]");
+      cards.forEach((card) => {
+        gsap.set(card, { opacity: 1, y: 0, filter: "brightness(1)" });
+        const mask = card.querySelector("[data-experience-mask]");
+        const veil = card.querySelector("[data-experience-veil]");
+
+        if (mask) gsap.set(mask, { clipPath: "inset(0% 0 0 0)" });
+        if (veil) gsap.set(veil, { opacity: 0 });
+      });
+
+      return;
+    }
+
     const tween = gsap.to(track, {
       x: () => -getScrollDistance(),
       ease: "none",
