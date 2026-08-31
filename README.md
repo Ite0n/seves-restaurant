@@ -38,6 +38,9 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 
 Without Supabase, reservations fall back to local file storage; enquiries require Supabase.
 
+For route behavior, persistence fallbacks, notification wiring, and operational checks, see
+[`docs/api-and-persistence.md`](docs/api-and-persistence.md).
+
 ## Optional integrations
 
 ```env
