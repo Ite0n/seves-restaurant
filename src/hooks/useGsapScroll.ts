@@ -36,6 +36,73 @@ function refreshScrollOnImages(root: HTMLElement) {
 
 /** Soft cinematic scrub — photos feel deliberate, not jittery. */
 const SCRUB_LUXE = 1.05;
+const MIN_HORIZONTAL_SCROLL_DISTANCE = 1;
+
+function completeProgress(progress: HTMLElement | null | undefined) {
+  if (progress) progress.style.transform = "scaleX(1)";
+}
+
+function revealStaticTastingJourney(
+  track: HTMLElement,
+  progress: HTMLElement | null | undefined
+) {
+  const cards = Array.from(
+    track.querySelectorAll<HTMLElement>("[data-journey-card]")
+  );
+  const masks = Array.from(
+    track.querySelectorAll<HTMLElement>("[data-journey-mask]")
+  );
+  const images = Array.from(
+    track.querySelectorAll<HTMLElement>("[data-journey-parallax]")
+  );
+
+  gsap.set(track, { x: 0 });
+  gsap.set(cards, { opacity: 1, y: 0 });
+  gsap.set(masks, { clipPath: "inset(0% 0% 0% 0%)" });
+  gsap.set(images, { scale: 1.02, xPercent: 0 });
+  completeProgress(progress);
+
+  return () => {
+    gsap.set([track, ...cards, ...masks, ...images], {
+      clearProps: "transform,opacity,clipPath",
+    });
+    if (progress) progress.style.transform = "scaleX(0)";
+  };
+}
+
+function revealStaticGallery(
+  track: HTMLElement,
+  progress: HTMLElement | null | undefined
+) {
+  const panels = Array.from(
+    track.querySelectorAll<HTMLElement>("[data-gallery-panel]")
+  );
+  const images = Array.from(
+    track.querySelectorAll<HTMLElement>("[data-gallery-parallax]")
+  );
+  const floats = Array.from(
+    track.querySelectorAll<HTMLElement>("[data-gallery-float]")
+  );
+
+  gsap.set(track, { x: 0 });
+  gsap.set(panels, {
+    scale: 1,
+    opacity: 1,
+    rotate: 0,
+    filter: "brightness(1) blur(0px)",
+    clipPath: "inset(0% 0% 0% 0% round 3px)",
+  });
+  gsap.set(images, { scale: 1.02, xPercent: 0, yPercent: 0 });
+  gsap.set(floats, { y: 0 });
+  completeProgress(progress);
+
+  return () => {
+    gsap.set([track, ...panels, ...images, ...floats], {
+      clearProps: "transform,opacity,filter,clipPath",
+    });
+    if (progress) progress.style.transform = "scaleX(0)";
+  };
+}
 
 export function useWalkthroughSnap(
   sectionRef: React.RefObject<HTMLElement | null>,
@@ -156,6 +223,12 @@ export function useTastingJourneyPin(
 
     const getScrollDistance = () =>
       Math.max(track.scrollWidth - container.offsetWidth, 0);
+
+    // If the strip fits inside the viewport, scrubbed container animations
+    // never advance; render the cards in their accessible final state instead.
+    if (getScrollDistance() < MIN_HORIZONTAL_SCROLL_DISTANCE) {
+      return revealStaticTastingJourney(track, progressRef?.current);
+    }
 
     const tween = gsap.to(track, {
       x: () => -getScrollDistance(),
@@ -329,6 +402,12 @@ export function useGalleryScroll(
 
     const getScrollDistance = () =>
       Math.max(track.scrollWidth - container.clientWidth, 0);
+
+    // If the strip fits inside the viewport, scrubbed container animations
+    // never advance; render the frames in their accessible final state instead.
+    if (getScrollDistance() < MIN_HORIZONTAL_SCROLL_DISTANCE) {
+      return revealStaticGallery(track, progressRef.current);
+    }
 
     const tween = gsap.to(track, {
       x: () => -getScrollDistance(),
